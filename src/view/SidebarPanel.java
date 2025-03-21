@@ -1,9 +1,11 @@
-package admin;
+package view;
 
 import javax.swing.*;
+
+import view.employee.EmployeePanel;
+
 import java.awt.*;
 import java.util.ArrayList;
-import admin.ui.nhanvien.EmployeePanel; // Import EmployeePanel từ admin.ui.nhanvien
 
 public class SidebarPanel extends JPanel {
     private JPanel mainPanel; // Khai báo mainPanel
@@ -30,7 +32,7 @@ public class SidebarPanel extends JPanel {
         imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         imageLabel.setVerticalAlignment(JLabel.CENTER);
-        ImageIcon defaultIcon = new ImageIcon(getClass().getResource("/admin/images/UIimage.png"));
+        ImageIcon defaultIcon = new ImageIcon(getClass().getResource("resources/images/ULTIMAGE.png"));
         if (defaultIcon.getImage() != null) {
             Image scaledImage = defaultIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImage));

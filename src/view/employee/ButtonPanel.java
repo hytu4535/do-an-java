@@ -1,4 +1,4 @@
-package admin.ui.nhanvien;
+package view.employee;
 
 import javax.swing.*;
 import java.awt.*;

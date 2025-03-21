@@ -1,7 +1,9 @@
-package admin;
+package view;
 
-import admin.ui.nhanvien.*;
 import javax.swing.*;
+
+import view.employee.*;
+
 import java.awt.*;
 
 
