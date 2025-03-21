@@ -32,7 +32,7 @@ public class SidebarPanel extends JPanel {
         imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         imageLabel.setVerticalAlignment(JLabel.CENTER);
-        ImageIcon defaultIcon = new ImageIcon(getClass().getResource("resources/images/ULTIMAGE.png"));
+        ImageIcon defaultIcon = new ImageIcon(getClass().getResource("../resources/images/UIimage.png"));
         if (defaultIcon.getImage() != null) {
             Image scaledImage = defaultIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImage));
