@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 
 import view.employee.EmployeePanel;
-
+import view.thongke.StatisticsPanel;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -142,7 +142,7 @@ public class SidebarPanel extends JPanel {
                         mainPanel.add(new JLabel("Tồn kho - Chưa triển khai"));
                         break;
                     case "Thống kê":
-                        mainPanel.add(new JLabel("Thống kê - Chưa triển khai"));
+                        mainPanel.add(new StatisticsPanel());
                         break;
                     case "Cài đặt":
                         mainPanel.add(new JLabel("Cài đặt - Chưa triển khai"));
