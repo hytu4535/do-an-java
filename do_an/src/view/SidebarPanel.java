@@ -1,11 +1,15 @@
 package view;
 
 import javax.swing.*;
+
 import view.nguoidung.NguoiDungPanel;
-import view.thongke.StatisticsPanel;
+import view.phieunhap.PhieunhapPanel;
 import view.nhaphang.NhaphangPanel;
+import view.thongke.StatisticsPanel;
+
 import java.awt.*;
 import java.util.ArrayList;
+
 
 public class SidebarPanel extends JPanel {
     private JPanel mainPanel; // Khai báo mainPanel
@@ -120,7 +124,7 @@ public class SidebarPanel extends JPanel {
                         mainPanel.add(new NhaphangPanel());
                         break;
                     case "Phiếu nhập":
-                        mainPanel.add(new JLabel("Phiếu nhập - Chưa triển khai"));
+                        mainPanel.add(new PhieunhapPanel());
                         break;
                     case "Xuất hàng":
                         mainPanel.add(new JLabel("Xuất hàng - Chưa triển khai"));
