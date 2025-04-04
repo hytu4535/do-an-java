@@ -16,6 +16,10 @@ public class Paneltrai extends JPanel {
     private JPanel pnlPanelthongtin;
     private JPanel pnlPanelluachon;
     
+    private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
+    
+    private Color bgColor = new Color(255, 255, 255);
+    
     public Paneltrai() {
         InitComponents();
     }
@@ -64,7 +68,7 @@ public class Paneltrai extends JPanel {
         pnlPanelthongtin.setPreferredSize(new Dimension(pnlPanelthongtin.getPreferredSize().width, 400));
         
         //dung de fix loi va kiem tra
-        pnlPanelthongtin.setBackground(Color.yellow);
+        //pnlPanelthongtin.setBackground(Color.yellow);
         
         //them vao panel lon
         this.add(pnlPanelthongtin, BorderLayout.CENTER);

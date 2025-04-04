@@ -12,6 +12,10 @@ public class Panelphai_Panelthongtin extends JPanel {
     private String[] tblTruongdulieu;// cac truong du lieu cua table
     private JScrollPane nutcuon;//them nut cuon trong truong hop co qua nhieu du lieu
     
+     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
+    
+    private Color bgColor = new Color(255, 255, 255);
+    
     public Panelphai_Panelthongtin() {
         InitComponents();
     }
@@ -24,6 +28,8 @@ public class Panelphai_Panelthongtin extends JPanel {
     
     public void InitPanel() {
         this.setOpaque(true);
+        
+        this.setBackground(bgColor);
         
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 400));
         
@@ -47,7 +53,21 @@ public class Panelphai_Panelthongtin extends JPanel {
         tablemodel = new DefaultTableModel(dumpdata, tblTruongdulieu);
         
         //set du lieu cho table thong tin
-        tblThongtin.setModel(tablemodel);
+       tblThongtin.setModel(tablemodel);
+        
+        //set font cho table
+        tblThongtin.setFont(myFont);
+        
+        //chỉnh màu cho table
+        tblThongtin.setBackground(bgColor);
+        
+        // Đặt màu nền cho tiêu đề cột (có thể thay đổi thành màu mong muốn)
+        tblThongtin.getTableHeader().setBackground(bgColor);  
+        
+        // Đặt phông chữ cho tiêu đề(cột). header có in đậm chữ
+        Font myTableFont = new Font("Arial", Font.BOLD, 16);
+        
+        tblThongtin.getTableHeader().setFont(myTableFont);
         
         //dieu chinh kich thuoc table thong tin
         tblThongtin.setPreferredSize(new Dimension(tblThongtin.getPreferredSize().width, 400));
@@ -61,6 +81,8 @@ public class Panelphai_Panelthongtin extends JPanel {
         
         nutcuon = new JScrollPane(tblThongtin);// co the khai bao () sau do dung phuong thuc
         //                                                                      setViewportView(table) de dua table vao JScrollPane
+        
+        nutcuon.getViewport().setBackground(bgColor);
         
         //do JScrollPane da la mot container nen chi can them JScrollPane vao panel
         this.add(nutcuon);// nutcuon, khong phai tblThongtin

@@ -17,6 +17,11 @@ public class Panelphai extends JPanel {
     private JPanel pnlPanelthongtin;
     private JPanel pnlPanelluachon;
     
+     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
+    
+    private Color bgColor = new Color(255, 255, 255);
+    
+    
     public Panelphai() {
         InitComponents();
     }
@@ -35,6 +40,8 @@ public class Panelphai extends JPanel {
     public void InitPanel() {
         //dieuchinh thong so cho panel
         this.setOpaque(true);
+        
+        this.setBackground(bgColor);
         
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 600));
         

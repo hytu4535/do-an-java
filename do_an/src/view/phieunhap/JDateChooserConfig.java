@@ -8,6 +8,7 @@ import java.awt.*;
 
 /*###############
 -Lớp này sẽ có phuong thức để thay đổi màu nền cho component JDateChooser
+-Vì lí do gì đấy phương thức chỉ mới thay đổi màu nền của icon và label của phần popup
 ###############*/
 
 

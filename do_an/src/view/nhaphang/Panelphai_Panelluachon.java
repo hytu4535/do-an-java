@@ -16,6 +16,11 @@ public class Panelphai_Panelluachon extends JPanel {
     private String[] btnTennut;
     private String[] btnCommand;
     
+    private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
+    
+    private Color bgColor = new Color(255, 255, 255);
+    
+    
     public Panelphai_Panelluachon() {
         InitComponents();
     }
@@ -29,6 +34,8 @@ public class Panelphai_Panelluachon extends JPanel {
     
     public void InitPanel() {
         this.setOpaque(true);
+        
+        this.setBackground(bgColor);
         
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 100));
         
@@ -50,11 +57,12 @@ public class Panelphai_Panelluachon extends JPanel {
         btnCommand = new String[] {"Excel", "Sua", "Xoa", "Nhap"};
         
         int height = 40;
-        Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
         
         //dieu chinh lblTongtien
         lblTongtien.setBorder(null);
+        
         lblTongtien.setFont(myFont);
+        
         lblTongtien.setPreferredSize(new Dimension(lblTongtien.getPreferredSize().width, height));
         
         //dieu chinh lblHienthi
@@ -66,8 +74,15 @@ public class Panelphai_Panelluachon extends JPanel {
             JButton tempbutt = new JButton(btnTennut[i]);
             
             tempbutt.setFocusable(false);
+            
             tempbutt.setFont(myFont);
+            
+            //tempbutt.setBorder(null);
+            
+            tempbutt.setBackground(bgColor);
+            
             tempbutt.setPreferredSize(new Dimension(tempbutt.getPreferredSize().width, height));
+            
             tempbutt.setActionCommand(btnCommand[i]);
             
             btnNut.add(tempbutt);

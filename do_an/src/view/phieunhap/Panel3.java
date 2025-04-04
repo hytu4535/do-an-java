@@ -23,7 +23,7 @@ public class Panel3 extends JPanel {
     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
     private Color bgColor = new Color(255, 255, 255);
     
-    // Constructor của Panel1
+    // Constructor của Panel3
     public Panel3() {
         InitComponents();
     }
@@ -32,6 +32,9 @@ public class Panel3 extends JPanel {
         InitPanel();
         
         InitPanelThongtin();
+        
+        //cái này để test cái popup chi tiết phiếu
+        //InitTestPopup();
     }
     
     public void InitPanel() {
@@ -67,8 +70,11 @@ public class Panel3 extends JPanel {
         
         // Đặt màu nền cho tiêu đề cột (có thể thay đổi thành màu mong muốn)
         tblThongtin.getTableHeader().setBackground(bgColor);  
-        // Đặt phông chữ cho tiêu đề(cột)
-        tblThongtin.getTableHeader().setFont(myFont);
+        
+        // Đặt phông chữ cho tiêu đề(cột). header có font riêng
+        Font myTableFont = new Font("Arial", Font.BOLD, 16);
+        
+        tblThongtin.getTableHeader().setFont(myTableFont);
         
         //#############################
         // Tạo một Custom TableCellRenderer để thay đổi màu nền của ô dữ liệu
@@ -100,6 +106,9 @@ public class Panel3 extends JPanel {
         // thêm table vào nut cuộn
         spNutcuon = new JScrollPane(tblThongtin);
         
+        // chỉnh màu nền của nút cuộn
+        spNutcuon.getViewport().setBackground(bgColor);
+        
         // thêm vào Panel lớn
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -110,5 +119,17 @@ public class Panel3 extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
         
         this.add(spNutcuon, gbc);
+    }
+    
+    public void InitTestPopup() {
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        
+        gbc.fill = GridBagConstraints.BOTH;
+        
+        this.add(new ChiTietPhieuNhap(), gbc);
     }
 }

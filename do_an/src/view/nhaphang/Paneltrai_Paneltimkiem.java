@@ -11,6 +11,10 @@ public class Paneltrai_Paneltimkiem extends JPanel {
     private JTextField txtfTimkiem;
     private JButton btnTimkiem;
     
+    private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
+    
+    private Color bgColor = new Color(255, 255, 255);
+    
     public Paneltrai_Paneltimkiem() {
         InitComponents();
     }
@@ -26,6 +30,8 @@ public class Paneltrai_Paneltimkiem extends JPanel {
         
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 100));
         
+        this.setBackground(bgColor);
+        
         //set layout
         gbc = new GridBagConstraints();
         
@@ -39,14 +45,15 @@ public class Paneltrai_Paneltimkiem extends JPanel {
         txtfTimkiem = new JTextField();
         
         btnTimkiem = new JButton("Làm mới");
-        btnTimkiem.setBackground(new Color(255,255,255));
+        btnTimkiem.setBackground(this.bgColor);
         
         //dieu chinh txtfTimkiem
         txtfTimkiem.setOpaque(true);
+        txtfTimkiem.setFont(myFont);
         txtfTimkiem.setBorder(new LineBorder(Color.black, 1));
 
         //dieu chinh btnTimkiem
-        btnTimkiem.setFont(new Font("Arial", Font.PLAIN, 18));
+        btnTimkiem.setFont(myFont);
         btnTimkiem.setFocusable(false);
         
         //them components vao panel

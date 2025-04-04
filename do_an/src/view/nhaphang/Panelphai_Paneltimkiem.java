@@ -15,6 +15,10 @@ public class Panelphai_Paneltimkiem extends JPanel {
     private JComboBox<String> cbNhacungcap;//chi dinh ro kieu doi tuong ma combobox chua
     private GridBagConstraints gbc;
     
+     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
+    
+    private Color bgColor = new Color(255, 255, 255);
+    
     public Panelphai_Paneltimkiem() {
         InitComponents();
     }
@@ -27,6 +31,8 @@ public class Panelphai_Paneltimkiem extends JPanel {
     
     public void InitPanel() {
         this.setOpaque(true);
+        
+        this.setBackground(bgColor);
         
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 100));
         
@@ -44,14 +50,15 @@ public class Panelphai_Paneltimkiem extends JPanel {
         
         txtfHienthi = new ArrayList<JTextField>();
         
-        Font myfont = new Font("Arial", Font.PLAIN, 18);
-        
         //dieu chinh va them Label vao arraylist
         
         for(int i = 0; i < 3; ++i) {
             JLabel temp = new JLabel(Hienthiname[i]);
             
-            temp.setFont(myfont);
+            temp.setFont(myFont);
+            
+            temp.setBackground(bgColor);
+            
             temp.setOpaque(true);
             
             lblHienthi.add(temp);
@@ -64,6 +71,8 @@ public class Panelphai_Paneltimkiem extends JPanel {
             temp.setOpaque(true);
             //ngan khong cho nguoi dung chinh sua phan textfield
             temp.setEditable(false);
+            
+            temp.setBackground(bgColor);
             
             temp.setBorder(new LineBorder(Color.black, 1));
             
@@ -78,7 +87,9 @@ public class Panelphai_Paneltimkiem extends JPanel {
         
         cbNhacungcap.setPreferredSize(new Dimension(cbNhacungcap.getPreferredSize().width, 40));
         
-        cbNhacungcap.setFont(myfont);
+        cbNhacungcap.setFont(myFont);
+        
+        cbNhacungcap.setBackground(bgColor);
         
         
         //them components vao panel

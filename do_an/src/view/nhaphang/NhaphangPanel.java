@@ -13,6 +13,10 @@ public class NhaphangPanel extends JPanel {
     private JPanel pnlPanelphai;
     private GridLayout gridlayout;
     
+    private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
+    
+    private Color bgColor = new Color(255, 255, 255);
+    
     public NhaphangPanel() {
         
         InitComponents();
@@ -34,6 +38,10 @@ public class NhaphangPanel extends JPanel {
         this.setOpaque(true);
         
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 600));
+        
+        this.setBackground(bgColor);
+        
+        this.setFont(myFont);
         
         //set layout cho panel
         gridlayout = new GridLayout(1, 2);// 1 hang, 2 cot
@@ -73,7 +81,7 @@ public class NhaphangPanel extends JPanel {
         pnlPanelphai.setPreferredSize(new Dimension(pnlPaneltrai.getPreferredSize().width, 600));
         
         //Cai nay dung de kiem tra neu co loi
-        pnlPanelphai.setBackground(Color.blue);
+        //pnlPanelphai.setBackground(bgColor);
         
         //them vao panel lon
         
