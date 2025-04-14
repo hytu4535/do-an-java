@@ -1,5 +1,6 @@
-package view.phieunhap;
+package view.phieuxuat;
 
+import view.phieunhap.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -102,11 +103,5 @@ public class Panel1_Panelchucnang extends JPanel {
            
            this.add(btnNut.get(i), gbc);
        }
-    }
-    
-    
-    //getter
-    public ArrayList<JButton> getBtnNut() {
-        return btnNut;
     }
 }

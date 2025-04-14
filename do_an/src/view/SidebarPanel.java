@@ -3,12 +3,18 @@ package view;
 import javax.swing.*;
 
 import view.nguoidung.NguoiDungPanel;
+
 import view.phieunhap.PhieunhapPanel;
+import view.phieuxuat.PhieuxuatPanel;
+import view.xuathang.XuathangPanel;
+
 import view.nhaphang.NhaphangPanel;
+
 import view.thongke.StatisticsPanel;
 
 import java.awt.*;
 import java.util.ArrayList;
+
 
 
 public class SidebarPanel extends JPanel {
@@ -127,10 +133,10 @@ public class SidebarPanel extends JPanel {
                         mainPanel.add(new PhieunhapPanel());
                         break;
                     case "Xuất hàng":
-                        mainPanel.add(new JLabel("Xuất hàng - Chưa triển khai"));
+                        mainPanel.add(new XuathangPanel());
                         break;
                     case "Phiếu xuất":
-                        mainPanel.add(new JLabel("Phiếu xuất - Chưa triển khai"));
+                        mainPanel.add(new PhieuxuatPanel());
                         break;
                     case "Tài khoản":
                         mainPanel.add(new NguoiDungPanel());

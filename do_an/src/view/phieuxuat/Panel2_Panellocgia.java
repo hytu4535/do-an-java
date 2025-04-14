@@ -1,5 +1,6 @@
-package view.phieunhap;
+package view.phieuxuat;
 
+import view.phieunhap.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -147,16 +148,5 @@ public class Panel2_Panellocgia extends JPanel {
         
         this.add(txtfDen, gbc);
         
-    }
-    
-    
-     //getter
-
-    public JTextField getTxtfTu() {
-        return txtfTu;
-    }
-
-    public JTextField getTxtfDen() {
-        return txtfDen;
     }
 }

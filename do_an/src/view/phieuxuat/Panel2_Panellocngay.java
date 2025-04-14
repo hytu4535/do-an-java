@@ -1,4 +1,7 @@
-package view.phieunhap;
+package view.phieuxuat;
+
+import view.phieunhap.*;
+import com.toedter.calendar.JDateChooser;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,9 +19,14 @@ import javax.swing.border.TitledBorder;
 
 
 
-public class Panel2_Panellocgia extends JPanel {
+public class Panel2_Panellocngay extends JPanel {
+    //####< Lưu ý >####
+    // -Kiểm tra Libraries xem có file < jcalender-1.4.jar > chưa
+    // NẾU CHƯA CÓ
+    // => Tải jcalender-1.4.jar trên mạng về và add file đó vào Libraries trước khi dùng
+    //###############
+    private JDateChooser dcTu, dcDen;// chọn thời gian từ .... đến .....
     private JLabel lblTu, lblDen;//hiển thị cho cái bên trên
-    private JTextField txtfTu, txtfDen;
     
     private GridBagConstraints gbc;// Panel sẽ dùng gridbaglayout để tạo giao diện
     
@@ -27,7 +35,7 @@ public class Panel2_Panellocgia extends JPanel {
     private Color bgColor = new Color(255, 255, 255);
     
     
-    public Panel2_Panellocgia() {
+    public Panel2_Panellocngay() {
         InitComponents();
     }
     
@@ -45,10 +53,10 @@ public class Panel2_Panellocgia extends JPanel {
         
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 100));
         
-        this.setBackground(bgColor);
+        this.setBackground(new Color(255,255,255));
         
         //set title border
-        TitledBorder titledBorder = new TitledBorder("Lọc theo giá");
+        TitledBorder titledBorder = new TitledBorder("Lọc theo ngày");
         
         // Thay đổi font của tiêu đề
         titledBorder.setTitleFont(myFont); // Font, kiểu chữ, kích thước
@@ -62,9 +70,9 @@ public class Panel2_Panellocgia extends JPanel {
     }
     
     public void InitLoc() {
-        txtfTu = new JTextField();
+        dcTu = new JDateChooser();
         
-        txtfDen = new JTextField();
+        dcDen = new JDateChooser();
         
         lblTu = new JLabel("Từ");
         
@@ -90,15 +98,16 @@ public class Panel2_Panellocgia extends JPanel {
         lblDen.setFont(myFont);
         
         // điều chỉnh các jdatechooser
-        // txtfTu
-        txtfTu.setFont(myFont);
+        // dcTu
+        dcTu.setFont(myFont);
         
-        txtfTu.setBackground(bgColor);
+        JDateChooserConfig.customizeDateChooser(dcTu, bgColor);
         
-        // txtfDen
-        txtfDen.setFont(myFont);
+        // dcDen
+        dcDen.setFont(myFont);
         
-        txtfDen.setBackground(bgColor);
+        //dcDen.setBackground(bgColor);
+        JDateChooserConfig.customizeDateChooser(dcDen, bgColor);
         
         // thêm các components vào Panel lớn
         gbc.insets = new Insets(5, 10, 5, 10);//top, left, bottom, right
@@ -114,7 +123,7 @@ public class Panel2_Panellocgia extends JPanel {
         
         this.add(lblTu, gbc);
         
-        // txtfTu
+        // dcTu
         gbc.gridx = 1;
         gbc.gridy = 0;
         
@@ -123,7 +132,7 @@ public class Panel2_Panellocgia extends JPanel {
         
         gbc.fill = GridBagConstraints.BOTH;
         
-        this.add(txtfTu, gbc);
+        this.add(dcTu, gbc);
         
         // lblDen
         gbc.gridx = 2;
@@ -136,7 +145,7 @@ public class Panel2_Panellocgia extends JPanel {
         
         this.add(lblDen, gbc);
         
-        // txtfDen
+        // dcDen
         gbc.gridx = 3;
         gbc.gridy = 0;
         
@@ -145,18 +154,7 @@ public class Panel2_Panellocgia extends JPanel {
         
         gbc.fill = GridBagConstraints.BOTH;
         
-        this.add(txtfDen, gbc);
+        this.add(dcDen, gbc);
         
-    }
-    
-    
-     //getter
-
-    public JTextField getTxtfTu() {
-        return txtfTu;
-    }
-
-    public JTextField getTxtfDen() {
-        return txtfDen;
     }
 }

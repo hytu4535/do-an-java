@@ -1,11 +1,11 @@
-package view.phieunhap;
+package view.phieuxuat;
 
+import view.phieunhap.*;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import javax.swing.table.DefaultTableModel;
-import view.phieunhap.ChiTietPhieuNhap;
 
 
 /*##############
@@ -55,24 +55,14 @@ public class Panel3 extends JPanel {
     public void InitPanelThongtin() {
         tblThongtin = new JTable();
         
-        tblTruongdulieu = new String[] {"STT", "Mã phiếu", "Nhà cung cấp", 
-                                                                   "Người tạo", "Thời gian tạo", "Tổng tiền"};
+        tblTruongdulieu = new String[] {"STT", "Mã phiếu", 
+                                                                   "Người tạo", 
+                                                                   "Thời gian tạo", 
+                                                                   "Tổng tiền"};
         
         //them du lieu vao tablemodel
-        //tablemodel có các trường dữ liệu nhưng không có dòng dữ liệu nào và
-        // các ô dữ liệu không thể bị thay đổi nhưng vẫn chọn được
-        //########################
-        tablemodel = new DefaultTableModel(null, tblTruongdulieu) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Không ô nào được chỉnh sửa
-            }
-        };
-        //########################
-
-        
-        // ngăn không cho thay đổi các hàng dữ liệu( cái này ngăn việc chọn hàng luôn)
-        //tblThongtin.setEnabled(false);
+        //tablemodel có các trường dữ liệu nhưng không có dòng dữ liệu nào
+        tablemodel = new DefaultTableModel(null, tblTruongdulieu);
         
         //set du lieu cho table thong tin
         tblThongtin.setModel(tablemodel);
@@ -80,11 +70,6 @@ public class Panel3 extends JPanel {
         tblThongtin.setFont(myFont);
         
         tblThongtin.setBackground(bgColor);
-        
-        // cho phép chọn theo hàng
-        tblThongtin.setRowSelectionAllowed(true);
-        // cái này chỉ chọn 1 hàng duy nhất
-        tblThongtin.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         // Đặt màu nền cho tiêu đề cột (có thể thay đổi thành màu mong muốn)
         tblThongtin.getTableHeader().setBackground(bgColor);  
@@ -101,22 +86,12 @@ public class Panel3 extends JPanel {
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 
-                // nếu hàng được chọn thì chuyển màu
-                if (isSelected) {
-                    // Màu khi được chọn
-                    c.setBackground(new Color(255, 255, 153)); // Vàng nhạt 
-                    c.setForeground(Color.BLACK);
-                }
-                else {
-                    // Màu nền mặc định
-                    c.setBackground(bgColor);
-                    c.setForeground(Color.BLACK);
-                }
-
+                // Thay đổi màu nền của ô dữ liệu
+                c.setBackground(bgColor); // Đặt màu nền cho ô dữ liệu
                 return c;
             }
         };
-
+        
         // Áp dụng renderer cho tất cả các ô trong bảng
         for (int i = 0; i < tblThongtin.getColumnCount(); i++) {
             tblThongtin.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
@@ -124,12 +99,11 @@ public class Panel3 extends JPanel {
         //#############################
         
         // điểu chỉnh độ rộng cho các cột của table
-        tblThongtin.getColumnModel().getColumn(0).setPreferredWidth(48);
-        tblThongtin.getColumnModel().getColumn(1).setPreferredWidth(48);
-        tblThongtin.getColumnModel().getColumn(2).setPreferredWidth(352);
-        tblThongtin.getColumnModel().getColumn(3).setPreferredWidth(128);
-        tblThongtin.getColumnModel().getColumn(4).setPreferredWidth(112);
-        tblThongtin.getColumnModel().getColumn(5).setPreferredWidth(112);
+        tblThongtin.getColumnModel().getColumn(0).setPreferredWidth(60);
+        tblThongtin.getColumnModel().getColumn(1).setPreferredWidth(185);
+        tblThongtin.getColumnModel().getColumn(2).setPreferredWidth(185);
+        tblThongtin.getColumnModel().getColumn(3).setPreferredWidth(185);
+        tblThongtin.getColumnModel().getColumn(4).setPreferredWidth(185);
         
         // thêm table vào nut cuộn
         spNutcuon = new JScrollPane(tblThongtin);
@@ -149,7 +123,6 @@ public class Panel3 extends JPanel {
         this.add(spNutcuon, gbc);
     }
     
-    //########################
     public void InitTestPopup() {
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -161,17 +134,4 @@ public class Panel3 extends JPanel {
         
         this.add(new ChiTietPhieuNhap(), gbc);
     }
-   //########################
-
-    
-    //các getter để lấy component cho lớp bus(controller)
-    
-    public JTable getTblThongtin() {
-        return tblThongtin;
-    }
-
-    public DefaultTableModel getTablemodel() {
-        return tablemodel;
-    }
-
 }

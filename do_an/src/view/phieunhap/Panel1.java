@@ -70,4 +70,14 @@ public class Panel1 extends JPanel {
         
         this.add(this.pnlTimkiem, gbc);
     }
+    
+    
+    // getter
+    public JPanel getPnlChucnang() {
+        return pnlChucnang;
+    }
+
+    public JPanel getPnlTimkiem() {
+        return pnlTimkiem;
+    }
 }

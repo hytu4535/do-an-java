@@ -1,5 +1,6 @@
-package view.phieunhap;
+package view.phieuxuat;
 
+import view.phieunhap.*;
 import javax.swing.*;
 import java.awt.*;
 
@@ -69,16 +70,5 @@ public class Panel2 extends JPanel {
         gbc.fill = GridBagConstraints.BOTH; // Panel sẽ trải rộng theo hai chiều 
         
         this.add(this.pnlLocgia, gbc);
-    }
-    
-    
-    //getter
-
-    public JPanel getPnlLocngay() {
-        return pnlLocngay;
-    }
-
-    public JPanel getPnlLocgia() {
-        return pnlLocgia;
     }
 }

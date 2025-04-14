@@ -1,5 +1,6 @@
-package view.phieunhap;
+package view.phieuxuat;
 
+import view.phieunhap.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -66,7 +67,7 @@ public class Panel1_Paneltimkiem extends JPanel {
         
         txtfTimkiem = new JTextField();
         
-        Boloc = new String[] {"Mã phiếu", "Nhà cung cấp", "Người tạo"};
+        Boloc = new String[] {"Mã phiếu ", "Người tạo"};
         
         cbTimkiem = new JComboBox<>(Boloc);
         
@@ -136,19 +137,5 @@ public class Panel1_Paneltimkiem extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL; // Panel sẽ trải rộng theo chiều ngang
         
         this.add(btnLammoi, gbc);
-    }
-    
-    
-    //getter
-    public JComboBox<String> getCbTimkiem() {
-        return cbTimkiem;
-    }
-
-    public JTextField getTxtfTimkiem() {
-        return txtfTimkiem;
-    }
-
-    public JButton getBtnLammoi() {
-        return btnLammoi;
     }
 }

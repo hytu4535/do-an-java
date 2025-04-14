@@ -1,6 +1,4 @@
-package view.phieunhap;
-
-import controller.PhieuNhapController;
+package view.phieuxuat;
 
 import java.awt.BorderLayout;
 
@@ -9,7 +7,7 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class PhieunhapPanel extends JPanel {
+public class PhieuxuatPanel extends JPanel {
     private JPanel pnlPanel1, pnlPanel2, pnlPanel3;//mỗi panel tương ứng với 3 tầng của giao diện
     //Panel 1 gồm: chức năng, tìm kiếm
     //Panel2 gồm: bộ lọc
@@ -17,10 +15,7 @@ public class PhieunhapPanel extends JPanel {
     
     private GridBagConstraints gbc;
     
-    private PhieuNhapController pnc;
-    
-    
-    public PhieunhapPanel() {
+    public PhieuxuatPanel() {
         
         InitComponents();
     }
@@ -34,8 +29,6 @@ public class PhieunhapPanel extends JPanel {
        InitPanel2();
        
        InitPanel3();
-       
-       InitController();
         
     }
     
@@ -78,7 +71,7 @@ public class PhieunhapPanel extends JPanel {
     
     public void InitPanel2() {
         this.pnlPanel2 = new Panel2();
-        //this.pnlPanel1 = new JPanel();
+        //this.pnlPanel2 = new JPanel();
         
         this.pnlPanel2.setOpaque(true);
         
@@ -99,7 +92,7 @@ public class PhieunhapPanel extends JPanel {
     
     public void InitPanel3() {
         this.pnlPanel3 = new Panel3();
-        //this.pnlPanel3 = new FramePhieunhap();
+        //this.pnlPanel3 = new ChiTietPhieuXuat();
         
         this.pnlPanel3.setOpaque(true);
         
@@ -116,25 +109,5 @@ public class PhieunhapPanel extends JPanel {
         gbc.fill = GridBagConstraints.BOTH; // Panel sẽ trải rộng theo hai chiều 
         
         this.add(this.pnlPanel3, gbc);
-    }
-    
-    
-    // khởi tạo controller 
-    public void InitController() {
-        this.pnc = new PhieuNhapController(this);
-    }
-    
-    //getter
-
-    public JPanel getPnlPanel1() {
-        return pnlPanel1;
-    }
-
-    public JPanel getPnlPanel2() {
-        return pnlPanel2;
-    }
-
-    public JPanel getPnlPanel3() {
-        return pnlPanel3;
     }
 }

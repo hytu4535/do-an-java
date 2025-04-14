@@ -1,25 +1,26 @@
-package view.phieunhap;
+package view.phieuxuat;
 
+import view.phieunhap.*;
 import javax.swing.*;
 import java.awt.*;
 
-public class Panel2 extends JPanel {
-    private JPanel pnlLocngay;
-    private JPanel pnlLocgia;
+public class Panel1 extends JPanel {
+    private JPanel pnlChucnang;
+    private JPanel pnlTimkiem;
     
     private GridBagConstraints gbc;
     
     // Constructor của Panel1
-    public Panel2() {
+    public Panel1() {
         InitComponents();
     }
     
     public void InitComponents() {
         InitPanel();
         
-        InitPanelLocngay();
+        InitPanelchucnang();
         
-        InitPanelLocgia();
+        InitPaneltimkiem();
     }
     
     public void InitPanel() {
@@ -36,49 +37,38 @@ public class Panel2 extends JPanel {
         this.setLayout(new GridBagLayout());
     }
     
-    public void InitPanelLocngay() {
-        this.pnlLocngay = new Panel2_Panellocngay();
+    public void InitPanelchucnang() {
+        this.pnlChucnang = new Panel1_Panelchucnang();
         
-        this.pnlLocngay.setOpaque(true);
+        this.pnlChucnang.setOpaque(true);
         
-        this.pnlLocngay.setPreferredSize(new Dimension(this.pnlLocngay.getPreferredSize().width, 70));
+        this.pnlChucnang.setPreferredSize(new Dimension(this.pnlChucnang.getPreferredSize().width, 70));
         
         //thêm vào Panel1
         gbc.gridx = 0;
         gbc.gridy = 0;
         
-        gbc.weightx = 0.5; // chiêm một nữa chiều ngang của panel lớn chứa nó
+        gbc.weightx = 0.6; // 
         gbc.weighty = 1.0; // 
         gbc.fill = GridBagConstraints.BOTH; // Panel sẽ trải rộng theo hai chiều 
         
-        this.add(this.pnlLocngay, gbc);
+        this.add(this.pnlChucnang, gbc);
     }
     
-    public void InitPanelLocgia() {
-        this.pnlLocgia = new Panel2_Panellocgia();
+    public void InitPaneltimkiem() {
+        this.pnlTimkiem = new Panel1_Paneltimkiem();
         
-        this.pnlLocgia.setOpaque(true);
+        this.pnlTimkiem.setOpaque(true);
         
-        this.pnlLocgia.setPreferredSize(new Dimension(this.pnlLocgia.getPreferredSize().width, 70));
+        this.pnlTimkiem.setPreferredSize(new Dimension(this.pnlTimkiem.getPreferredSize().width, 70));
         
         gbc.gridx = 1;
         gbc.gridy = 0;
         
-        gbc.weightx = 0.5;
+        gbc.weightx = 1.0; // Chiếm hết chiều rộng
         gbc.weighty = 1.0; // 
         gbc.fill = GridBagConstraints.BOTH; // Panel sẽ trải rộng theo hai chiều 
         
-        this.add(this.pnlLocgia, gbc);
-    }
-    
-    
-    //getter
-
-    public JPanel getPnlLocngay() {
-        return pnlLocngay;
-    }
-
-    public JPanel getPnlLocgia() {
-        return pnlLocgia;
+        this.add(this.pnlTimkiem, gbc);
     }
 }
