@@ -139,6 +139,12 @@ public class PhieuNhapController {
                 // kiểm tra nếu tuNgay lớn hơn deNgay
                 if( tuNgay.getTime() > denNgay.getTime() ) {
                     // check lỗi
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Ngày từ phải bé hơn ngày đến!",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
                 else{
                     // nếu ngày của phiếu không nằm trong tầm [tuNgay, denNgay]
@@ -151,6 +157,12 @@ public class PhieuNhapController {
             }
             else {
                 // thông báo người dùng phải chọn đủ
+                JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Hãy chọn đủ thông tin ngày để lọc",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                 );
             }
         }
         //#############################
@@ -172,11 +184,23 @@ public class PhieuNhapController {
             if(tuGia.length() > 0 && denGia.length() > 0) {
                 // kiểm tra nếu không phải là số
                 if( !isNumeric(tuGia) || !isNumeric(denGia) ) {
-                    // báo lỗi cho người dùng
+                     // báo lỗi
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "các giá trị từ và đến phải là số!",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
                 }
                 // nếu là số nhưng tu > den
                 else if( Double.parseDouble(tuGia) > Double.parseDouble(denGia) ) {
-                    //báo lỗi
+                    //báo lỗi cho người dùng
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Giá từ phải bé hơn giá đến!!",// nội dung 
+                        "Cảnh báo", // tiêu đề 
+                        JOptionPane.ERROR_MESSAGE// icon
+                    );
                 }
                 // đủ điều kiện
                 else {
@@ -195,6 +219,13 @@ public class PhieuNhapController {
             }
             else {
                 //thông báo phải nhập đủ thông tin để dùng
+                JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Hãy chọn đủ thông tin giá để lọc",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                
             }
         }
         //############################
@@ -210,35 +241,17 @@ public class PhieuNhapController {
         tblmodel.setRowCount(0);
         
         // thêm hàng vào bảng
-        // tạo mảng object để chưa dữ liệu
-        Object[][] dulieu = new Object[danhsachphieu.size()][6];// [số hàng dữ liệu][các cột dữ liệu]
-        
         for(int i = 0; i < danhsachphieu.size(); ++i) {
-            // lấy phiếu nhập tại vị trí i
             PhieuNhap phieu = danhsachphieu.get(i);
             
-            // STT
-            dulieu[i][0] = String.valueOf(i + 1);
-            
-            // maPhieu
-            dulieu[i][1] = phieu.getMaPhieu();
-            
-            // nhaCungCap(tạm thời là mã)
-            dulieu[i][2] = phieu.getMaNhaCungCap();
-            
-            // nguoiTao
-            dulieu[i][3] = phieu.getNguoiTao();
-            
-            // thoiGianTao
-            dulieu[i][4] = phieu.getThoiGianTao();
-            
-            // tongTien
-            dulieu[i][5] = DoubleToDong(phieu.getTongTien());
-        }
-        
-        // đưa dữ liệu vào bảng
-        for(Object[] hangdulieu : dulieu) {
-            tblmodel.addRow(hangdulieu);
+            tblmodel.addRow(new Object[] {
+                String.valueOf(i + 1),
+                phieu.getMaPhieu(),
+                phieu.getMaNhaCungCap(),
+                phieu.getNguoiTao(),
+                phieu.getThoiGianTao(),
+                DoubleToDong(phieu.getTongTien())
+            });
         }
         
     }

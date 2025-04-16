@@ -3,6 +3,8 @@ package controller;
 import dao.*;
 
 import model.PhieuXuat;
+import model.ChiTietPhieuXuat;
+import model.VanPhongPham;
 
 import view.phieuxuat.*;
 
@@ -16,8 +18,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
@@ -45,6 +50,18 @@ public class PhieuXuatController {
             @Override
             public void actionPerformed(ActionEvent l) {
                 loadData();
+            }
+        });
+        
+        
+        //thêm sự kiện cho nút xem chi tiết
+        
+        Panel1_Panelchucnang panelchucnang = (Panel1_Panelchucnang) panel1.getPnlChucnang();
+        
+        panelchucnang.getBtnNut().get(2).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadDataChiTietPhieuXuat();
             }
         });
         
@@ -117,6 +134,12 @@ public class PhieuXuatController {
                 // kiểm tra nếu tuNgay lớn hơn deNgay
                 if( tuNgay.getTime() > denNgay.getTime() ) {
                     // check lỗi
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Ngày từ phải bé hơn ngày đến!",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
                 else{
                     // nếu ngày của phiếu không nằm trong tầm [tuNgay, denNgay]
@@ -129,6 +152,12 @@ public class PhieuXuatController {
             }
             else {
                 // thông báo người dùng phải chọn đủ
+                JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Hãy chọn đủ thông tin ngày để lọc",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                 );
             }
         }
         //#############################
@@ -151,10 +180,22 @@ public class PhieuXuatController {
                 // kiểm tra nếu không phải là số
                 if( !isNumeric(tuGia) || !isNumeric(denGia) ) {
                     // báo lỗi cho người dùng
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "các giá trị từ và đến phải là số!",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
                 }
                 // nếu là số nhưng tu > den
                 else if( Double.parseDouble(tuGia) > Double.parseDouble(denGia) ) {
-                    //báo lỗi
+                    //báo lỗi cho người dùng
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Giá từ phải bé hơn giá đến!!",// nội dung 
+                        "Cảnh báo", // tiêu đề 
+                        JOptionPane.ERROR_MESSAGE// icon
+                    );
                 }
                 // đủ điều kiện
                 else {
@@ -172,7 +213,13 @@ public class PhieuXuatController {
                 }
             }
             else {
-                //thông báo phải nhập đủ thông tin để dùng
+                 //thông báo phải nhập đủ thông tin để dùng
+                JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Hãy chọn đủ thông tin giá để lọc",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                );
             }
         }
         //############################
@@ -188,36 +235,127 @@ public class PhieuXuatController {
         tblmodel.setRowCount(0);
         
         // thêm hàng vào bảng
-        // tạo mảng object để chưa dữ liệu
-        Object[][] dulieu = new Object[danhsachphieu.size()][5];// [số hàng dữ liệu][các cột dữ liệu]
-        
         for(int i = 0; i < danhsachphieu.size(); ++i) {
-            // lấy phiếu nhập tại vị trí i
             PhieuXuat phieu = danhsachphieu.get(i);
             
-            // STT
-            dulieu[i][0] = String.valueOf(i + 1);
-            
-            // maPhieu
-            dulieu[i][1] = phieu.getMaPhieu();
-            
-            // nguoiTao
-            dulieu[i][2] = phieu.getNguoiTao();
-            
-            // thoiGianTao
-            dulieu[i][3] = phieu.getThoiGianTao();
-            
-            // tongTien
-            dulieu[i][4] = DoubleToDong(phieu.getTongTien());
-        }
-        
-        // đưa dữ liệu vào bảng
-        for(Object[] hangdulieu : dulieu) {
-            tblmodel.addRow(hangdulieu);
+            tblmodel.addRow(new Object[] {
+                String.valueOf(i + 1),
+                phieu.getMaPhieu(),
+                phieu.getNguoiTao(),
+                phieu.getThoiGianTao(),
+                DoubleToDong(phieu.getTongTien())
+            });
         }
         
     }
 
+    
+     // tải dữ liệu của chi tiết phiếu xuất
+    public void loadDataChiTietPhieuXuat() {
+        // lấy các component
+        Panel3 panel3 = (Panel3) this.view.getPnlPanel3();
+        
+        // lấy table của panel 3
+        JTable bangphieu = panel3.getTblThongtin();
+        
+        // lấy hàng được chọn trong bang phieu
+        // trả về -1 nếu không chọn
+        int hangDuocChon = bangphieu.getSelectedRow();
+        
+        
+        // tạo JDialog để hiển thị
+        ChiTietPhieuXuatDialog CTphieu = new ChiTietPhieuXuatDialog(null, "Chi tiết phiếu nhập", true);
+        
+        // kiểm tra nếu có chọn một hàng
+        if( hangDuocChon != -1 ) {
+            // lấy maPhieu tại hàng thứ "hang", cột 1
+            String maPhieu = bangphieu.getValueAt(hangDuocChon, 1).toString();
+            
+            //lấy danh sách chi tiết phiếu nhập
+            ArrayList<ChiTietPhieuXuat> danhsachChiTietPhieu = 
+                    ChiTietPhieuXuatDAO.getInstance().getAllById(maPhieu);
+            
+            // tạo danh sách các sản phẩm nằm trong danhsachChiTietPhieu để đưa vào bảng sản phẩm 
+            ArrayList<VanPhongPham> danhsachVPP = new ArrayList<>();
+            
+            for(var item : danhsachChiTietPhieu) {
+                // truy xuất vật phẩm từ csdl trùng với maVatPham 
+                VanPhongPham vpp = VanPhongPhamDAO.getInstance().getByID(item.getMaVatPham());
+                
+                danhsachVPP.add(vpp);
+            }
+            
+            // hiển thị lên chi tiết phiếu nhập
+            
+            // PHẦN THÔNG TIN
+            // -phần thông tin trước gồm: mã phiếu, người tạo, nhà cung cấp, thời gian
+            // -phần thông tin sẽ lấy dữ liệu từ hàng được chọn
+            ArrayList<JLabel> lblThongtin = CTphieu.getPnlContent().getLblThongtin();
+            
+            String[] lblHienthi =  CTphieu.getPnlContent().getLblHienthi();
+            
+            // bắt đầu điền thông tin
+            // mã phiếu
+            lblThongtin.get(0).setText(lblHienthi[0] + ": " + bangphieu.getValueAt(hangDuocChon, 1).toString());
+                
+            // người tạo
+            lblThongtin.get(1).setText(lblHienthi[1] + ": " + bangphieu.getValueAt(hangDuocChon, 2).toString());
+                
+            // thời gian tạo
+            lblThongtin.get(2).setText(lblHienthi[2] + ": " + bangphieu.getValueAt(hangDuocChon, 3).toString());
+                
+            //thời gian
+            //lblThongtin.get(3).setText(lblHienthi[3] + ": " + bangphieu.getValueAt(hangDuocChon, 4).toString());
+           
+            
+            
+            
+            // PHẦN BẢNG SẢN PHẨM
+            // lấy table model của bảng
+            DefaultTableModel tablemodel = CTphieu.getPnlContent().getTablemodel();
+            
+            // thêm dữ liệu vào bảng 
+            for(int i = 0; i < danhsachVPP.size(); ++i) {
+                VanPhongPham temp = danhsachVPP.get(i);
+                
+                double gia = temp.getGia();
+                double soLuong = temp.getSoLuong();
+                
+                double thanhTien = gia * soLuong;
+                
+                tablemodel.addRow(new Object[] {
+                    String.valueOf(i + 1),                  // STT
+                    temp.getMaVatPham(),             // mã vật phẩm
+                    temp.getTenVatPham(),           // tên vật phẩm
+                    temp.getSoLuong(),                  // số lượng
+                    DoubleToDong(gia),                  // đơn giá
+                    DoubleToDong(thanhTien)      // thành tiền            
+                });
+            }
+            
+            
+            
+            // PHẦN TỔNG TIỀN
+            JLabel lblTongtien = CTphieu.getPnlContent().getLblTongtien();
+            
+            // điền thông tin
+            lblTongtien.setText("TỔNG TIỀN:  " + bangphieu.getValueAt(hangDuocChon, 4).toString());
+            
+            
+            // hiển thị Dialog
+            CTphieu.setVisible(true);
+        }
+        else {
+            // báo cho người dùng chọn hàng dữ liệu
+            JOptionPane.showMessageDialog(
+                    CTphieu                                                                     // parent: 
+                    , "Hãy chọn một hàng dữ liệu"                              // nội dung của thông báo
+                    , "THÔNG BÁO"                                                       // tiêu đề của thông báo
+                    , JOptionPane.INFORMATION_MESSAGE        // icon của thông báo
+            );    
+        }
+        
+    }
     
     
   
