@@ -31,7 +31,7 @@ public class ChiTietPhieuNhap extends JPanel {
     private JLabel lblTongtien;
     
     private int height = 600;
-    private int width = 800;
+    private int width = 1000;
     private Font myFont1 = new Font("Arial", Font.BOLD, 26);//dung de dieu chinh phong chu, kieu chu, kich co
     private Font myFont2 = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
     
@@ -140,6 +140,9 @@ public class ChiTietPhieuNhap extends JPanel {
         //tablemodel có các trường dữ liệu nhưng không có dòng dữ liệu nào
         tablemodel = new DefaultTableModel(null, tblTruongdulieu);
         
+        // ngăn không cho thay đổi các hàng dữ liệu( cái này ngăn việc chọn hàng luôn)
+        tblThongtin.setEnabled(false);
+        
         //set du lieu cho table thong tin
         tblThongtin.setModel(tablemodel);
         
@@ -175,12 +178,12 @@ public class ChiTietPhieuNhap extends JPanel {
         //#############################
         
         // điểu chỉnh độ rộng cho các cột của table
-        tblThongtin.getColumnModel().getColumn(0).setPreferredWidth(48);
-        tblThongtin.getColumnModel().getColumn(1).setPreferredWidth(48);
-        tblThongtin.getColumnModel().getColumn(2).setPreferredWidth(352);
-        tblThongtin.getColumnModel().getColumn(3).setPreferredWidth(128);
-        tblThongtin.getColumnModel().getColumn(4).setPreferredWidth(112);
-        tblThongtin.getColumnModel().getColumn(5).setPreferredWidth(112);
+        tblThongtin.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tblThongtin.getColumnModel().getColumn(1).setPreferredWidth(150);
+        tblThongtin.getColumnModel().getColumn(2).setPreferredWidth(400);
+        tblThongtin.getColumnModel().getColumn(3).setPreferredWidth(100);
+        tblThongtin.getColumnModel().getColumn(4).setPreferredWidth(150);
+        tblThongtin.getColumnModel().getColumn(5).setPreferredWidth(150);
         
         // thêm table vào nut cuộn
         spNutcuon = new JScrollPane(tblThongtin);
@@ -274,4 +277,29 @@ public class ChiTietPhieuNhap extends JPanel {
         //thêm vào Panel lớn
         this.add(pnlTongtien, BorderLayout.SOUTH);
     }
+    
+    
+    // getter
+
+    public ArrayList<JLabel> getLblThongtin() {
+        return lblThongtin;
+    }
+
+    public String[] getLblHienthi() {
+        return lblHienthi;
+    }
+
+    public JTable getTblThongtin() {
+        return tblThongtin;
+    }
+
+    public DefaultTableModel getTablemodel() {
+        return tablemodel;
+    }
+    
+
+    public JLabel getLblTongtien() {
+        return lblTongtien;
+    }
+    
 }

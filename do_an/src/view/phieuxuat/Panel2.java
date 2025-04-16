@@ -71,4 +71,16 @@ public class Panel2 extends JPanel {
         
         this.add(this.pnlLocgia, gbc);
     }
+    
+    
+    // getter
+
+    public JPanel getPnlLocngay() {
+        return pnlLocngay;
+    }
+
+    public JPanel getPnlLocgia() {
+        return pnlLocgia;
+    }
+    
 }

@@ -6,6 +6,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VanPhongPhamDAO {
+    // phương thức trả về đối tượng của lớp
+    public static VanPhongPhamDAO getInstance() {
+        return new VanPhongPhamDAO();
+    }
+    
+    
+    // phương thức tìm kiếm theo maVatPham và trả về đối tượng
+    public VanPhongPham getByID(String id) {
+        VanPhongPham ketqua = null;
+        try {
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "SELECT * FROM vanphongpham WHERE maVatPham = ?";
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, id);
+            
+            ResultSet rs = pst.executeQuery();
+            
+            if(rs.next()) {
+                VanPhongPham kq = new VanPhongPham();
+                
+                kq.setMaVatPham(rs.getString("maVatPham"));
+                
+                kq.setTenVatPham(rs.getString("tenVatPham"));
+                
+                kq.setSoLuong(rs.getInt("soLuong"));
+                
+                kq.setLoaiVatPham(rs.getString("loaiVatPham"));
+                
+                kq.setGia(rs.getDouble("gia"));
+                
+                kq.setThuongHieu(rs.getString("thuongHieu"));
+                
+                kq.setChatLieu(rs.getString("chatLieu"));
+                
+                kq.setDoDay((double) rs.getDouble("doDay"));
+                
+                kq.setMoTa(rs.getString("moTa"));
+                
+                kq.setXuatXu(rs.getString("xuatXu"));
+                
+                kq.setTrangThai(rs.getInt("trangThai"));
+                
+                ketqua = kq;
+            }
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return ketqua;
+    }
+    
     public List<VanPhongPham> getAllVanPhongPhams() {
         List<VanPhongPham> vanPhongPhams = new ArrayList<>();
         String sql = "SELECT * FROM VanPhongPham";

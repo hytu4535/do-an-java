@@ -138,4 +138,21 @@ public class Panel1_Paneltimkiem extends JPanel {
         
         this.add(btnLammoi, gbc);
     }
+    
+    
+    // getter
+
+    public JTextField getTxtfTimkiem() {
+        return txtfTimkiem;
+    }
+
+    public JButton getBtnLammoi() {
+        return btnLammoi;
+    }
+
+    public JComboBox<String> getCbTimkiem() {
+        return cbTimkiem;
+    }
+    
+    
 }

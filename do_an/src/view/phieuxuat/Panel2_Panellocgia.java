@@ -149,4 +149,17 @@ public class Panel2_Panellocgia extends JPanel {
         this.add(txtfDen, gbc);
         
     }
+    
+    
+    
+    // getter
+
+    public JTextField getTxtfTu() {
+        return txtfTu;
+    }
+
+    public JTextField getTxtfDen() {
+        return txtfDen;
+    }
+    
 }

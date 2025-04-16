@@ -2,13 +2,11 @@ package controller;
 
 import dao.*;
 
-import model.PhieuNhap;
-import model.ChiTietPhieuNhap;
-import model.VanPhongPham;
+import model.PhieuXuat;
 
-import view.phieunhap.*;
+import view.phieuxuat.*;
 
-import view.phieunhap.PhieunhapPanel;
+import view.phieuxuat.PhieuxuatPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.RoundingMode;
@@ -18,20 +16,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 
-
-public class PhieuNhapController {
-    private PhieunhapPanel view;
+public class PhieuXuatController {
+    private PhieuxuatPanel view;
     
-    public PhieuNhapController(PhieunhapPanel view ) {
+    public PhieuXuatController(PhieuxuatPanel view ) {
         this.view = view;
         
         Action();
@@ -54,27 +48,17 @@ public class PhieuNhapController {
             }
         });
         
-        //thêm sự kiện cho nút xem chi tiết
-        
-        Panel1_Panelchucnang panelchucnang = (Panel1_Panelchucnang) panel1.getPnlChucnang();
-        
-        panelchucnang.getBtnNut().get(2).addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loadDataChiTietPhieuNhap();
-            }
-        });
-        
     }
     
     // lọc dữ liệu theo các lựa chon trong combobox(nếu các giá trị lọc không được thêm vào thì sẽ in ra danh
     // sách từ getAll() )
     private void loadData() {
         // lấy dữ liêu từ cdsl
-        ArrayList<PhieuNhap> danhsachphieu = PhieuNhapDAO.getInstance().getAll();
+        ArrayList<PhieuXuat> danhsachphieu = 
+                (ArrayList<PhieuXuat>) PhieuXuatDAO.getInstance().getAllPhieuXuats();
         
         // dùng để lọc danh sách
-        Iterator<PhieuNhap> it = danhsachphieu.iterator();
+        Iterator<PhieuXuat> it = danhsachphieu.iterator();
         
         // LỌC DỮ LIỆU THEO PHẦN PANEL1
         // lấy các component ở panel1_timkiem
@@ -93,7 +77,7 @@ public class PhieuNhapController {
         if(text.length() != 0) {
             // bắt đầu lọc danh sách
             
-            //"Mã phiếu", "Nhà cung cấp", "Người tạo"
+            //"Mã phiếu", "Người tạo"
             switch(choice) {
                 // maPhieu
                 case 0 -> {
@@ -101,14 +85,8 @@ public class PhieuNhapController {
                         if( !it.next().getMaPhieu().toLowerCase().contains(text) )  it.remove();
                     }
                 }
-                // nhaCungCap
-                case 1 -> {
-                    while( it.hasNext() ) {
-                        if( !it.next().getMaNhaCungCap().toLowerCase().contains(text) )  it.remove();
-                    }
-                }
                 // nguoiTao
-                case 2 -> {
+                case 1 -> {
                     while( it.hasNext() ) {
                         if( !it.next().getNguoiTao().toLowerCase().contains(text) )  it.remove();
                     }
@@ -124,7 +102,7 @@ public class PhieuNhapController {
         
         Panel2_Panellocngay panellocngay = (Panel2_Panellocngay) panel2.getPnlLocngay();
         
-        // lấy mốc ngày(* CÓ THỂ NULL*)
+        // lấy mốc ngày(* CÓ THỂ NULL *)
         Date tuNgay = panellocngay.getDcTu().getDate();
         
         Date denNgay = panellocngay.getDcDen().getDate();
@@ -211,11 +189,11 @@ public class PhieuNhapController {
         
         // thêm hàng vào bảng
         // tạo mảng object để chưa dữ liệu
-        Object[][] dulieu = new Object[danhsachphieu.size()][6];// [số hàng dữ liệu][các cột dữ liệu]
+        Object[][] dulieu = new Object[danhsachphieu.size()][5];// [số hàng dữ liệu][các cột dữ liệu]
         
         for(int i = 0; i < danhsachphieu.size(); ++i) {
             // lấy phiếu nhập tại vị trí i
-            PhieuNhap phieu = danhsachphieu.get(i);
+            PhieuXuat phieu = danhsachphieu.get(i);
             
             // STT
             dulieu[i][0] = String.valueOf(i + 1);
@@ -223,129 +201,19 @@ public class PhieuNhapController {
             // maPhieu
             dulieu[i][1] = phieu.getMaPhieu();
             
-            // nhaCungCap(tạm thời là mã)
-            dulieu[i][2] = phieu.getMaNhaCungCap();
-            
             // nguoiTao
-            dulieu[i][3] = phieu.getNguoiTao();
+            dulieu[i][2] = phieu.getNguoiTao();
             
             // thoiGianTao
-            dulieu[i][4] = phieu.getThoiGianTao();
+            dulieu[i][3] = phieu.getThoiGianTao();
             
             // tongTien
-            dulieu[i][5] = DoubleToDong(phieu.getTongTien());
+            dulieu[i][4] = DoubleToDong(phieu.getTongTien());
         }
         
         // đưa dữ liệu vào bảng
         for(Object[] hangdulieu : dulieu) {
             tblmodel.addRow(hangdulieu);
-        }
-        
-    }
-    
-    // tải dữ liệu của chi tiết phiếu nhập
-    public void loadDataChiTietPhieuNhap() {
-        // lấy các component
-        Panel3 panel3 = (Panel3) this.view.getPnlPanel3();
-        
-        // lấy table của panel 3
-        JTable bangphieu = panel3.getTblThongtin();
-        
-        // lấy hàng được chọn trong bang phieu
-        // trả về -1 nếu không chọn
-        int hangDuocChon = bangphieu.getSelectedRow();
-        
-        
-        // tạo JDialog để hiển thị
-        ChiTietPhieuNhapDialog CTphieu = new ChiTietPhieuNhapDialog(null, "Chi tiết phiếu nhập", true);
-        
-        // kiểm tra nếu có chọn một hàng
-        if( hangDuocChon != -1 ) {
-            // lấy maPhieu tại hàng thứ "hang", cột 1
-            String maPhieu = bangphieu.getValueAt(hangDuocChon, 1).toString();
-            
-            //lấy danh sách chi tiết phiếu nhập
-            ArrayList<ChiTietPhieuNhap> danhsachChiTietPhieu = 
-                    ChiTietPhieuNhapDAO.getInstance().getAllById(maPhieu);
-            
-            // tạo danh sách các sản phẩm nằm trong danhsachChiTietPhieu để đưa vào bảng sản phẩm 
-            ArrayList<VanPhongPham> danhsachVPP = new ArrayList<>();
-            
-            for(var item : danhsachChiTietPhieu) {
-                // truy xuất vật phẩm từ csdl trùng với maVatPham 
-                VanPhongPham vpp = VanPhongPhamDAO.getInstance().getByID(item.getMaVatPham());
-                
-                danhsachVPP.add(vpp);
-            }
-            
-            // hiển thị lên chi tiết phiếu nhập
-            
-            // PHẦN THÔNG TIN
-            // -phần thông tin trước gồm: mã phiếu, người tạo, nhà cung cấp, thời gian
-            // -phần thông tin sẽ lấy dữ liệu từ hàng được chọn
-            ArrayList<JLabel> lblThongtin = CTphieu.getPnlContent().getLblThongtin();
-            
-            String[] lblHienthi =  CTphieu.getPnlContent().getLblHienthi();
-            
-            // bắt đầu điền thông tin
-            // mã phiếu
-            lblThongtin.get(0).setText(lblHienthi[0] + ": " + bangphieu.getValueAt(hangDuocChon, 1).toString());
-                
-            // người tạo
-            lblThongtin.get(1).setText(lblHienthi[1] + ": " + bangphieu.getValueAt(hangDuocChon, 3).toString());
-                
-            // nhà cung cấp
-            lblThongtin.get(2).setText(lblHienthi[2] + ": " + bangphieu.getValueAt(hangDuocChon, 2).toString());
-                
-            //thời gian
-            lblThongtin.get(3).setText(lblHienthi[3] + ": " + bangphieu.getValueAt(hangDuocChon, 4).toString());
-           
-            
-            
-            
-            // PHẦN BẢNG SẢN PHẨM
-            // lấy table model của bảng
-            DefaultTableModel tablemodel = CTphieu.getPnlContent().getTablemodel();
-            
-            // thêm dữ liệu vào bảng 
-            for(int i = 0; i < danhsachVPP.size(); ++i) {
-                VanPhongPham temp = danhsachVPP.get(i);
-                
-                double gia = temp.getGia();
-                double soLuong = temp.getSoLuong();
-                
-                double thanhTien = gia * soLuong;
-                
-                tablemodel.addRow(new Object[] {
-                    String.valueOf(i + 1),                  // STT
-                    temp.getMaVatPham(),             // mã vật phẩm
-                    temp.getTenVatPham(),           // tên vật phẩm
-                    temp.getSoLuong(),                  // số lượng
-                    DoubleToDong(gia),                  // đơn giá
-                    DoubleToDong(thanhTien)      // thành tiền            
-                });
-            }
-            
-            
-            
-            // PHẦN TỔNG TIỀN
-            JLabel lblTongtien = CTphieu.getPnlContent().getLblTongtien();
-            
-            // điền thông tin
-            lblTongtien.setText("TỔNG TIỀN:  " + bangphieu.getValueAt(hangDuocChon, 5).toString());
-            
-            
-            // hiển thị Dialog
-            CTphieu.setVisible(true);
-        }
-        else {
-            // báo cho người dùng chọn hàng dữ liệu
-            JOptionPane.showMessageDialog(
-                    CTphieu                                                                     // parent: 
-                    , "Hãy chọn một hàng dữ liệu"                              // nội dung của thông báo
-                    , "THÔNG BÁO"                                                       // tiêu đề của thông báo
-                    , JOptionPane.INFORMATION_MESSAGE        // icon của thông báo
-            );    
         }
         
     }

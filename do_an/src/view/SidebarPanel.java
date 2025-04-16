@@ -1,19 +1,19 @@
 package view;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 
+
+import controller.NguoiDungController;
+import controller.PhanQuyenController;
 import view.nguoidung.NguoiDungPanel;
-
+import view.thongke.StatisticsPanel;
+import view.nhaphang.NhaphangPanel;
+import view.phanquyen.PhanQuyenPanel;
 import view.phieunhap.PhieunhapPanel;
 import view.phieuxuat.PhieuxuatPanel;
 import view.xuathang.XuathangPanel;
-
-import view.nhaphang.NhaphangPanel;
-
-import view.thongke.StatisticsPanel;
-
-import java.awt.*;
-import java.util.ArrayList;
 
 
 
@@ -21,20 +21,38 @@ public class SidebarPanel extends JPanel {
     private JPanel mainPanel; // Khai báo mainPanel
     private JLabel imageLabel; // Label thêm hình ảnh
 
+    // Khai báo các panel và controller
+    private NguoiDungPanel nguoiDungPanel;
+    private PhanQuyenPanel phanQuyenPanel;
+    private NhaphangPanel nhaphangPanel;
+    private PhieunhapPanel phieunhapPanel;
+    private XuathangPanel xuathangPanel;
+    private PhieuxuatPanel phieuxuatPanel;
+    private StatisticsPanel statisticsPanel;
+
+    private NguoiDungController nguoiDungController;
+    private PhanQuyenController phanQuyenController;
+
+    private JPanel currentPanel; // Lưu panel hiện tại để tránh làm mới không cần thiết
+
     // Constructor nhận mainPanel làm tham số
     public SidebarPanel(JPanel mainPanel) {
         this.mainPanel = mainPanel; // Lưu tham chiếu đến mainPanel
-        
+        this.currentPanel = null; // Khởi tạo panel hiện tại là null
+
+        // Khởi tạo các panel và controller một lần duy nhất
+        initializePanelsAndControllers();
+
         // Đặt kích thước và layout
         setPreferredSize(new Dimension(200, getHeight()));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        
+
         // Panel cho phần header với hình ảnh
         JPanel headerPanel = new JPanel();
         headerPanel.setOpaque(false); // Làm trong suốt để hiển thị gradient của sidebar
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120)); // Chiều cao cố định cho header
-        
+
         // Thêm hình ảnh mặc định
         imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -46,7 +64,7 @@ public class SidebarPanel extends JPanel {
         } else {
             imageLabel.setText("No Image");
         }
-        
+
         // Nút để thay đổi hình ảnh
         JButton changeImageButton = new JButton("Change Image");
         changeImageButton.setBackground(new Color(220, 235, 255)); // Màu nhạt hơn để nổi bật trên gradient
@@ -54,7 +72,7 @@ public class SidebarPanel extends JPanel {
         changeImageButton.setFont(new Font("Arial", Font.PLAIN, 12));
         changeImageButton.setMaximumSize(new Dimension(100, 25));
         changeImageButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         // Xử lý sự kiện thay đổi hình ảnh
         changeImageButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -70,7 +88,7 @@ public class SidebarPanel extends JPanel {
                 repaint();
             }
         });
-        
+
         // Thêm các thành phần vào headerPanel
         headerPanel.add(imageLabel, BorderLayout.CENTER);
         headerPanel.add(changeImageButton, BorderLayout.SOUTH);
@@ -90,6 +108,7 @@ public class SidebarPanel extends JPanel {
         menuItems.add("Tài khoản");
         menuItems.add("Tồn kho");
         menuItems.add("Thống kê");
+        menuItems.add("Phân quyền");
         menuItems.add("Đăng xuất");
 
         // Thêm các nút menu và đường kẻ phân cách
@@ -118,41 +137,51 @@ public class SidebarPanel extends JPanel {
 
             // Xử lý sự kiện bấm nút
             menuButton.addActionListener(e -> {
-                mainPanel.removeAll(); // Xóa nội dung cũ
+                JPanel newPanel = null;
                 switch (item) {
                     case "Sản phẩm":
-                        mainPanel.add(new JLabel("Sản phẩm - Chưa triển khai"));
+                        newPanel = createPlaceholderPanel("Sản phẩm - Chưa triển khai");
                         break;
                     case "Nhà cung cấp":
-                        mainPanel.add(new JLabel("Nhà cung cấp - Chưa triển khai"));
+                        newPanel = createPlaceholderPanel("Nhà cung cấp - Chưa triển khai");
                         break;
                     case "Nhập hàng":
-                        mainPanel.add(new NhaphangPanel());
+                        newPanel = nhaphangPanel;
                         break;
                     case "Phiếu nhập":
-                        mainPanel.add(new PhieunhapPanel());
+                        newPanel = phieunhapPanel;
                         break;
                     case "Xuất hàng":
-                        mainPanel.add(new XuathangPanel());
+                        newPanel = xuathangPanel;
                         break;
                     case "Phiếu xuất":
-                        mainPanel.add(new PhieuxuatPanel());
+                        newPanel = phieuxuatPanel;
                         break;
                     case "Tài khoản":
-                        mainPanel.add(new NguoiDungPanel());
+                        newPanel = nguoiDungPanel;
                         break;
                     case "Tồn kho":
-                        mainPanel.add(new JLabel("Tồn kho - Chưa triển khai"));
+                        newPanel = createPlaceholderPanel("Tồn kho - Chưa triển khai");
                         break;
                     case "Thống kê":
-                        mainPanel.add(new StatisticsPanel());
+                        newPanel = statisticsPanel;
+                        break;
+                    case "Phân quyền":
+                        newPanel = phanQuyenPanel;
                         break;
                     case "Đăng xuất":
                         System.exit(0);
-                        break;
+                        return;
                 }
-                mainPanel.revalidate();
-                mainPanel.repaint();
+
+                // Chỉ làm mới nếu panel mới khác với panel hiện tại
+                if (newPanel != currentPanel) {
+                    mainPanel.removeAll();
+                    mainPanel.add(newPanel);
+                    mainPanel.revalidate();
+                    mainPanel.repaint();
+                    currentPanel = newPanel; // Cập nhật panel hiện tại
+                }
             });
 
             // Thêm nút vào sidebar
@@ -168,6 +197,36 @@ public class SidebarPanel extends JPanel {
                 add(Box.createRigidArea(new Dimension(0, 5))); // Khoảng cách nhỏ sau đường kẻ
             }
         }
+    }
+
+    // Phương thức khởi tạo các panel và controller
+    private void initializePanelsAndControllers() {
+        // Khởi tạo các panel
+        nguoiDungPanel = new NguoiDungPanel();
+        phanQuyenPanel = new PhanQuyenPanel();
+        nhaphangPanel = new NhaphangPanel();
+        phieunhapPanel = new PhieunhapPanel();
+        xuathangPanel = new XuathangPanel();
+        phieuxuatPanel = new PhieuxuatPanel();
+        statisticsPanel = new StatisticsPanel();
+
+        // Khởi tạo các controller
+        nguoiDungController = new NguoiDungController(nguoiDungPanel);
+        phanQuyenController = new PhanQuyenController(phanQuyenPanel);
+
+        // Đăng ký NguoiDungController làm listener cho PhanQuyenController
+        phanQuyenController.addRoleGroupChangeListener(nguoiDungController);
+    }
+
+    // Phương thức tạo panel placeholder cho các mục chưa triển khai
+    private JPanel createPlaceholderPanel(String message) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        JLabel label = new JLabel(message, SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.PLAIN, 16));
+        label.setForeground(Color.GRAY);            
+        panel.add(label, BorderLayout.CENTER);
+        return panel;
     }
 
     // Override paintComponent để vẽ gradient

@@ -104,4 +104,13 @@ public class Panel1_Panelchucnang extends JPanel {
            this.add(btnNut.get(i), gbc);
        }
     }
+    
+    
+    
+    // getter
+
+    public ArrayList<JButton> getBtnNut() {
+        return btnNut;
+    }
+    
 }

@@ -61,8 +61,20 @@ public class Panel3 extends JPanel {
                                                                    "Tổng tiền"};
         
         //them du lieu vao tablemodel
-        //tablemodel có các trường dữ liệu nhưng không có dòng dữ liệu nào
-        tablemodel = new DefaultTableModel(null, tblTruongdulieu);
+        //tablemodel có các trường dữ liệu nhưng không có dòng dữ liệu nào và
+        // các ô dữ liệu không thể bị thay đổi nhưng vẫn chọn được
+        //########################
+        tablemodel = new DefaultTableModel(null, tblTruongdulieu) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không ô nào được chỉnh sửa
+            }
+        };
+        //########################
+
+        
+        // ngăn không cho thay đổi các hàng dữ liệu( cái này ngăn việc chọn hàng luôn)
+        //tblThongtin.setEnabled(false);
         
         //set du lieu cho table thong tin
         tblThongtin.setModel(tablemodel);
@@ -70,6 +82,11 @@ public class Panel3 extends JPanel {
         tblThongtin.setFont(myFont);
         
         tblThongtin.setBackground(bgColor);
+        
+        // cho phép chọn theo hàng
+        tblThongtin.setRowSelectionAllowed(true);
+        // cái này chỉ chọn 1 hàng duy nhất
+        tblThongtin.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         // Đặt màu nền cho tiêu đề cột (có thể thay đổi thành màu mong muốn)
         tblThongtin.getTableHeader().setBackground(bgColor);  
@@ -86,12 +103,22 @@ public class Panel3 extends JPanel {
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 
-                // Thay đổi màu nền của ô dữ liệu
-                c.setBackground(bgColor); // Đặt màu nền cho ô dữ liệu
+                // nếu hàng được chọn thì chuyển màu
+                if (isSelected) {
+                    // Màu khi được chọn
+                    c.setBackground(new Color(255, 255, 153)); // Vàng nhạt 
+                    c.setForeground(Color.BLACK);
+                }
+                else {
+                    // Màu nền mặc định
+                    c.setBackground(bgColor);
+                    c.setForeground(Color.BLACK);
+                }
+
                 return c;
             }
         };
-        
+
         // Áp dụng renderer cho tất cả các ô trong bảng
         for (int i = 0; i < tblThongtin.getColumnCount(); i++) {
             tblThongtin.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
@@ -134,4 +161,16 @@ public class Panel3 extends JPanel {
         
         this.add(new ChiTietPhieuNhap(), gbc);
     }
+    
+    
+    // getter
+
+    public JTable getTblThongtin() {
+        return tblThongtin;
+    }
+
+    public DefaultTableModel getTablemodel() {
+        return tablemodel;
+    }
+    
 }

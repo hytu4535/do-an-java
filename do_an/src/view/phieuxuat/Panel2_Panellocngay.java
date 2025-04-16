@@ -157,4 +157,18 @@ public class Panel2_Panellocngay extends JPanel {
         this.add(dcDen, gbc);
         
     }
+    
+    
+    
+    
+    // getter
+
+    public JDateChooser getDcTu() {
+        return dcTu;
+    }
+
+    public JDateChooser getDcDen() {
+        return dcDen;
+    }
+    
 }

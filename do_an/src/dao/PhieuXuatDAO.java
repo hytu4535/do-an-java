@@ -6,9 +6,118 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhieuXuatDAO {
+    // phương thức trả về đối tượng của lớp
+    public static PhieuXuatDAO getInstance() {
+        return new PhieuXuatDAO();
+    }
+    
+    // các phương thức truy vấn
+    
+    // thêm phiếu nhập
+    public void insert(PhieuXuat temp) {
+        // nhận giá trị khi thêm vào bảng dữ liệu phiếu nhập mới
+        int ketqua = 0;
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "INSERT INTO phieuxuat "
+                    + "(maPhieu, thoiGianTao, nguoiTao, tongTien) "
+                    + "VALUES (?, ?, ?, ?)";
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            // đặt giá trị cho các dấu '?'
+            pst.setString(1, temp.getMaPhieu());
+            
+            pst.setTimestamp(2, temp.getThoiGianTao());
+            
+            pst.setString(3, temp.getNguoiTao());
+            
+            pst.setDouble(4, temp.getTongTien());
+            
+            // thực thi câu lệnh
+            ketqua = pst.executeUpdate();
+            
+            // đóng kết nối tới csdl
+            DBConnection.closeConnection(con);
+            
+            
+        } 
+        catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        
+    }
+    
+    // chỉnh sửa phiếu nhập
+    public void update(PhieuXuat temp) {
+        int ketQua = 0;
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "UPDATE phieuxuat SET "
+                    + "maPhieu = ?, "
+                    + "thoiGianTao = ?, "
+                    + "nguoiTao = ?, "
+                    + "tongTien = ? "
+                    + "WHERE maPhieu = ?";
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, temp.getMaPhieu());
+            
+            pst.setTimestamp(2, temp.getThoiGianTao());
+            
+            pst.setString(3, temp.getNguoiTao());
+            
+            pst.setDouble(4, temp.getTongTien());
+            
+            pst.setString(5, temp.getMaPhieu());
+            
+            ketQua = pst.executeUpdate();
+            
+            DBConnection.closeConnection(con);
+            
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        
+    }
+    
+    // xóa phiêu nhập
+    public void delete(PhieuXuat temp) {
+        int ketQua = 0;
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "DELETE FROM phieuxuat WHERE maPhieu = ?";
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, temp.getMaPhieu());
+            
+            ketQua = pst.executeUpdate();
+            
+            DBConnection.closeConnection(con);
+            
+        } 
+        catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        
+    }
+    
+    // lấy tất cả phiêu nhập
+    
     public List<PhieuXuat> getAllPhieuXuats() {
         List<PhieuXuat> phieuXuats = new ArrayList<>();
-        String sql = "SELECT * FROM PhieuXuat";
+        String sql = "SELECT * FROM phieuxuat";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

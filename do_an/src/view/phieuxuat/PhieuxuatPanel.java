@@ -1,5 +1,7 @@
 package view.phieuxuat;
 
+import controller.PhieuXuatController;
+
 import java.awt.BorderLayout;
 
 import java.awt.*;
@@ -15,6 +17,8 @@ public class PhieuxuatPanel extends JPanel {
     
     private GridBagConstraints gbc;
     
+    private PhieuXuatController pxc;
+    
     public PhieuxuatPanel() {
         
         InitComponents();
@@ -29,6 +33,8 @@ public class PhieuxuatPanel extends JPanel {
        InitPanel2();
        
        InitPanel3();
+       
+       InitController();
         
     }
     
@@ -110,4 +116,25 @@ public class PhieuxuatPanel extends JPanel {
         
         this.add(this.pnlPanel3, gbc);
     }
+    
+    // khởi tạo controller
+    public void InitController() {
+        this.pxc = new PhieuXuatController(this);
+    }
+    
+    
+    // getter
+
+    public JPanel getPnlPanel1() {
+        return pnlPanel1;
+    }
+
+    public JPanel getPnlPanel2() {
+        return pnlPanel2;
+    }
+
+    public JPanel getPnlPanel3() {
+        return pnlPanel3;
+    }
+    
 }

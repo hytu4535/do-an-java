@@ -12,7 +12,8 @@ import java.util.List;
 public class AccountDAO {
     public List<Account> getAllAccounts() {
         List<Account> accounts = new ArrayList<>();
-        String sql = "SELECT * FROM account";
+        String sql = "SELECT a.*, rg.roleGroupName FROM quanlivanphongpham.account a " +
+                     "LEFT JOIN quanlivanphongpham.role_group rg ON a.roleGroupId = rg.roleGroupId";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -24,11 +25,12 @@ public class AccountDAO {
                 Account account = new Account();
                 account.setUserName(rs.getString("userName"));
                 account.setFullName(rs.getString("fullName"));
-                account.setRole(rs.getString("role"));
+                account.setRoleGroupId(rs.getString("roleGroupId"));
+                account.setRoleGroupName(rs.getString("roleGroupName"));
                 account.setStatus(rs.getInt("status"));
                 account.setNamSinh(rs.getDate("namsinh"));
-                account.setDiaChi(rs.getString("diaChi"));
-                account.setDienThoai(rs.getString("dienThoai"));
+                account.setDiaChi(rs.getString("diachi"));
+                account.setDienThoai(rs.getString("dienthoai"));
                 account.setEmail(rs.getString("email"));
                 accounts.add(account);
             }
@@ -40,12 +42,12 @@ public class AccountDAO {
     }
 
     public void addAccount(Account account) {
-        String sql = "INSERT INTO account (userName, fullName, role, status, namSinh, diaChi, dienThoai, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO quanlivanphongpham.account (userName, fullName, roleGroupId, status, namsinh, diachi, dienthoai, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, account.getUserName());
             stmt.setString(2, account.getFullName());
-            stmt.setString(3, account.getRole());
+            stmt.setString(3, account.getRoleGroupId());
             stmt.setInt(4, account.getStatus());
             stmt.setDate(5, account.getNamSinh());
             stmt.setString(6, account.getDiaChi());
@@ -59,11 +61,11 @@ public class AccountDAO {
     }
 
     public void updateAccount(Account account) {
-        String sql = "UPDATE account SET fullName = ?, role = ?, status = ?, namSinh = ?, diaChi = ?, dienThoai = ?, email = ? WHERE userName = ?";
+        String sql = "UPDATE quanlivanphongpham.account SET fullName = ?, roleGroupId = ?, status = ?, namsinh = ?, diachi = ?, dienthoai = ?, email = ? WHERE userName = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, account.getFullName());
-            stmt.setString(2, account.getRole());
+            stmt.setString(2, account.getRoleGroupId());
             stmt.setInt(3, account.getStatus());
             stmt.setDate(4, account.getNamSinh());
             stmt.setString(5, account.getDiaChi());
@@ -78,7 +80,7 @@ public class AccountDAO {
     }
 
     public void deleteAccount(String userName) {
-        String sql = "DELETE FROM account WHERE userName = ?";
+        String sql = "DELETE FROM quanlivanphongpham.account WHERE userName = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, userName);

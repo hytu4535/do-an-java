@@ -1,42 +1,42 @@
 package dao;
 
-import model.PhieuNhap;
+import model.ChiTietPhieuNhap;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhieuNhapDAO {
+
+public class ChiTietPhieuNhapDAO {
     // phương thức trả về đối tượng của lớp
-    public static PhieuNhapDAO getInstance() {
-        return new PhieuNhapDAO();
+    public static ChiTietPhieuNhapDAO getInstance() {
+        return new ChiTietPhieuNhapDAO();
     }
     
     // các phương thức truy vấn
     
     // thêm phiếu nhập
-    public void insert(PhieuNhap temp) {
+    public void insert(ChiTietPhieuNhap temp) {
         // nhận giá trị khi thêm vào bảng dữ liệu phiếu nhập mới
         int ketqua = 0;
         
         try {
             Connection con = DBConnection.getConnection();
             
-            String sql = "INSERT INTO phieunhap "
-                    + "(maPhieu, thoiGianTao, nguoiTao, maNhaCungCap, tongTien) "
-                    + "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO chitietphieunhap "
+                    + "(maPhieu, maVatPham, soLuong, donGia) "
+                    + "VALUES (?, ?, ?, ?)";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
             // đặt giá trị cho các dấu '?'
             pst.setString(1, temp.getMaPhieu());
             
-            pst.setTimestamp(2, temp.getThoiGianTao());
+            pst.setString(2, temp.getMaVatPham());
             
-            pst.setString(3, temp.getNguoiTao());
+            pst.setInt(3, temp.getSoLuong());
             
-            pst.setString(4, temp.getMaNhaCungCap());
-            
-            pst.setDouble(5, temp.getTongTien());
+            pst.setDouble(4, temp.getDonGia());
             
             // thực thi câu lệnh
             ketqua = pst.executeUpdate();
@@ -54,33 +54,29 @@ public class PhieuNhapDAO {
     }
     
     // chỉnh sửa phiếu nhập
-    public void update(PhieuNhap temp) {
+    public void update(ChiTietPhieuNhap temp) {
         int ketQua = 0;
         
         try {
             Connection con = DBConnection.getConnection();
             
-            String sql = "UPDATE phieunhap SET "
+            String sql = "UPDATE chitietphieunhap SET "
                     + "maPhieu = ?, "
-                    + "thoiGianTao = ?, "
-                    + "nguoiTao = ?, "
-                    + "maNhaCungCap = ?, "
-                    + "tongTien = ? "
+                    + "maVatPham = ?, "
+                    + "soLuong = ?, "
+                    + "donGia = ?, "
                     + "WHERE maPhieu = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
+            // đặt giá trị cho các dấu '?'
             pst.setString(1, temp.getMaPhieu());
             
-            pst.setTimestamp(2, temp.getThoiGianTao());
+            pst.setString(2, temp.getMaVatPham());
             
-            pst.setString(3, temp.getNguoiTao());
+            pst.setInt(3, temp.getSoLuong());
             
-            pst.setString(4, temp.getMaNhaCungCap());
-            
-            pst.setDouble(5, temp.getTongTien());
-            
-            pst.setString(6, temp.getMaPhieu());
+            pst.setDouble(4, temp.getDonGia());
             
             ketQua = pst.executeUpdate();
             
@@ -94,17 +90,17 @@ public class PhieuNhapDAO {
     }
     
     // xóa phiêu nhập
-    public void delete(PhieuNhap t) {
+    public void delete(ChiTietPhieuNhap temp) {
         int ketQua = 0;
         
         try {
             Connection con = DBConnection.getConnection();
             
-            String sql = "DELETE FROM phieunhap WHERE maPhieu = ?";
+            String sql = "DELETE FROM chitietphieunhap WHERE maPhieu = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
-            pst.setString(1, t.getMaPhieu());
+            pst.setString(1, temp.getMaPhieu());
             
             ketQua = pst.executeUpdate();
             
@@ -118,45 +114,33 @@ public class PhieuNhapDAO {
         
     }
     
-    // lấy tất cả phiêu nhập
+    // lấy tất cả chi tiết phiếu nhập
     
-    public ArrayList<PhieuNhap> getAll() {
-        ArrayList<PhieuNhap> ketQua = new ArrayList<PhieuNhap>();
+    public ArrayList<ChiTietPhieuNhap> getAll() {
+        ArrayList<ChiTietPhieuNhap> ketQua = new ArrayList<ChiTietPhieuNhap>();
         
         try {
             
             Connection con = DBConnection.getConnection();
             
-            String sql = "SELECT * FROM phieunhap ORDER BY thoiGianTao DESC";
+            String sql = "SELECT * FROM chitietphieunhap ORDER BY thoiGianTao DESC";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
             ResultSet rs = pst.executeQuery();
             
             while (rs.next()) {
-                String maPhieu = rs.getString("maPhieu");
-                
-                Timestamp thoiGianTao = rs.getTimestamp("thoiGianTao");
-                
-                String nguoiTao = rs.getString("nguoiTao");
-                
-                String maNhaCungCap = rs.getString("maNhaCungCap");
-                
-                double tongTien = rs.getDouble("tongTien");
-                
                 // tạo đối tượng và thêm vào mảng
-                PhieuNhap p = new PhieuNhap();
+                ChiTietPhieuNhap p = new ChiTietPhieuNhap();
                 
                 // Lưu ý: nhớ ép kiểu dữ liệu cho các biến 
                 p.setMaPhieu( (String) rs.getString("maPhieu") );
                 
-                p.setThoiGianTao( (Timestamp) rs.getTimestamp("thoiGianTao") );
+                p.setMaVatPham( (String) rs.getString("maVatPham") );
                 
-                p.setNguoiTao( (String) rs.getString("nguoiTao") );
+                p.setDonGia( (double) rs.getDouble("donGia"));
                 
-                p.setMaNhaCungCap( (String) rs.getString("maNhaCungCap") );
-                
-                p.setTongTien( (double) rs.getDouble("tongTien") );
+                p.setSoLuong( (int) rs.getInt("soLuong") );
                 
                 ketQua.add(p);
             }
@@ -169,24 +153,46 @@ public class PhieuNhapDAO {
         return ketQua;
     }
     
-    public List<PhieuNhap> getAllPhieuNhaps() {
-        List<PhieuNhap> phieuNhaps = new ArrayList<>();
-        String sql = "SELECT * FROM phieunhap";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+    // lấy tất cả chi tiết phiếu nhập theo maPhieu
+    public ArrayList<ChiTietPhieuNhap> getAllById(String id) {
+        ArrayList<ChiTietPhieuNhap> ketQua = new ArrayList<ChiTietPhieuNhap>();
+        
+        try {
+            
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "SELECT * FROM chitietphieunhap "
+                    + "WHERE maPhieu = ? ";
+                    
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, id);
+            
+            ResultSet rs = pst.executeQuery();
+            
             while (rs.next()) {
-                PhieuNhap pn = new PhieuNhap();
-                pn.setMaPhieu(rs.getString("maPhieu"));
-                pn.setThoiGianTao(rs.getTimestamp("thoiGianTao"));
-                pn.setNguoiTao(rs.getString("nguoiTao"));
-                pn.setMaNhaCungCap(rs.getString("maNhaCungCap"));
-                pn.setTongTien(rs.getDouble("tongTien"));
-                phieuNhaps.add(pn);
+                // tạo đối tượng và thêm vào mảng
+                ChiTietPhieuNhap p = new ChiTietPhieuNhap();
+                
+                // Lưu ý: nhớ ép kiểu dữ liệu cho các biến 
+                p.setMaPhieu( (String) rs.getString("maPhieu") );
+                
+                p.setMaVatPham( (String) rs.getString("maVatPham") );
+                
+                p.setDonGia( (double) rs.getDouble("donGia"));
+                
+                p.setSoLuong( (int) rs.getInt("soLuong") );
+                
+                ketQua.add(p);
             }
-        } catch (SQLException e) {
+        } 
+        catch (Exception e) {
+            // TODO: handle exception
             e.printStackTrace();
         }
-        return phieuNhaps;
+        
+        return ketQua;
     }
+    
 }

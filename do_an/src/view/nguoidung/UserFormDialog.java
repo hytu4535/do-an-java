@@ -1,23 +1,42 @@
 package view.nguoidung;
 
+import dao.RoleGroupDAO;
+import model.RoleGroup;
+
 import javax.swing.*;
 import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class UserFormDialog extends JDialog {
     private HashMap<String, JTextField> fields;
     private JComboBox<String> statusComboBox;
-    private JComboBox<String> roleComboBox; // Thêm JComboBox cho Vai trò
+    private JComboBox<String> roleComboBox;
     private boolean confirmed;
+    private static HashMap<String, String> roleMapping; // Ánh xạ roleGroupName với roleGroupId, tĩnh để lưu trữ
+    private static boolean rolesLoaded = false; // Cờ để kiểm tra xem danh sách vai trò đã được tải chưa
+    private RoleGroupDAO roleGroupDAO;
 
     public UserFormDialog(Frame parent, String title, HashMap<String, String> initialData, boolean isEditMode) {
         super(parent, title, true); // Modal dialog
         setLayout(new BorderLayout());
         fields = new HashMap<>();
         confirmed = false;
+        roleGroupDAO = new RoleGroupDAO();
+
+        // Khởi tạo roleMapping nếu chưa khởi tạo
+        if (roleMapping == null) {
+            roleMapping = new HashMap<>();
+        }
+
+        // Lấy danh sách vai trò từ cơ sở dữ liệu nếu chưa tải
+        if (!rolesLoaded) {
+            loadRolesFromDatabase();
+            rolesLoaded = true;
+        }
 
         // Panel chứa các trường nhập liệu
         JPanel inputPanel = new JPanel(new GridLayout(8, 2, 10, 10));
@@ -38,12 +57,18 @@ public class UserFormDialog extends JDialog {
                     statusComboBox.setSelectedItem(initialData.get(labels[i]));
                 }
                 inputPanel.add(statusComboBox);
-            } else if (labels[i].equals("Vai trò")) { // Thay JTextField thành JComboBox cho Vai trò
-                String[] roles = {"Admin", "User", "Nhân viên nhập", "Nhân viên xuất", "Nhân viên kho", "Quản lý kho"};
-                roleComboBox = new JComboBox<>(roles);
+            } else if (labels[i].equals("Vai trò")) {
+                // Sử dụng danh sách vai trò lấy từ cơ sở dữ liệu
+                List<String> roleNames = new ArrayList<>(roleMapping.keySet());
+                roleComboBox = new JComboBox<>(roleNames.toArray(new String[0]));
                 roleComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
                 if (initialData != null && initialData.containsKey(labels[i])) {
-                    roleComboBox.setSelectedItem(initialData.get(labels[i]));
+                    // Tìm roleGroupName tương ứng với roleGroupId trong initialData
+                    String roleGroupId = initialData.get(labels[i]);
+                    String roleGroupName = getRoleNameById(roleGroupId);
+                    if (roleGroupName != null) {
+                        roleComboBox.setSelectedItem(roleGroupName);
+                    }
                 }
                 inputPanel.add(roleComboBox);
             } else {
@@ -100,6 +125,24 @@ public class UserFormDialog extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
+    // Lấy danh sách vai trò từ cơ sở dữ liệu
+    private void loadRolesFromDatabase() {
+        List<RoleGroup> roleGroups = roleGroupDAO.getAllRoleGroups();
+        for (RoleGroup roleGroup : roleGroups) {
+            roleMapping.put(roleGroup.getRoleGroupName(), roleGroup.getRoleGroupId());
+        }
+    }
+
+    // Tìm roleGroupName dựa trên roleGroupId
+    private String getRoleNameById(String roleGroupId) {
+        for (String roleName : roleMapping.keySet()) {
+            if (roleMapping.get(roleName).equals(roleGroupId)) {
+                return roleName;
+            }
+        }
+        return null; // Trả về null nếu không tìm thấy
+    }
+
     // Kiểm tra dữ liệu đầu vào
     private boolean validateFields() {
         // Kiểm tra Tên tài khoản và Họ tên không được để trống
@@ -152,7 +195,13 @@ public class UserFormDialog extends JDialog {
             data.put(label, fields.get(label).getText().trim());
         }
         data.put("Trạng thái", (String) statusComboBox.getSelectedItem());
-        data.put("Vai trò", (String) roleComboBox.getSelectedItem()); // Thêm giá trị của Vai trò
+        String selectedRoleName = (String) roleComboBox.getSelectedItem();
+        data.put("Vai trò", roleMapping.get(selectedRoleName)); // Trả về roleGroupId thay vì roleGroupName
         return data;
+    }
+
+    // Phương thức để làm mới danh sách vai trò (gọi từ controller khi danh sách nhóm quyền thay đổi)
+    public static void refreshRoles() {
+        rolesLoaded = false; // Đặt lại cờ để tải lại danh sách vai trò
     }
 }

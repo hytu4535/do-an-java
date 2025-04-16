@@ -5,7 +5,8 @@ import java.sql.Date;
 public class Account {
     private String userName;
     private String fullName;
-    private String role;
+    private String roleGroupId; // Đổi từ role thành roleGroupId
+    private String roleGroupName; // Thêm để lưu tên nhóm quyền
     private int status;
     private Date namSinh; // Đổi từ Integer sang Date
     private String diaChi;
@@ -33,12 +34,28 @@ public class Account {
         this.fullName = fullName;
     }
 
+    public String getRoleGroupId() {
+        return roleGroupId;
+    }
+
+    public void setRoleGroupId(String roleGroupId) {
+        this.roleGroupId = roleGroupId;
+    }
+
+    public String getRoleGroupName() {
+        return roleGroupName;
+    }
+
+    public void setRoleGroupName(String roleGroupName) {
+        this.roleGroupName = roleGroupName;
+    }
+
     public String getRole() {
-        return role;
+        return roleGroupName; // Trả về roleGroupName thay vì roleGroupId
     }
 
     public void setRole(String role) {
-        this.role = role;
+        this.roleGroupName = role; // Gán vào roleGroupName
     }
 
     public int getStatus() {
