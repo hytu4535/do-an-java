@@ -10,7 +10,7 @@ import javax.swing.border.LineBorder;
 
 public class Paneltrai_Panelluachon extends JPanel {
     private JLabel lblSoluong;
-    private JLabel lblHienthi;
+    private JTextField txtfHienthi;
     private JButton btnThem;
     private GridBagConstraints gbc;
     
@@ -40,7 +40,7 @@ public class Paneltrai_Panelluachon extends JPanel {
     public void InitLuachon() {
         lblSoluong = new JLabel("Số lượng");// so luong
         
-        lblHienthi = new JLabel();
+        txtfHienthi = new JTextField();
         
         btnThem = new JButton("Thêm");
         
@@ -52,9 +52,11 @@ public class Paneltrai_Panelluachon extends JPanel {
         lblSoluong.setFont(myFont);
         //lblSoluong.setPreferredSize(new Dimension(lblSoluong.getPreferredSize().width, height));
         
-        //dieu chinh lblHienthi
-        lblHienthi.setBorder(new LineBorder(Color.black, 1));// tao vien co mau den, 2px
-        lblHienthi.setPreferredSize(new Dimension(lblSoluong.getPreferredSize().width, height));
+        //dieu chinh txtfHienthi
+        txtfHienthi.setBorder(new LineBorder(Color.black, 1));// tao vien co mau den, 2px
+        txtfHienthi.setPreferredSize(new Dimension(lblSoluong.getPreferredSize().width, height));
+        txtfHienthi.setFont(myFont);
+        
         
         //dieu chinh btnThem
         btnThem.setFocusable(false);
@@ -77,7 +79,7 @@ public class Paneltrai_Panelluachon extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 0;
         
-        this.add(lblHienthi, gbc);
+        this.add(txtfHienthi, gbc);
         
         //btnThem
         gbc.gridx = 2;
@@ -89,12 +91,15 @@ public class Paneltrai_Panelluachon extends JPanel {
     
     // getter
 
-    public JLabel getLblHienthi() {
-        return lblHienthi;
+    public JTextField getTxtfHienthi() {
+        return txtfHienthi;
     }
 
     public JButton getBtnThem() {
         return btnThem;
     }
+    
+    // getter 
+    
     
 }

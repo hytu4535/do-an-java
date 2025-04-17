@@ -1,4 +1,4 @@
-package view.nhaphang;
+package view.xuathang;
 
 import java.awt.FlowLayout;
 import java.awt.Font;

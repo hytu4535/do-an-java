@@ -1,6 +1,8 @@
 package view.xuathang;
 
 
+import controller.XuatHangController;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,6 +15,8 @@ public class XuathangPanel extends JPanel {
     private Paneltrai pnlPaneltrai;
     private Panelphai pnlPanelphai;
     private GridLayout gridlayout;
+    
+    private XuatHangController xhc;
     
     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
     
@@ -30,6 +34,8 @@ public class XuathangPanel extends JPanel {
        InitPaneltrai();
        
        InitPanelphai();
+       
+       InitController();
         
     }
     
@@ -89,6 +95,10 @@ public class XuathangPanel extends JPanel {
         this.add(pnlPanelphai);
     }
     
+    // khởi tạo controller
+    public void InitController() {
+        this.xhc = new XuatHangController(this);
+    }
     /*################### 
     GHI CHU
     NhaphangPanel chia thanh 2 panel nho de hien thi thong tin gom paneltrai va panelphai
