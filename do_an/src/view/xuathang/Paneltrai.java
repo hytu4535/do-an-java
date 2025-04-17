@@ -13,9 +13,9 @@ public class Paneltrai extends JPanel {
     + Panel cho phan thong tin(Jtable): CENTER
     + Panel cho phan nut, label: SOUTH
     ################*/
-    private JPanel pnlPaneltimkiem;
-    private JPanel pnlPanelthongtin;
-    private JPanel pnlPanelluachon;
+    private Paneltrai_Paneltimkiem pnlPaneltimkiem;
+    private Paneltrai_Panelthongtin pnlPanelthongtin;
+    private Paneltrai_Panelluachon pnlPanelluachon;
     
     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
     
@@ -87,4 +87,20 @@ public class Paneltrai extends JPanel {
         //them vao panel lon
         this.add(pnlPanelluachon, BorderLayout.SOUTH);
     }
+    
+    
+    // getter
+
+    public Paneltrai_Paneltimkiem getPnlPaneltimkiem() {
+        return pnlPaneltimkiem;
+    }
+
+    public Paneltrai_Panelthongtin getPnlPanelthongtin() {
+        return pnlPanelthongtin;
+    }
+
+    public Paneltrai_Panelluachon getPnlPanelluachon() {
+        return pnlPanelluachon;
+    }
+    
 }

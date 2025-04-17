@@ -85,4 +85,16 @@ public class Paneltrai_Panelluachon extends JPanel {
         
         this.add(btnThem, gbc);
     }
+    
+    
+    // getter
+
+    public JLabel getLblHienthi() {
+        return lblHienthi;
+    }
+
+    public JButton getBtnThem() {
+        return btnThem;
+    }
+    
 }

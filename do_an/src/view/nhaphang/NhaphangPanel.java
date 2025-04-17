@@ -1,5 +1,7 @@
 package view.nhaphang;
 
+import controller.NhapHangController;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,13 +11,17 @@ public class NhaphangPanel extends JPanel {
     GHI CHU
     NhaphangPanel chia thanh 2 panel nho de hien thi thong tin gom paneltrai va panelphai
     ###################*/
-    private JPanel pnlPaneltrai;
-    private JPanel pnlPanelphai;
+    private Paneltrai pnlPaneltrai;
+    private Panelphai pnlPanelphai;
     private GridLayout gridlayout;
     
     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
     
     private Color bgColor = new Color(255, 255, 255);
+    
+    // controller
+    private NhapHangController nhc;
+    
     
     public NhaphangPanel() {
         
@@ -29,6 +35,8 @@ public class NhaphangPanel extends JPanel {
        InitPaneltrai();
        
        InitPanelphai();
+       
+       InitController();
         
     }
     
@@ -88,8 +96,25 @@ public class NhaphangPanel extends JPanel {
         this.add(pnlPanelphai);
     }
     
+    
+    // khởi tạo controller
+    public void InitController() {
+        this.nhc = new NhapHangController(this);
+    }
+    
+    
     /*################### 
     GHI CHU
     NhaphangPanel chia thanh 2 panel nho de hien thi thong tin gom paneltrai va panelphai
     ###################*/
+
+    
+    // getter
+    public Paneltrai getPnlPaneltrai() {
+        return pnlPaneltrai;
+    }
+
+    public Panelphai getPnlPanelphai() {
+        return pnlPanelphai;
+    }
 }

@@ -79,4 +79,16 @@ public class Paneltrai_Paneltimkiem extends JPanel {
         this.add(btnTimkiem, gbc);
         
     }
+    
+    
+    // getter
+
+    public JTextField getTxtfTimkiem() {
+        return txtfTimkiem;
+    }
+
+    public JButton getBtnTimkiem() {
+        return btnTimkiem;
+    }
+    
 }

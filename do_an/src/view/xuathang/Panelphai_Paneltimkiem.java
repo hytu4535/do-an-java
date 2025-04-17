@@ -103,7 +103,14 @@ public class Panelphai_Paneltimkiem extends JPanel {
             gbc.weightx = 1.0;
             
             this.add(txtfHienthi.get(i), gbc);
-        }
-        
+        }  
     }
+    
+    
+    // getter
+
+    public ArrayList<JTextField> getTxtfHienthi() {
+        return txtfHienthi;
+    }
+    
 }

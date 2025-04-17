@@ -32,9 +32,9 @@ public class ChiTietPhieuNhapDialog extends JDialog {
         InitComponents();
 
         // căn kích cỡ tự động?
-        pack(); 
+        this.pack(); 
         // vị trí khi hiện lên
-        setLocationRelativeTo(owner); 
+        this.setLocationRelativeTo(owner); 
     }
     
     public void InitComponents() {

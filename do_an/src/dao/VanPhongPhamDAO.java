@@ -12,6 +12,61 @@ public class VanPhongPhamDAO {
     }
     
     
+    // phương thức cập nhật văn phòng phẩm
+    public void update(VanPhongPham temp) {
+        int ketqua = 0;
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "UPDATE vanphongpham SET "
+                    + "maVatPham = ?, "//1
+                    + "tenVatPham = ?, "//2
+                    + "soLuong = ?, "//3
+                    + "loaiVatPham = ?, "//4
+                    + "gia = ?, "//5
+                    + "thuongHieu = ?, "//6
+                    + "chatLieu = ?, "//7
+                    + "doDay = ?, "//8
+                    + "moTa = ?, "//9
+                    + "xuatXu = ?, "//10
+                    + "trangThai = ?, "//11
+                    + "WHERE maVatPham = ?";
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, temp.getMaVatPham());
+            
+            pst.setString(2, temp.getTenVatPham());
+            
+            pst.setInt(3, temp.getSoLuong());
+            
+            pst.setString(4, temp.getLoaiVatPham());
+            
+            pst.setDouble(5, temp.getGia());
+            
+            pst.setString(6, temp.getThuongHieu());
+            
+            pst.setString(7, temp.getChatLieu());
+            
+            pst.setDouble(8, temp.getDoDay());
+           
+            pst.setString(9, temp.getMoTa());
+            
+            pst.setString(10, temp.getXuatXu());
+            
+            pst.setInt(11, temp.getTrangThai());
+            
+            // bắt đầu update
+            ketqua = pst.executeUpdate();
+            
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    } 
+    
+    
     // phương thức tìm kiếm theo maVatPham và trả về đối tượng
     public VanPhongPham getByID(String id) {
         VanPhongPham ketqua = null;

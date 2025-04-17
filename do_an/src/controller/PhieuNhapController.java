@@ -384,13 +384,13 @@ public class PhieuNhapController {
     
     // hàm để chuyển double thành chuỗi 
     public String DoubleToDong(double number) {
-    DecimalFormat Format = new DecimalFormat("###,###,###");
+        DecimalFormat Format = new DecimalFormat("###,###,###");
     
-    // làm tròn xuống nếu có 
-    //Format.setRoundingMode(RoundingMode.DOWN);
+        // làm tròn xuống nếu có 
+        //Format.setRoundingMode(RoundingMode.DOWN);
     
-    //trả về chuỗi và cộng thêm "đ"
-    return Format.format((long) number) + " đ";
-}
+        //trả về chuỗi và cộng thêm "đ"
+        return Format.format((long) number) + " đ";
+    }
 
 }

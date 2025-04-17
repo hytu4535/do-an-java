@@ -120,4 +120,15 @@ public class Panelphai_Panelluachon extends JPanel {
             this.add(btnNut.get(i), gbc);
         }
     }
+    
+    // getter
+
+    public JLabel getLblHienthi() {
+        return lblHienthi;
+    }
+
+    public ArrayList<JButton> getBtnNut() {
+        return btnNut;
+    }
+    
 }

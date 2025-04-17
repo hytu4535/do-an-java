@@ -132,4 +132,15 @@ public class Panelphai_Paneltimkiem extends JPanel {
         
         this.add(cbNhacungcap, gbc);
     }
+    
+    // getter
+
+    public ArrayList<JTextField> getTxtfHienthi() {
+        return txtfHienthi;
+    }
+
+    public JComboBox<String> getCbNhacungcap() {
+        return cbNhacungcap;
+    }
+    
 }

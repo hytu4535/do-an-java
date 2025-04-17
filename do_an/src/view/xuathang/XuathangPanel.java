@@ -10,8 +10,8 @@ public class XuathangPanel extends JPanel {
     GHI CHU
     NhaphangPanel chia thanh 2 panel nho de hien thi thong tin gom paneltrai va panelphai
     ###################*/
-    private JPanel pnlPaneltrai;
-    private JPanel pnlPanelphai;
+    private Paneltrai pnlPaneltrai;
+    private Panelphai pnlPanelphai;
     private GridLayout gridlayout;
     
     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
@@ -93,4 +93,15 @@ public class XuathangPanel extends JPanel {
     GHI CHU
     NhaphangPanel chia thanh 2 panel nho de hien thi thong tin gom paneltrai va panelphai
     ###################*/
+    
+    // getter
+
+    public Paneltrai getPnlPaneltrai() {
+        return pnlPaneltrai;
+    }
+
+    public Panelphai getPnlPanelphai() {
+        return pnlPanelphai;
+    }
+    
 }

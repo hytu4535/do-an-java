@@ -16,6 +16,22 @@ public class VanPhongPham {
     // Constructor
     public VanPhongPham() {}
 
+    // Constructor
+    public VanPhongPham(String maVatPham, String tenVatPham, int soLuong, String loaiVatPham, double gia, String thuongHieu, String chatLieu, Double doDay, String moTa, String xuatXu, Integer trangThai) {
+        this.maVatPham = maVatPham;
+        this.tenVatPham = tenVatPham;
+        this.soLuong = soLuong;
+        this.loaiVatPham = loaiVatPham;
+        this.gia = gia;
+        this.thuongHieu = thuongHieu;
+        this.chatLieu = chatLieu;
+        this.doDay = doDay;
+        this.moTa = moTa;
+        this.xuatXu = xuatXu;
+        this.trangThai = trangThai;
+    }
+    
+
     // Getters and Setters
     public String getMaVatPham() { return maVatPham; }
     public void setMaVatPham(String maVatPham) { this.maVatPham = maVatPham; }

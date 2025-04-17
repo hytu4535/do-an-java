@@ -87,4 +87,16 @@ public class Panelphai_Panelthongtin extends JPanel {
         //do JScrollPane da la mot container nen chi can them JScrollPane vao panel
         this.add(nutcuon);// nutcuon, khong phai tblThongtin
     }
+    
+    
+    // getter
+
+    public JTable getTblThongtin() {
+        return tblThongtin;
+    }
+
+    public DefaultTableModel getTablemodel() {
+        return tablemodel;
+    }
+    
 }
