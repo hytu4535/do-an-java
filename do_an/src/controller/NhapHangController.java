@@ -163,8 +163,24 @@ public class NhapHangController {
                             }
                         }
                         
-                        // chuyển đối tượng temp sang cho ArrayList bên phải
-                        this.danhsachVPPPhai.add(new VanPhongPham(
+                        VanPhongPham kiemtra = null;
+                        
+                        // kiểm tra nếu table phải đã có cùng loại sản phẩm bên table trái thì cho vào cùng hàng
+                        for(var item : this.danhsachVPPPhai) {
+                            if( item.getMaVatPham().equals(temp.getMaVatPham()) ) {
+                                kiemtra = item;
+                                break;
+                            }
+                        }
+                        
+                        // nếu có tồn tại
+                        if( kiemtra != null){
+                            kiemtra.setSoLuong( (kiemtra.getSoLuong() + soLuongNhap) );
+                        }
+                        // nếu chưa có thì
+                        else {
+                            // chuyển đối tượng temp sang cho ArrayList bên phải
+                            this.danhsachVPPPhai.add(new VanPhongPham(
                                 temp.getMaVatPham(),
                                 temp.getTenVatPham(),
                                 
@@ -178,7 +194,8 @@ public class NhapHangController {
                                 temp.getMoTa(),
                                 temp.getXuatXu(),
                                 temp.getTrangThai()
-                        ));
+                            ));
+                        }
                         
                         // cập nhật lại danhsachVPPTrai bên trái
                         temp.setSoLuong(soLuongHang - soLuongNhap);
