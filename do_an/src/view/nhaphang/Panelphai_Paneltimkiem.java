@@ -12,7 +12,6 @@ public class Panelphai_Paneltimkiem extends JPanel {
     private ArrayList<JLabel> lblHienthi;// 3 cai label de hien thi cho 2 textfield va 1 combobox
     private ArrayList<JTextField> txtfHienthi;
     private String[] Hienthiname;
-    private JComboBox<String> cbNhacungcap;//chi dinh ro kieu doi tuong ma combobox chua
     private GridBagConstraints gbc;
     
      private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
@@ -44,7 +43,7 @@ public class Panelphai_Paneltimkiem extends JPanel {
     }
     
     public void InitTimkiem() {
-        Hienthiname = new String[] {"Mã phiếu tạo", "Nhà cung cấp", "Người tạo phiếu"};
+        Hienthiname = new String[] {"Mã phiếu tạo", "Người tạo phiếu"};
         
         lblHienthi = new ArrayList<JLabel>();
         
@@ -52,7 +51,7 @@ public class Panelphai_Paneltimkiem extends JPanel {
         
         //dieu chinh va them Label vao arraylist
         
-        for(int i = 0; i < 3; ++i) {
+        for(int i = 0; i < 2; ++i) {
             JLabel temp = new JLabel(Hienthiname[i]);
             
             temp.setFont(myFont);
@@ -76,20 +75,12 @@ public class Panelphai_Paneltimkiem extends JPanel {
             
             temp.setBorder(new LineBorder(Color.black, 1));
             
+            temp.setFont(myFont);
+            
             temp.setPreferredSize(new Dimension(temp.getPreferredSize().width, 40));
             
             txtfHienthi.add(temp);
         }
-        
-        //dieu chinh cbNhacungcap
-        String[] cbName = new String[] {"bla1", "bla2", "bla3"};
-        cbNhacungcap = new JComboBox<>(cbName);
-        
-        cbNhacungcap.setPreferredSize(new Dimension(cbNhacungcap.getPreferredSize().width, 40));
-        
-        cbNhacungcap.setFont(myFont);
-        
-        cbNhacungcap.setBackground(bgColor);
         
         
         //them components vao panel
@@ -108,39 +99,20 @@ public class Panelphai_Paneltimkiem extends JPanel {
         
         //txtfHienthi
         for(int i = 0; i < txtfHienthi.size(); ++i) {
-            //textfield cua ma phieu nhap
-            if(i == txtfHienthi.size() - 1) {
-                gbc.gridx = 1;
-                gbc.gridy = 2;
-            }
-            //textfield cua nguoi tao phieu
-            else {
-                gbc.gridx = 1;
-                gbc.gridy = 0;
-            }
+            gbc.gridx = 1;
+            gbc.gridy = i;
             
             gbc.weightx = 1.0;
             
             this.add(txtfHienthi.get(i), gbc);
-        }
-        
-        //cbNhacuncap
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        
-        gbc.weightx = 1.0;
-        
-        this.add(cbNhacungcap, gbc);
+        }  
     }
+    
     
     // getter
 
     public ArrayList<JTextField> getTxtfHienthi() {
         return txtfHienthi;
-    }
-
-    public JComboBox<String> getCbNhacungcap() {
-        return cbNhacungcap;
     }
     
 }

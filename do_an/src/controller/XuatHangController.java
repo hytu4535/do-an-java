@@ -1,5 +1,6 @@
 package controller;
 
+import dao.PhieuXuatDAO;
 import dao.VanPhongPhamDAO;
 
 import java.awt.event.ActionEvent;
@@ -13,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import model.PhieuXuat;
 import model.VanPhongPham;
 
 import view.xuathang.PopupNhapSoLuong;
@@ -441,7 +443,7 @@ public class XuatHangController {
                VanPhongPham temp = dulieu.get(i);
                
                tableModelPhai.addRow(new Object[]{
-                    String.valueOf( + 1),
+                    String.valueOf( i + 1),
                     temp.getMaVatPham(),
                     temp.getTenVatPham(),
                     temp.getSoLuong(),
@@ -449,11 +451,34 @@ public class XuatHangController {
                });
             } 
         }
+        
+        // tải thêm thông tim của mã phiếu nhập mới
+        this.view.getPnlPanelphai().getPnlPaneltimkiem().getTxtfHienthi().get(0).setText(
+                maPhieuXuatMoi());
     }
     //##############################
     
     
     
+    
+    // hàm để tạo mã phiếu xuất
+    public String maPhieuXuatMoi() {
+        // tạo phần đầu mã phiếu xuất 
+        String maPhieu = "PX";
+        
+        int maSo = 1;
+        
+        // đếm số lượng phiêu xuất trong csdl để lấy ra maSo
+        ArrayList<PhieuXuat> danhsachPhieu = 
+                (ArrayList<PhieuXuat>) PhieuXuatDAO.getInstance().getAllPhieuXuats();
+        
+        // lặp trong mảng để đếm maSo
+        for(var item : danhsachPhieu) {
+            maSo++;
+        }
+        
+        return maPhieu + String.valueOf(maSo);
+    }
     
     // hàm để kiểm tra xem chuỗi có  phải số không(kiểu dữ liệu double)
     public boolean isNumeric(String strNum) {

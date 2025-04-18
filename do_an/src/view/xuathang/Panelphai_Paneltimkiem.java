@@ -75,6 +75,8 @@ public class Panelphai_Paneltimkiem extends JPanel {
             
             temp.setBorder(new LineBorder(Color.black, 1));
             
+            temp.setFont(myFont);
+            
             temp.setPreferredSize(new Dimension(temp.getPreferredSize().width, 40));
             
             txtfHienthi.add(temp);

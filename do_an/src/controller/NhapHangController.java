@@ -1,6 +1,7 @@
 package controller;
 
 import dao.VanPhongPhamDAO;
+import dao.PhieuNhapDAO;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import model.PhieuNhap;
 import model.VanPhongPham;
 
 import view.nhaphang.NhaphangPanel;
@@ -146,12 +148,8 @@ public class NhapHangController {
                     // lấy số lượng nhập
                     int soLuongNhap = Integer.parseInt(soLuongNhapTextField);
                 
-                    // lấy số lượng hàng hiện tại
-                    int soLuongHang = Integer.parseInt(table.getValueAt(hangDuocChon, 2).toString());
-                
-                    // kiểm tra nếu số lượng nhập không vượt quá số lượng hàng hiên tại 
-                    // và phải lớn hơn 0
-                    if( soLuongNhap <= soLuongHang && soLuongNhap > 0) {
+                    // kiểm tra nếu số lượng nhập phải lớn hơn 0
+                    if( soLuongNhap > 0) {
                         // chuyển vật phẩm sang cho table bên phải và cập nhật lại danhsachVPPPhai
                         
                         // lấy ra văn phòng phẩm trong table trái
@@ -197,14 +195,8 @@ public class NhapHangController {
                             ));
                         }
                         
-                        // cập nhật lại danhsachVPPTrai bên trái
-                        temp.setSoLuong(soLuongHang - soLuongNhap);
                         
-                        // làm mới lại hai table 
-                        // table trái
-                        loadData(this.danhsachVPPTrai, 1);
-                        
-                        // table phải
+                        // làm mới lại hai table phải
                         loadData(this.danhsachVPPPhai, 0);
                     }
                     // nếu vượt quá
@@ -212,7 +204,7 @@ public class NhapHangController {
                     // báo cho người dùng chọn hàng dữ liệu
                         JOptionPane.showMessageDialog(
                             null,                                                                     // parent: 
-                            "Số lượng nhập vào phải nhỏ hơn số lượng hàng và lớn hơn 0!", // nội dung của thông báo
+                            "Số lượng nhập vào phải  lớn hơn 0!", // nội dung của thông báo
                             "THÔNG BÁO",                                                 // tiêu đề của thông báo
                             JOptionPane.INFORMATION_MESSAGE        // icon của thông báo
                         );    
@@ -276,14 +268,6 @@ public class NhapHangController {
             // biến để lưu số lượng hàng đưuọc chọn bên phải
             int soLuongPhai = Integer.parseInt(tablePhai.getValueAt(hangDuocChon, 3).toString());
             
-            // B1: cập nhật danhsachVPPTrai trước
-            for(var item : this.danhsachVPPTrai) {
-                if( item.getMaVatPham().equals(maVatPhamPhai) ) {
-                    // sửa số lượng
-                    item.setSoLuong( item.getSoLuong() + soLuongPhai );
-                }
-            }
-            
             // B2: xóa đối tượng được chọn trong danhsachVPPPhai
             for(int i = 0; i < this.danhsachVPPPhai.size(); ++i) {
                 if( this.danhsachVPPPhai.get(i).getMaVatPham().equals(maVatPhamPhai) ) {
@@ -292,10 +276,7 @@ public class NhapHangController {
                 }
             }
             
-            // B3: cập nhật lại table của hai bên
-            // table trái
-            loadData(this.danhsachVPPTrai, 1);
-            
+            // B3: cập nhật lại table phải
             // table phải
             loadData(this.danhsachVPPPhai, 0);
         }
@@ -344,34 +325,11 @@ public class NhapHangController {
                 return;
             }
             
-            
-            // B1: cập nhật danhsachVPPTrai trước
-            for(var item : this.danhsachVPPTrai) {
-                if( item.getMaVatPham().equals(maVatPhamPhai) ) {
-                     // kiểm tra nếu số lượng sửa nhiều hơn số lượng bên danhsachVPPTrai
-                     if( item.getSoLuong() < soLuongMoi ) {
-                         // báo lỗi
-                         JOptionPane.showMessageDialog(null,
-                        "Số lượng được sửa phải bé hơn số lượng hàng trong danh sách!", 
-                        "Lỗi", 
-                        JOptionPane.ERROR_MESSAGE
-                        );
-                         // ngắt hành động
-                        return;
-                     }
-                    // sửa số lượng
-                     else {
-                        item.setSoLuong( item.getSoLuong() + (soLuongHienTai - soLuongMoi) );
-                     }
-                }
-            }
-            
-            // B2: cập nhật vào danhsachVPPPhai
+            // B1: cập nhật vào danhsachVPPPhai
             for(int i = 0; i < this.danhsachVPPPhai.size(); ++i) {
-                // nếu số lượng nhập mới là 0 thì xóa luôn hàng đấy
                 if( this.danhsachVPPPhai.get(i).getMaVatPham().equals(maVatPhamPhai)) {
                      // nếu số lượng nhập mới là 0 thì xóa luôn hàng đấy
-                     if( (soLuongHienTai - soLuongMoi) == 0 ) {
+                     if( soLuongMoi == 0 ) {
                          this.danhsachVPPPhai.remove(i);
                      }
                      // nếu không phải
@@ -383,11 +341,7 @@ public class NhapHangController {
                 }
             }
           
-            // B3: cập nhật lại table của hai bên
-            // table trái
-            loadData(this.danhsachVPPTrai, 1);
-            
-            // table phải
+            // B2: cập nhật lại table phải
             loadData(this.danhsachVPPPhai, 0);
         }
         // nếu chưa chọn
@@ -401,6 +355,8 @@ public class NhapHangController {
             );    
         }
     }
+    
+    
     
     
     
@@ -441,7 +397,7 @@ public class NhapHangController {
                VanPhongPham temp = dulieu.get(i);
                
                tableModelPhai.addRow(new Object[]{
-                    String.valueOf( + 1),
+                    String.valueOf( i + 1),
                     temp.getMaVatPham(),
                     temp.getTenVatPham(),
                     temp.getSoLuong(),
@@ -449,11 +405,33 @@ public class NhapHangController {
                });
             } 
         }
+        
+        // tải thêm thông tim của mã phiếu nhập mới
+        this.view.getPnlPanelphai().getPnlPaneltimkiem().getTxtfHienthi().get(0).setText(
+                maPhieuNhapMoi());
     }
     //##############################
     
     
     
+    
+    // hàm để tạo mã phiếu nhập
+    public String maPhieuNhapMoi() {
+        // tạo phần đầu mã phiếu nhập 
+        String maPhieu = "PN";
+        
+        int maSo = 1;
+        
+        // đếm số lượng phiêu nhập trong csdl để lấy ra maSo
+        ArrayList<PhieuNhap> danhsachPhieu = PhieuNhapDAO.getInstance().getAll();
+        
+        // lặp trong mảng để đếm maSo
+        for(var item : danhsachPhieu) {
+            maSo++;
+        }
+        
+        return maPhieu + String.valueOf(maSo);
+    }
     
     // hàm để kiểm tra xem chuỗi có  phải số không(kiểu dữ liệu double)
     public boolean isNumeric(String strNum) {
