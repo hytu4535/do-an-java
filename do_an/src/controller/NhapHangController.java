@@ -1,21 +1,30 @@
 package controller;
 
+import dao.ChiTietPhieuNhapDAO;
+import dao.NhaCungCapDAO;
 import dao.VanPhongPhamDAO;
 import dao.PhieuNhapDAO;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import model.NhaCungCap;
 import model.PhieuNhap;
 import model.VanPhongPham;
+import model.ChiTietPhieuNhap;
 
 import view.nhaphang.NhaphangPanel;
 import view.nhaphang.PopupNhapSoLuong;
@@ -37,6 +46,8 @@ public class NhapHangController {
     
     public NhapHangController(NhaphangPanel view) {
         this.view = view;
+        
+        themLuaChon();
         
         Action();
     }
@@ -77,12 +88,29 @@ public class NhapHangController {
                 suaSoLuong();
             }
         });
+        
+        // thêm sự kiện cho nút thêm phiếu nhập bên phải
+        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(3).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent l) {
+                themPhieuNhap();
+            }
+        });
     }
     
     
     // tải dữ liệu cho bảng bên trái
     public void loadDataBenTrai() {
             // bảng này có bộ lọc tìm kiếm
+            // thêm các nhà cung cấp cho combobox ở phần tìm kiếm bên phải
+            
+            // lấy bộ lọc
+            JComboBox boloc = this.view.getPnlPanelphai().getPnlPaneltimkiem().getCbNhacungcap();
+            
+            // lấy giá trị được chọn 
+            String nhaCungCap = boloc.getSelectedItem().toString();
+            
+            
             // lấy dữ liệu lọc
             String timkiem = this.view.getPnlPaneltrai().getPnlPaneltimkiem().getTxtfTimkiem().getText().toLowerCase();
             
@@ -92,8 +120,9 @@ public class NhapHangController {
             // nếu có dùng bộ timkiem
            if( timkiem.length() > 0) {
                 // lọc
+                System.out.println(this.danhsachVPPTrai.size());
                 for(var item : this.danhsachVPPTrai) {
-                // nếu hàng có điểm giống với điều kiện lọc
+                // nếu hàng có điểm giống với điều kiện lọc( phần tìm kiếm và phần combobox )
                 String maVatPham = item.getMaVatPham().toLowerCase();
                 
                 String tenVatPham = item.getTenVatPham().toLowerCase();
@@ -102,10 +131,11 @@ public class NhapHangController {
                 
                 String donGia = String.valueOf(item.getGia()).toLowerCase();
                 
-                    if( maVatPham.contains(timkiem) || 
-                            tenVatPham.contains(timkiem) || 
-                            soLuong.contains(timkiem) ||
-                            donGia.contains(timkiem) ) {
+                String thuongHieu = item.getThuongHieu();
+                
+                    if( (maVatPham.contains(timkiem) || tenVatPham.contains(timkiem) || 
+                            soLuong.contains(timkiem) || donGia.contains(timkiem) )  &&
+                            thuongHieu.equals(boloc.getSelectedItem().toString()) ) {
                         
                         danhsach.add(item);
                     }
@@ -113,7 +143,7 @@ public class NhapHangController {
            }
            // nếu không dùng tìm kiếm
            else {
-               danhsach =this.danhsachVPPTrai;
+               danhsach = this.danhsachVPPTrai;
            }
            
            //in danhsach ra bảng
@@ -357,12 +387,119 @@ public class NhapHangController {
     }
     
     
+    // phương thức thêm phiếu nhập mới
+    public void themPhieuNhap() {
+        // tạo một phiếu nhập trước
+        PhieuNhap phieuMoi = new PhieuNhap();
+        
+        // thêm các thông tin của phiếu
+        // maPhieuNhap
+        String maPhieuNhap = maPhieuNhapMoi() ;
+        
+        phieuMoi.setMaPhieu(maPhieuNhap);
+        
+        // thoiGianTao
+        Timestamp thoiGian = Timestamp.valueOf(LocalDateTime.now());
+        
+        phieuMoi.setThoiGianTao(thoiGian);
+        
+        // người tạo (chưa lấy được tài khoản đăng nhập nên mặc định là bên dưới)
+        phieuMoi.setNguoiTao("staff01");
+        
+        // maNhaCungCap
+        phieuMoi.setMaNhaCungCap(
+                this.view.getPnlPanelphai().getPnlPaneltimkiem().getCbNhacungcap().getSelectedItem().toString());
+        
+        // tongTien. Sử dụng mảng VPPPhai để tính
+        double tongTien = 0;
+        
+        for(var item : this.danhsachVPPPhai) {
+            tongTien += ( item.getGia() * item.getSoLuong() );
+        }
+        
+        phieuMoi.setTongTien(tongTien);
+        
+        // đưa vào vào csdl
+        PhieuNhapDAO.getInstance().insert(phieuMoi);
+        
+        // Sau khi thêm phiếu nhập, ta thêm chi tiết phiếu nhập
+        for(var item : this.danhsachVPPPhai) {
+            ChiTietPhieuNhap CTPhieuMoi = new ChiTietPhieuNhap();
+            
+            // thêm thông tin cho phiếu
+            // maPhieu
+            CTPhieuMoi.setMaPhieu(maPhieuNhap);
+            
+            // maVatPham
+            CTPhieuMoi.setMaVatPham( item.getMaVatPham() );
+            
+            // soLuong
+            CTPhieuMoi.setSoLuong( item.getSoLuong() );
+            
+            // đơn giá (gia)
+            CTPhieuMoi.setDonGia( item.getGia() );
+            
+            // thêm vào csdl
+            ChiTietPhieuNhapDAO.getInstance().insert(CTPhieuMoi);
+        }
+        
+        // Cập nhật thông tin cua các sản phẩm bị ảnh hưởng
+        // B1: lấy danh sách văn phòng phẩm hiện tại
+        ArrayList<VanPhongPham> danhsachVPPMoi = 
+                (ArrayList<VanPhongPham>) VanPhongPhamDAO.getInstance().getAllVanPhongPhams();
+        
+        // B2: cập nhật danh sách mới vào csdl
+        for(var item : danhsachVPPMoi) {
+            // kiểm tra xem nếu có VanPhongPham nào trùng maVatPham bên danhsachVPPPhai thì cập nhật
+            // thay đổi lên danhsachVPPMoi và cập nhật lên csdl
+            
+            // * dùng danhsachVPPPhai vì danh sách đó đã lưu các thay đổi rồi *
+            for(var sanPham : this.danhsachVPPPhai) {
+                if( item.getMaVatPham().equals(sanPham.getMaVatPham()) ) {
+                    // cập nhật số lượng sau khi thêm phiếu nhập và chi tiết phiếu nhập
+                    item.setSoLuong( (item.getSoLuong() + sanPham.getSoLuong()) );
+                    
+                     VanPhongPhamDAO.getInstance().update(item);
+                     
+                    break;
+                }
+            }
+        }
+    
+        
+        // làm mới panel
+        // table trái
+        // làm mới dữ liệu danhsachVPPTrai
+        this.danhsachVPPTrai = 
+                (ArrayList<VanPhongPham>) VanPhongPhamDAO.getInstance().getAllVanPhongPhams();
+        
+        loadData(this.danhsachVPPTrai, 1);
+        
+        // table phải
+        // xóa hết dữ liệu danhsachVPPPhai
+        this.danhsachVPPPhai.clear();
+        
+        loadData(this.danhsachVPPPhai, 0);
+    }
+    
+    // thêm lữa chọn cho combobox
+    public void themLuaChon() {
+         // thêm các lựa chọn là mã nhà cung cấp cho combobox
+        ArrayList<NhaCungCap> danhsachNCC = 
+                (ArrayList<NhaCungCap>) NhaCungCapDAO.getInstance().getAllNhaCungCaps();
+        
+        for(var item : danhsachNCC) {
+            this.view.getPnlPanelphai().getPnlPaneltimkiem().getCbNhacungcap().addItem(
+                item.getMaNhaCungCap());
+        }
+    }
+    
     
     
     
     // hàm để hỗ trợ việc hiển thị dữ liêu bảng: bảng trái = 1, bảng phải = 0;
     public void loadData(ArrayList<VanPhongPham> dulieu, int luachon) {
-
+        
         // nếu là bảng bên trái
         if( luachon == 1) {
             // lấy table model bên trái
@@ -420,17 +557,29 @@ public class NhapHangController {
         // tạo phần đầu mã phiếu nhập 
         String maPhieu = "PN";
         
-        int maSo = 1;
+        int maSo = 0;
         
         // đếm số lượng phiêu nhập trong csdl để lấy ra maSo
         ArrayList<PhieuNhap> danhsachPhieu = PhieuNhapDAO.getInstance().getAll();
         
-        // lặp trong mảng để đếm maSo
+        // lý do làm như này vì có thể các maPhieu không liên tục. vd: PX1, PX3, PX4, .....
         for(var item : danhsachPhieu) {
-            maSo++;
+            String ma = item.getMaPhieu().replace(maPhieu, "");
+            
+            try {
+                int so = Integer.parseInt(ma);
+                
+                if( maSo < so ) {
+                    maSo = so;
+                }
+                
+            }
+            catch(NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
         
-        return maPhieu + String.valueOf(maSo);
+        return maPhieu + String.valueOf(maSo + 1);
     }
     
     // hàm để kiểm tra xem chuỗi có  phải số không(kiểu dữ liệu double)
@@ -459,4 +608,5 @@ public class NhapHangController {
         //trả về chuỗi và cộng thêm "đ"
         return Format.format((long) number) + " đ";
     }
+    
 }

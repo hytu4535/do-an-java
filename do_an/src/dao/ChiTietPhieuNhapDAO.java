@@ -42,6 +42,8 @@ public class ChiTietPhieuNhapDAO {
             ketqua = pst.executeUpdate();
             
             // đóng kết nối tới csdl
+            pst.close();
+            
             DBConnection.closeConnection(con);
             
             
@@ -64,7 +66,7 @@ public class ChiTietPhieuNhapDAO {
                     + "maPhieu = ?, "
                     + "maVatPham = ?, "
                     + "soLuong = ?, "
-                    + "donGia = ?, "
+                    + "donGia = ? "// NHỚ BỎ DẤU PHẨY TRƯỚC WHERE
                     + "WHERE maPhieu = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
@@ -79,6 +81,10 @@ public class ChiTietPhieuNhapDAO {
             pst.setDouble(4, temp.getDonGia());
             
             ketQua = pst.executeUpdate();
+            
+            
+            //
+            pst.close();
             
             DBConnection.closeConnection(con);
             
@@ -103,6 +109,9 @@ public class ChiTietPhieuNhapDAO {
             pst.setString(1, temp.getMaPhieu());
             
             ketQua = pst.executeUpdate();
+            
+            //
+            pst.close();
             
             DBConnection.closeConnection(con);
             
@@ -144,6 +153,11 @@ public class ChiTietPhieuNhapDAO {
                 
                 ketQua.add(p);
             }
+            
+            //
+            pst.close();
+            
+            DBConnection.closeConnection(con);
         } 
         catch (Exception e) {
             // TODO: handle exception
@@ -186,6 +200,10 @@ public class ChiTietPhieuNhapDAO {
                 
                 ketQua.add(p);
             }
+            
+            pst.close();
+            
+            DBConnection.closeConnection(con);
         } 
         catch (Exception e) {
             // TODO: handle exception

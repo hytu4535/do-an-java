@@ -53,9 +53,9 @@ public class Panelphai_Panelluachon extends JPanel {
         
         btnNut = new ArrayList<JButton>();
         
-        btnTennut = new String[] {"Nhập Excel", "Sửa số lượng", "Xóa sản phẩm", "Nhâp hàng"};
+        btnTennut = new String[] {"Nhập Excel", "Sửa số lượng", "Xóa sản phẩm", "Xuất hàng"};
         
-        btnCommand = new String[] {"Excel", "Sua", "Xoa", "Nhap"};
+        btnCommand = new String[] {"Excel", "Sua", "Xoa", "Xuat"};
         
         int height = 40;
         

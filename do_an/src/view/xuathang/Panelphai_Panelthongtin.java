@@ -50,13 +50,27 @@ public class Panelphai_Panelthongtin extends JPanel {
         };
         
         //them du lieu vao tablemodel
-        tablemodel = new DefaultTableModel(dumpdata, tblTruongdulieu);
+        //tablemodel có các trường dữ liệu nhưng không có dòng dữ liệu nào và
+        // các ô dữ liệu không thể bị thay đổi nhưng vẫn chọn được
+        //########################
+        tablemodel = new DefaultTableModel(null, tblTruongdulieu) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không ô nào được chỉnh sửa
+            }
+        };
+        //########################
         
         //set du lieu cho table thong tin
-       tblThongtin.setModel(tablemodel);
+        tblThongtin.setModel(tablemodel);
         
         //set font cho table
         tblThongtin.setFont(myFont);
+        
+        // cho phép chọn theo hàng
+        tblThongtin.setRowSelectionAllowed(true);
+        // cái này chỉ chọn 1 hàng duy nhất
+        tblThongtin.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         //chỉnh màu cho table
         tblThongtin.setBackground(bgColor);

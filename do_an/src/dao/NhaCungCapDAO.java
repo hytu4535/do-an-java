@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NhaCungCapDAO {
+    public static NhaCungCapDAO getInstance() {
+        return new NhaCungCapDAO();
+    }
+    
     public List<NhaCungCap> getAllNhaCungCaps() {
         List<NhaCungCap> nhaCungCaps = new ArrayList<>();
         String sql = "SELECT * FROM NhaCungCap";

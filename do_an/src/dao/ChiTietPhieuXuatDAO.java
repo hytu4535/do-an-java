@@ -42,8 +42,9 @@ public class ChiTietPhieuXuatDAO {
             ketqua = pst.executeUpdate();
             
             // đóng kết nối tới csdl
-            DBConnection.closeConnection(con);
+            pst.close();
             
+            DBConnection.closeConnection(con);
             
         } 
         catch (Exception e) {
@@ -64,7 +65,7 @@ public class ChiTietPhieuXuatDAO {
                     + "maPhieu = ?, "
                     + "maVatPham = ?, "
                     + "soLuong = ?, "
-                    + "donGia = ?, "
+                    + "donGia = ? "// NHỚ BỎ DẤU PHẨY TRƯỚC WHERE
                     + "WHERE maPhieu = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
@@ -79,6 +80,9 @@ public class ChiTietPhieuXuatDAO {
             pst.setDouble(4, temp.getDonGia());
             
             ketQua = pst.executeUpdate();
+            
+            // close
+            pst.close();
             
             DBConnection.closeConnection(con);
             
@@ -103,6 +107,9 @@ public class ChiTietPhieuXuatDAO {
             pst.setString(1, temp.getMaPhieu());
             
             ketQua = pst.executeUpdate();
+            
+            //
+            pst.close();
             
             DBConnection.closeConnection(con);
             
@@ -144,6 +151,11 @@ public class ChiTietPhieuXuatDAO {
                 
                 ketQua.add(p);
             }
+            
+            //
+            pst.close();
+            
+            DBConnection.closeConnection(con);
         } 
         catch (Exception e) {
             // TODO: handle exception
@@ -185,7 +197,13 @@ public class ChiTietPhieuXuatDAO {
                 p.setSoLuong( (int) rs.getInt("soLuong") );
                 
                 ketQua.add(p);
+                
             }
+            
+            //
+            pst.close();
+            
+            DBConnection.closeConnection(con);
         } 
         catch (Exception e) {
             // TODO: handle exception

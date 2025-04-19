@@ -65,6 +65,14 @@ public class PhieuNhapController {
             }
         });
         
+        // thêm sự kiên cho nút sửa
+        panelchucnang.getBtnNut().get(1).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                suaPhieuNhap();
+            }
+        });
+        
     }
     
     // lọc dữ liệu theo các lựa chon trong combobox(nếu các giá trị lọc không được thêm vào thì sẽ in ra danh
@@ -362,8 +370,56 @@ public class PhieuNhapController {
         }
         
     }
-
     
+    // sửa phiêu nhập
+    public void suaPhieuNhap() {
+        // lấy các component
+        Panel3 panel3 = (Panel3) this.view.getPnlPanel3();
+        
+        // lấy table của panel 3
+        JTable bangphieu = panel3.getTblThongtin();
+        
+        // lấy hàng được chọn trong bang phieu
+        // trả về -1 nếu không chọn
+        int hangDuocChon = bangphieu.getSelectedRow();
+        
+        
+        // kiểm tra nếu có chọn một hàng
+        if( hangDuocChon != -1 ) {
+            // lấy maPhieu tại hàng thứ "hang", cột 1
+            String maPhieu = bangphieu.getValueAt(hangDuocChon, 1).toString();
+            
+            // lấy ra đối tượng phiếu nhập được chọn
+            PhieuNhap phieuDuocChon = PhieuNhapDAO.getInstance().getByID(maPhieu);
+            
+            System.out.println(phieuDuocChon.getMaPhieu());
+            
+            // yêu cầu người dùng nhập các thông tin để sửa phiếu
+            SuaPhieuNhapDialog popup = new SuaPhieuNhapDialog(null, phieuDuocChon);
+            
+            // trong popup đã có hàm để kiểm tra dữ liệu rồi
+            // lấy ra đối tượng chứa dữ liệu thay đổi
+            PhieuNhap phieuMoiSua = popup.getPhieuNhap();
+   
+            System.out.println(phieuMoiSua.getMaPhieu());
+            
+            // cập nhật phiếu nhập vào csdl
+            PhieuNhapDAO.getInstance().update(phieuMoiSua);
+            
+        }
+        else {
+            // báo cho người dùng chọn hàng dữ liệu
+            JOptionPane.showMessageDialog(
+                    null                                                                     // parent: 
+                    , "Hãy chọn một hàng dữ liệu"                              // nội dung của thông báo
+                    , "THÔNG BÁO"                                                       // tiêu đề của thông báo
+                    , JOptionPane.INFORMATION_MESSAGE        // icon của thông báo
+            );    
+        }
+        
+        // cập nhật lại bảng phiếu nhập
+        loadData();
+    }
     
   
     // hàm để kiểm tra xem chuỗi có  phải số không(kiểu dữ liệu double)

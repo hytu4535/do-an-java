@@ -40,6 +40,8 @@ public class PhieuXuatDAO {
             ketqua = pst.executeUpdate();
             
             // đóng kết nối tới csdl
+            pst.close();
+            
             DBConnection.closeConnection(con);
             
             
@@ -59,25 +61,22 @@ public class PhieuXuatDAO {
             Connection con = DBConnection.getConnection();
             
             String sql = "UPDATE phieuxuat SET "
-                    + "maPhieu = ?, "
                     + "thoiGianTao = ?, "
-                    + "nguoiTao = ?, "
                     + "tongTien = ? "
                     + "WHERE maPhieu = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
+           
+            pst.setTimestamp(1, temp.getThoiGianTao());
             
-            pst.setString(1, temp.getMaPhieu());
+            pst.setDouble(2, temp.getTongTien());
             
-            pst.setTimestamp(2, temp.getThoiGianTao());
-            
-            pst.setString(3, temp.getNguoiTao());
-            
-            pst.setDouble(4, temp.getTongTien());
-            
-            pst.setString(5, temp.getMaPhieu());
+            pst.setString(3, temp.getMaPhieu());
             
             ketQua = pst.executeUpdate();
+            
+            //
+            pst.close();
             
             DBConnection.closeConnection(con);
             
@@ -103,6 +102,9 @@ public class PhieuXuatDAO {
             
             ketQua = pst.executeUpdate();
             
+           //
+           pst.close();
+            
             DBConnection.closeConnection(con);
             
         } 
@@ -111,6 +113,43 @@ public class PhieuXuatDAO {
             e.printStackTrace();
         }
         
+    }
+    
+    public PhieuXuat getByID(String id) {
+        PhieuXuat p = new PhieuXuat();
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "SELECT * FROM phieuxuat WHERE maPhieu = ?";
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, id);
+            
+            ResultSet rs = pst.executeQuery();
+            
+            if(rs.next()) {
+                p.setMaPhieu(rs.getString("maPhieu"));
+                
+                p.setThoiGianTao(rs.getTimestamp("thoiGianTao"));
+                
+                p.setNguoiTao(rs.getString("nguoiTao"));
+                
+                p.setTongTien(rs.getDouble("tongTien"));
+            }
+            
+            //
+            pst.close();
+            
+            DBConnection.closeConnection(con);
+            
+        } 
+        catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return p;
     }
     
     // lấy tất cả phiêu nhập

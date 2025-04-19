@@ -1,12 +1,15 @@
 package controller;
 
+import dao.ChiTietPhieuXuatDAO;
 import dao.PhieuXuatDAO;
 import dao.VanPhongPhamDAO;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import javax.swing.JButton;
@@ -14,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import model.ChiTietPhieuXuat;
 import model.PhieuXuat;
 import model.VanPhongPham;
 
@@ -75,6 +79,14 @@ public class XuatHangController {
             @Override
             public void actionPerformed(ActionEvent l) {
                 suaSoLuong();
+            }
+        });
+        
+         // thêm sự kiện cho nút thêm phiếu nhập bên phải
+        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(3).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent l) {
+                themPhieuXuat();
             }
         });
     }
@@ -405,6 +417,98 @@ public class XuatHangController {
     }
     
     
+    // phương thức thêm phiếu xuất mới
+    public void themPhieuXuat() {
+        // tạo một phiếu nhập trước
+        PhieuXuat phieuMoi = new PhieuXuat();
+        
+        // thêm các thông tin của phiếu
+        // maPhieu
+        String maPhieuXuat = maPhieuXuatMoi() ;
+        
+        phieuMoi.setMaPhieu(maPhieuXuat);
+        
+        // thoiGianTao
+        Timestamp thoiGian = Timestamp.valueOf(LocalDateTime.now());
+        
+        phieuMoi.setThoiGianTao(thoiGian);
+        
+        // người tạo (chưa lấy được tài khoản đăng nhập nên mặc định là bên dưới)
+        phieuMoi.setNguoiTao("staff01");
+        
+        // tongTien. Sử dụng mảng VPPPhai để tính
+        double tongTien = 0;
+        
+        for(var item : this.danhsachVPPPhai) {
+            tongTien += ( item.getGia() * item.getSoLuong() );
+        }
+        
+        phieuMoi.setTongTien(tongTien);
+        
+        // thêm vào vào csdl
+        PhieuXuatDAO.getInstance().insert(phieuMoi);
+        
+        // Sau khi thêm phiếu nhập, ta thêm chi tiết phiếu nhập
+        for(var item : this.danhsachVPPPhai) {
+            ChiTietPhieuXuat CTPhieuMoi = new ChiTietPhieuXuat();
+            
+            // thêm thông tin cho phiếu
+            // maPhieu
+            CTPhieuMoi.setMaPhieu(maPhieuXuat);
+            
+            // maVatPham
+            CTPhieuMoi.setMaVatPham( item.getMaVatPham() );
+            
+            // soLuong
+            CTPhieuMoi.setSoLuong( item.getSoLuong() );
+            
+            // đơn giá (gia)
+            CTPhieuMoi.setDonGia( item.getGia() );
+            
+            // thêm vào csdl
+            ChiTietPhieuXuatDAO.getInstance().insert(CTPhieuMoi);
+        }
+        
+        // Cập nhật thông tin cua các sản phẩm bị ảnh hưởng
+        // B1: lấy danh sách văn phòng phẩm hiện tại
+        ArrayList<VanPhongPham> danhsachVPPMoi = 
+                (ArrayList<VanPhongPham>) VanPhongPhamDAO.getInstance().getAllVanPhongPhams();
+        
+        // B2: cập nhật danh sách mới vào csdl
+        for(var item : danhsachVPPMoi) {
+            // kiểm tra xem nếu có VanPhongPham nào trùng maVatPham bên danhsachVPPPhai thì cập nhật
+            // thay đổi lên danhsachVPPMoi và cập nhật lên csdl
+            
+            // * dùng danhsachVPPPhai vì danh sách đó đã lưu các thay đổi rồi *
+            for(var sanPham : this.danhsachVPPPhai) {
+                if( item.getMaVatPham().equals(sanPham.getMaVatPham()) ) {
+                    // cập nhật số lượng sau khi thêm phiếu nhập và chi tiết phiếu nhập
+                    // lấy số lượng hiện tại - số lượng xuất ra
+                    item.setSoLuong( (item.getSoLuong() - sanPham.getSoLuong()) );
+                    
+                    VanPhongPhamDAO.getInstance().update(item);
+                    
+                    break;
+                }
+            }
+        }
+    
+        
+        // làm mới panel
+        // table trái
+        // làm mới dữ liệu danhsachVPPTrai
+        this.danhsachVPPTrai = 
+                (ArrayList<VanPhongPham>) VanPhongPhamDAO.getInstance().getAllVanPhongPhams();
+        
+        loadData(this.danhsachVPPTrai, 1);
+        
+        // table phải
+        // xóa hết dữ liệu danhsachVPPPhai
+        this.danhsachVPPPhai.clear();
+        
+        loadData(this.danhsachVPPPhai, 0);
+    }
+    
     
     // hàm để hỗ trợ việc hiển thị dữ liêu bảng: bảng trái = 1, bảng phải = 0;
     public void loadData(ArrayList<VanPhongPham> dulieu, int luachon) {
@@ -466,18 +570,30 @@ public class XuatHangController {
         // tạo phần đầu mã phiếu xuất 
         String maPhieu = "PX";
         
-        int maSo = 1;
+        int maSo = 0;
         
         // đếm số lượng phiêu xuất trong csdl để lấy ra maSo
         ArrayList<PhieuXuat> danhsachPhieu = 
                 (ArrayList<PhieuXuat>) PhieuXuatDAO.getInstance().getAllPhieuXuats();
         
-        // lặp trong mảng để đếm maSo
+        // lý do làm như này vì có thể các maPhieu không liên tục. vd: PX1, PX3, PX4, .....
         for(var item : danhsachPhieu) {
-            maSo++;
+            String ma = item.getMaPhieu().replace(maPhieu, "");
+            
+            try {
+                int so = Integer.parseInt(ma);
+                
+                if( maSo < so ) {
+                    maSo = so;
+                }
+                
+            }
+            catch(NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
         
-        return maPhieu + String.valueOf(maSo);
+        return maPhieu + String.valueOf(maSo + 1);
     }
     
     // hàm để kiểm tra xem chuỗi có  phải số không(kiểu dữ liệu double)

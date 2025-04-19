@@ -11,6 +11,7 @@ import javax.swing.border.LineBorder;
 public class Panelphai_Paneltimkiem extends JPanel {
     private ArrayList<JLabel> lblHienthi;// 3 cai label de hien thi cho 2 textfield va 1 combobox
     private ArrayList<JTextField> txtfHienthi;
+    private JComboBox<String> cbNhacungcap;
     private String[] Hienthiname;
     private GridBagConstraints gbc;
     
@@ -43,15 +44,17 @@ public class Panelphai_Paneltimkiem extends JPanel {
     }
     
     public void InitTimkiem() {
-        Hienthiname = new String[] {"Mã phiếu tạo", "Người tạo phiếu"};
+        Hienthiname = new String[] {"Mã phiếu tạo", "Người tạo phiếu", "Nhà cung cấp"};
         
         lblHienthi = new ArrayList<JLabel>();
         
         txtfHienthi = new ArrayList<JTextField>();
         
+        cbNhacungcap = new JComboBox();
+        
         //dieu chinh va them Label vao arraylist
         
-        for(int i = 0; i < 2; ++i) {
+        for(int i = 0; i < 3; ++i) {
             JLabel temp = new JLabel(Hienthiname[i]);
             
             temp.setFont(myFont);
@@ -82,6 +85,11 @@ public class Panelphai_Paneltimkiem extends JPanel {
             txtfHienthi.add(temp);
         }
         
+        // điều chỉnh cbNhacungcap
+        cbNhacungcap.setFont(myFont);
+        cbNhacungcap.setBackground(bgColor);
+        
+        
         
         //them components vao panel
         gbc.fill = GridBagConstraints.BOTH;
@@ -106,6 +114,14 @@ public class Panelphai_Paneltimkiem extends JPanel {
             
             this.add(txtfHienthi.get(i), gbc);
         }  
+        
+        // cbNhacungcap
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        
+        gbc.weightx = 1.0;
+        
+        this.add(cbNhacungcap, gbc);
     }
     
     
@@ -115,4 +131,7 @@ public class Panelphai_Paneltimkiem extends JPanel {
         return txtfHienthi;
     }
     
+    public JComboBox getCbNhacungcap() {
+        return cbNhacungcap;
+    }
 }

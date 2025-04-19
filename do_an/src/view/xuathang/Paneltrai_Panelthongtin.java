@@ -44,13 +44,18 @@ public class Paneltrai_Panelthongtin extends JPanel {
         tblTruongdulieu = new String[] {"Mã vật phẩm", "Tên vật phẩm", "Số luọng", "Đơn gia"};
         //                                                          Ma vat pham     Ten vat pham    So luong        Don gia
         
-        //du lieu rac de them vao table thong tin
-        Object[][] dumpdata = {
-            {"bla", "bla", "bla", "bla"}
-        };
         
         //them du lieu vao tablemodel
-        tablemodel = new DefaultTableModel(dumpdata, tblTruongdulieu);
+        //tablemodel có các trường dữ liệu nhưng không có dòng dữ liệu nào và
+        // các ô dữ liệu không thể bị thay đổi nhưng vẫn chọn được
+        //########################
+        tablemodel = new DefaultTableModel(null, tblTruongdulieu) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không ô nào được chỉnh sửa
+            }
+        };
+        //########################
         
         //set du lieu cho table thong tin
         tblThongtin.setModel(tablemodel);
@@ -58,8 +63,10 @@ public class Paneltrai_Panelthongtin extends JPanel {
         //set font cho table
         tblThongtin.setFont(myFont);
         
-        //chỉnh màu cho table
-        tblThongtin.setBackground(bgColor);
+        // cho phép chọn theo hàng
+        tblThongtin.setRowSelectionAllowed(true);
+        // cái này chỉ chọn 1 hàng duy nhất
+        tblThongtin.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         // Đặt màu nền cho tiêu đề cột (có thể thay đổi thành màu mong muốn)
         tblThongtin.getTableHeader().setBackground(bgColor);  

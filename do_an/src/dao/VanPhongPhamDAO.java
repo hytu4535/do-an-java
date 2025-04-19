@@ -30,8 +30,8 @@ public class VanPhongPhamDAO {
                     + "doDay = ?, "//8
                     + "moTa = ?, "//9
                     + "xuatXu = ?, "//10
-                    + "trangThai = ?, "//11
-                    + "WHERE maVatPham = ?";
+                    + "trangThai = ? "//11 (NHỚ BỎ DẤU PHẨY TRƯỚC KHI ĐỨNG TRƯỚC WHERE)
+                    + "WHERE maVatPham = ?";//12
             
             PreparedStatement pst = con.prepareStatement(sql);
             
@@ -57,8 +57,15 @@ public class VanPhongPhamDAO {
             
             pst.setInt(11, temp.getTrangThai());
             
+            pst.setString(12, temp.getMaVatPham());
+            
             // bắt đầu update
             ketqua = pst.executeUpdate();
+            
+            //
+            pst.close();
+            
+            DBConnection.closeConnection(con);
             
         }
         catch(SQLException e) {

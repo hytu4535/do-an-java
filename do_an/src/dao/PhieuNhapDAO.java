@@ -42,6 +42,8 @@ public class PhieuNhapDAO {
             ketqua = pst.executeUpdate();
             
             // đóng kết nối tới csdl
+            pst.close();
+            
             DBConnection.closeConnection(con);
             
             
@@ -61,28 +63,22 @@ public class PhieuNhapDAO {
             Connection con = DBConnection.getConnection();
             
             String sql = "UPDATE phieunhap SET "
-                    + "maPhieu = ?, "
                     + "thoiGianTao = ?, "
-                    + "nguoiTao = ?, "
-                    + "maNhaCungCap = ?, "
                     + "tongTien = ? "
                     + "WHERE maPhieu = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
-            pst.setString(1, temp.getMaPhieu());
+            pst.setTimestamp(1, temp.getThoiGianTao());
             
-            pst.setTimestamp(2, temp.getThoiGianTao());
+            pst.setDouble(2, temp.getTongTien());
             
-            pst.setString(3, temp.getNguoiTao());
-            
-            pst.setString(4, temp.getMaNhaCungCap());
-            
-            pst.setDouble(5, temp.getTongTien());
-            
-            pst.setString(6, temp.getMaPhieu());
+            pst.setString(3, temp.getMaPhieu());
             
             ketQua = pst.executeUpdate();
+            
+            //
+            pst.close();
             
             DBConnection.closeConnection(con);
             
@@ -108,6 +104,10 @@ public class PhieuNhapDAO {
             
             ketQua = pst.executeUpdate();
             
+            
+            //
+            pst.close();
+            
             DBConnection.closeConnection(con);
             
         } 
@@ -116,6 +116,45 @@ public class PhieuNhapDAO {
             e.printStackTrace();
         }
         
+    }
+    
+    public PhieuNhap getByID(String id) {
+        PhieuNhap p = new PhieuNhap();
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            
+            String sql = "SELECT * FROM phieunhap WHERE maPhieu = ?";
+            
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, id);
+            
+            ResultSet rs = pst.executeQuery();
+            
+            if(rs.next()) {
+                p.setMaPhieu( (String) rs.getString("maPhieu") );
+                
+                p.setThoiGianTao( (Timestamp) rs.getTimestamp("thoiGianTao") );
+                
+                p.setNguoiTao( (String) rs.getString("nguoiTao") );
+                
+                p.setMaNhaCungCap( (String) rs.getString("maNhaCungCap") );
+                
+                p.setTongTien( (double) rs.getDouble("tongTien") );
+            }
+            
+            //
+            pst.close();
+            
+            DBConnection.closeConnection(con);
+            
+        } 
+        catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+        return p;
     }
     
     // lấy tất cả phiêu nhập
@@ -160,6 +199,11 @@ public class PhieuNhapDAO {
                 
                 ketQua.add(p);
             }
+            
+            // 
+            pst.close();
+            
+            DBConnection.closeConnection(con);
         } 
         catch (Exception e) {
             // TODO: handle exception
