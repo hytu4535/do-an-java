@@ -75,6 +75,14 @@ public class PhieuXuatController {
             }
         });
         
+        // thêm sự kiên cho nút xóa
+        panelchucnang.getBtnNut().get(0).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                xoaPhieuXuat();
+            }
+        });
+        
     }
     
     // lọc dữ liệu theo các lựa chon trong combobox(nếu các giá trị lọc không được thêm vào thì sẽ in ra danh
@@ -284,16 +292,7 @@ public class PhieuXuatController {
             //lấy danh sách chi tiết phiếu nhập
             ArrayList<ChiTietPhieuXuat> danhsachChiTietPhieu = 
                     ChiTietPhieuXuatDAO.getInstance().getAllById(maPhieu);
-            
-            // tạo danh sách các sản phẩm nằm trong danhsachChiTietPhieu để đưa vào bảng sản phẩm 
-            ArrayList<VanPhongPham> danhsachVPP = new ArrayList<>();
-            
-            for(var item : danhsachChiTietPhieu) {
-                // truy xuất vật phẩm từ csdl trùng với maVatPham 
-                VanPhongPham vpp = VanPhongPhamDAO.getInstance().getByID(item.getMaVatPham());
-                
-                danhsachVPP.add(vpp);
-            }
+    
             
             // hiển thị lên chi tiết phiếu nhập
             
@@ -324,22 +323,23 @@ public class PhieuXuatController {
             // lấy table model của bảng
             DefaultTableModel tablemodel = CTphieu.getPnlContent().getTablemodel();
             
-            // thêm dữ liệu vào bảng 
-            for(int i = 0; i < danhsachVPP.size(); ++i) {
-                VanPhongPham temp = danhsachVPP.get(i);
-                
-                double gia = temp.getGia();
-                double soLuong = temp.getSoLuong();
-                
+           // thêm dữ liệu vào bảng 
+            for (int i = 0; i < danhsachChiTietPhieu.size(); ++i) {
+                // các thông tin sản phẩm sẽ được lấy từ vpp nhưng số lượng, thành tiền thì là từ chiTiet
+                ChiTietPhieuXuat chiTiet = danhsachChiTietPhieu.get(i);
+                VanPhongPham vpp = VanPhongPhamDAO.getInstance().getByID(chiTiet.getMaVatPham());
+
+                double gia = chiTiet.getDonGia();
+                int soLuong = chiTiet.getSoLuong();
                 double thanhTien = gia * soLuong;
-                
-                tablemodel.addRow(new Object[] {
-                    String.valueOf(i + 1),                  // STT
-                    temp.getMaVatPham(),             // mã vật phẩm
-                    temp.getTenVatPham(),           // tên vật phẩm
-                    temp.getSoLuong(),                  // số lượng
-                    DoubleToDong(gia),                  // đơn giá
-                    DoubleToDong(thanhTien)      // thành tiền            
+
+                tablemodel.addRow(new Object[]{
+                    String.valueOf(i + 1),
+                    vpp.getMaVatPham(),
+                    vpp.getTenVatPham(),
+                    soLuong,
+                    DoubleToDong(gia),
+                    DoubleToDong(thanhTien)
                 });
             }
             
@@ -417,6 +417,60 @@ public class PhieuXuatController {
         // cập nhật lại bảng phiếu nhập
         loadData();
     }
+    
+    
+    // xóa phiếu xuất
+    public void xoaPhieuXuat() {
+        // lấy các component
+        Panel3 panel3 = (Panel3) this.view.getPnlPanel3();
+        
+        // lấy table của panel 3
+        JTable bangphieu = panel3.getTblThongtin();
+        
+        // lấy hàng được chọn trong bang phieu
+        // trả về -1 nếu không chọn
+        int hangDuocChon = bangphieu.getSelectedRow();
+        
+        
+        // kiểm tra nếu có chọn một hàng
+        if( hangDuocChon != -1 ) {
+            // lấy maPhieu tại hàng thứ "hang", cột 1
+            String maPhieu = bangphieu.getValueAt(hangDuocChon, 1).toString();
+            
+            // lấy ra đối tượng phiếu nhập được chọn
+            PhieuXuat phieuDuocChon = PhieuXuatDAO.getInstance().getByID(maPhieu);
+            
+            System.out.println(phieuDuocChon.getMaPhieu());
+            
+            // xóa các chi tiết phiếu xuất có liên quan đến phiếu xuất cần xóa trước rồi mới xóa phiếu xuất
+            
+            // lấy danh sách chi tiết phiếu xuất có liên quan tới phiếu xuất
+            ArrayList<ChiTietPhieuXuat> danhsachCTPX = 
+                    ChiTietPhieuXuatDAO.getInstance().getAllById(maPhieu);
+            
+            // xóa
+            for(var phieu : danhsachCTPX) {
+                ChiTietPhieuXuatDAO.getInstance().delete(phieu);
+            }
+            
+            // xóa phiếu nhập
+            PhieuXuatDAO.getInstance().delete(phieuDuocChon);
+            
+        }
+        else {
+            // báo cho người dùng chọn hàng dữ liệu
+            JOptionPane.showMessageDialog(
+                    null                                                                     // parent: 
+                    , "Hãy chọn một hàng dữ liệu"                              // nội dung của thông báo
+                    , "THÔNG BÁO"                                                       // tiêu đề của thông báo
+                    , JOptionPane.INFORMATION_MESSAGE        // icon của thông báo
+            );    
+        }
+        
+        // cập nhật lại bảng phiếu xuất
+        loadData();
+    }
+    
     
   
     // hàm để kiểm tra xem chuỗi có  phải số không(kiểu dữ liệu double)

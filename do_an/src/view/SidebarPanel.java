@@ -13,6 +13,7 @@ import view.nhaphang.NhaphangPanel;
 import view.phanquyen.PhanQuyenPanel;
 import view.phieunhap.PhieunhapPanel;
 import view.phieuxuat.PhieuxuatPanel;
+import view.sanpham.SanPhamPanel;
 import view.xuathang.XuathangPanel;
 
 
@@ -29,6 +30,7 @@ public class SidebarPanel extends JPanel {
     private XuathangPanel xuathangPanel;
     private PhieuxuatPanel phieuxuatPanel;
     private StatisticsPanel statisticsPanel;
+    private SanPhamPanel sanphamPanel;
 
     private NguoiDungController nguoiDungController;
     private PhanQuyenController phanQuyenController;
@@ -140,7 +142,7 @@ public class SidebarPanel extends JPanel {
                 JPanel newPanel = null;
                 switch (item) {
                     case "Sản phẩm":
-                        newPanel = createPlaceholderPanel("Sản phẩm - Chưa triển khai");
+                        newPanel = sanphamPanel;
                         break;
                     case "Nhà cung cấp":
                         newPanel = createPlaceholderPanel("Nhà cung cấp - Chưa triển khai");
@@ -209,6 +211,7 @@ public class SidebarPanel extends JPanel {
         xuathangPanel = new XuathangPanel();
         phieuxuatPanel = new PhieuxuatPanel();
         statisticsPanel = new StatisticsPanel();
+        sanphamPanel = new SanPhamPanel();
 
         // Khởi tạo các controller
         nguoiDungController = new NguoiDungController(nguoiDungPanel);

@@ -93,14 +93,14 @@ public class ChiTietPhieuXuatDAO {
         
     }
     
-    // xóa phiêu nhập
+    // xóa phiếu xuất
     public void delete(ChiTietPhieuXuat temp) {
         int ketQua = 0;
         
         try {
             Connection con = DBConnection.getConnection();
             
-            String sql = "DELETE FROM chitietphieunhap WHERE maPhieu = ?";
+            String sql = "DELETE FROM chitietphieuxuat WHERE maPhieu = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
