@@ -87,6 +87,10 @@ public class Panelphai_Panelluachon extends JPanel {
             tempbutt.setActionCommand(btnCommand[i]);
             
             btnNut.add(tempbutt);
+            
+            if(i == 3) {
+                tempbutt.setBackground(new Color(50, 168, 82));
+            }
         }
         
         //them cac components vao panel

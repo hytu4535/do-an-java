@@ -52,7 +52,7 @@ public class Panelphai_Panelluachon extends JPanel {
         
         btnNut = new ArrayList<JButton>();
         
-        btnTennut = new String[] {"Nhập Excel", "Sửa số lượng", "Xóa sản phẩm", "Nhâp hàng"};
+        btnTennut = new String[] {"Nhập Excel", "Sửa số lượng", "Xóa sản phẩm", "Nhập hàng"};
         
         btnCommand = new String[] {"Excel", "Sua", "Xoa", "Nhap"};
         
@@ -86,6 +86,10 @@ public class Panelphai_Panelluachon extends JPanel {
             tempbutt.setActionCommand(btnCommand[i]);
             
             btnNut.add(tempbutt);
+            
+            if(i == 3) {
+                tempbutt.setBackground(new Color(50, 168, 82));
+            }
         }
         
         //them cac components vao panel

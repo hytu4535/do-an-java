@@ -92,7 +92,7 @@ public class ChiTietPhieuNhap extends JPanel {
         lblTieude.setForeground(bgColor);
         
         // màu tạm thời
-        lblTieude.setBackground(Color.cyan);
+        lblTieude.setBackground(new Color(50, 168, 82));
         
         //
         lblTieude.setAlignmentX(Component.CENTER_ALIGNMENT);  // Căn giữa theo chiều ngang

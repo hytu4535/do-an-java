@@ -60,7 +60,7 @@ public class Paneltrai_Panelluachon extends JPanel {
         btnThem.setFocusable(false);
         btnThem.setBorder(null);
         btnThem.setFont(myFont);
-        btnThem.setBackground(Color.green);
+        btnThem.setBackground(new Color(50, 168, 82));
         btnThem.setPreferredSize(new Dimension(lblSoluong.getPreferredSize().width, height));
         
         //them cac components vao panel
