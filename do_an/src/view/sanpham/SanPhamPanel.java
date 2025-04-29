@@ -72,7 +72,7 @@ public class SanPhamPanel extends JPanel {
             int selectedRow = productTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String maSP = tableModel.getValueAt(selectedRow, 0).toString();
-                new SanPhamXoaForm((Frame) SwingUtilities.getWindowAncestor(this), maSP, controller).setVisible(true);
+                new SanPhamXoaForm((Frame) SwingUtilities.getWindowAncestor(this), controller, maSP).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn một sản phẩm để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             }

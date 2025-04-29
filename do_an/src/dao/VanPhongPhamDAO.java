@@ -11,6 +11,54 @@ public class VanPhongPhamDAO {
         return new VanPhongPhamDAO();
     }
     
+    // Lấy danh sách thương hiệu từ bảng vanphongpham
+    public List<String> getAllThuongHieu() {
+        List<String> thuongHieuList = new ArrayList<>();
+        String sql = "SELECT DISTINCT thuongHieu FROM VanPhongPham WHERE thuongHieu IS NOT NULL";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                thuongHieuList.add(rs.getString("thuongHieu"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return thuongHieuList;
+    }
+
+    // Lấy danh sách xuất xứ từ bảng vanphongpham
+    public List<String> getAllXuatXu() {
+        List<String> xuatXuList = new ArrayList<>();
+        String sql = "SELECT DISTINCT xuatXu FROM VanPhongPham WHERE xuatXu IS NOT NULL";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                xuatXuList.add(rs.getString("xuatXu"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return xuatXuList;
+    }
+    
+    // Kiểm tra mã vật phẩm đã tồn tại hay chưa (bất kể trangThai)
+    public boolean isMaVatPhamExists(String maVatPham) {
+        String sql = "SELECT COUNT(*) FROM vanphongpham WHERE maVatPham = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, maVatPham);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     
     // phương thức cập nhật văn phòng phẩm
     public void update(VanPhongPham temp) {
@@ -20,43 +68,32 @@ public class VanPhongPhamDAO {
             Connection con = DBConnection.getConnection();
             
             String sql = "UPDATE vanphongpham SET "
-                    + "maVatPham = ?, "//1
-                    + "tenVatPham = ?, "//2
-                    + "soLuong = ?, "//3
-                    + "loaiVatPham = ?, "//4
-                    + "gia = ?, "//5
-                    + "thuongHieu = ?, "//6
-                    + "chatLieu = ?, "//7
-                    + "doDay = ?, "//8
-                    + "moTa = ?, "//9
-                    + "xuatXu = ?, "//10
-                    + "trangThai = ? "//11 (NHỚ BỎ DẤU PHẨY TRƯỚC KHI ĐỨNG TRƯỚC WHERE)
-                    + "WHERE maVatPham = ?";//12
+                    + "maVatPham = ?, "
+                    + "tenVatPham = ?, "
+                    + "soLuong = ?, "
+                    + "loaiVatPham = ?, "
+                    + "gia = ?, "
+                    + "thuongHieu = ?, "
+                    + "chatLieu = ?, "
+                    + "doDay = ?, "
+                    + "moTa = ?, "
+                    + "xuatXu = ?, "
+                    + "trangThai = ? "
+                    + "WHERE maVatPham = ?";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
             pst.setString(1, temp.getMaVatPham());
-            
             pst.setString(2, temp.getTenVatPham());
-            
             pst.setInt(3, temp.getSoLuong());
-            
             pst.setString(4, temp.getLoaiVatPham());
-            
             pst.setDouble(5, temp.getGia());
-            
             pst.setString(6, temp.getThuongHieu());
-            
             pst.setString(7, temp.getChatLieu());
-            
             pst.setDouble(8, temp.getDoDay());
-           
             pst.setString(9, temp.getMoTa());
-            
             pst.setString(10, temp.getXuatXu());
-            
             pst.setInt(11, temp.getTrangThai());
-            
             pst.setString(12, temp.getMaVatPham());
             
             // bắt đầu update
@@ -73,14 +110,13 @@ public class VanPhongPhamDAO {
         }
     } 
     
-    
     // phương thức tìm kiếm theo maVatPham và trả về đối tượng
     public VanPhongPham getByID(String id) {
         VanPhongPham ketqua = null;
         try {
             Connection con = DBConnection.getConnection();
             
-            String sql = "SELECT * FROM vanphongpham WHERE maVatPham = ?";
+            String sql = "SELECT * FROM vanphongpham WHERE maVatPham = ? AND trangThai = 1";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
@@ -92,25 +128,15 @@ public class VanPhongPhamDAO {
                 VanPhongPham kq = new VanPhongPham();
                 
                 kq.setMaVatPham(rs.getString("maVatPham"));
-                
                 kq.setTenVatPham(rs.getString("tenVatPham"));
-                
                 kq.setSoLuong(rs.getInt("soLuong"));
-                
                 kq.setLoaiVatPham(rs.getString("loaiVatPham"));
-                
                 kq.setGia(rs.getDouble("gia"));
-                
                 kq.setThuongHieu(rs.getString("thuongHieu"));
-                
                 kq.setChatLieu(rs.getString("chatLieu"));
-                
                 kq.setDoDay((double) rs.getDouble("doDay"));
-                
                 kq.setMoTa(rs.getString("moTa"));
-                
                 kq.setXuatXu(rs.getString("xuatXu"));
-                
                 kq.setTrangThai(rs.getInt("trangThai"));
                 
                 ketqua = kq;
@@ -125,7 +151,7 @@ public class VanPhongPhamDAO {
     
     public List<VanPhongPham> getAllVanPhongPhams() {
         List<VanPhongPham> vanPhongPhams = new ArrayList<>();
-        String sql = "SELECT * FROM VanPhongPham";
+        String sql = "SELECT * FROM VanPhongPham WHERE trangThai = 1";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -187,7 +213,7 @@ public class VanPhongPhamDAO {
     //###############< code quoc huy>#####################
     public List<VanPhongPham> getAllSanPhams() {
         List<VanPhongPham> sanPhams = new ArrayList<>();
-        String sql = "SELECT * FROM VanPhongPham";
+        String sql = "SELECT * FROM VanPhongPham WHERE trangThai = 1";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -257,11 +283,14 @@ public class VanPhongPhamDAO {
     }
 
     public void deleteSanPham(String maVatPham) {
-        String sql = "DELETE FROM VanPhongPham WHERE maVatPham = ?";
+        String sql = "UPDATE VanPhongPham SET trangThai = 0 WHERE maVatPham = ? AND trangThai = 1";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, maVatPham);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Không tìm thấy sản phẩm với mã: " + maVatPham + " hoặc sản phẩm đã được xóa trước đó!");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Lỗi khi xóa sản phẩm: " + e.getMessage());
@@ -272,11 +301,11 @@ public class VanPhongPhamDAO {
         List<VanPhongPham> sanPhams = new ArrayList<>();
         String sql;
         if (tieuChi.equals("Mã SP")) {
-            sql = "SELECT * FROM VanPhongPham WHERE maVatPham LIKE ?";
+            sql = "SELECT * FROM VanPhongPham WHERE maVatPham LIKE ? AND trangThai = 1";
         } else if (tieuChi.equals("Tên SP")) {
-            sql = "SELECT * FROM VanPhongPham WHERE tenVatPham LIKE ?";
+            sql = "SELECT * FROM VanPhongPham WHERE tenVatPham LIKE ? AND trangThai = 1";
         } else {
-            sql = "SELECT * FROM VanPhongPham WHERE maVatPham LIKE ? OR tenVatPham LIKE ?";
+            sql = "SELECT * FROM VanPhongPham WHERE (maVatPham LIKE ? OR tenVatPham LIKE ?) AND trangThai = 1";
         }
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -307,5 +336,4 @@ public class VanPhongPhamDAO {
         }
         return sanPhams;
     }
-    
 }

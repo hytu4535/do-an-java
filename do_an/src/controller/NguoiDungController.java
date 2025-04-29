@@ -2,6 +2,7 @@ package controller;
 
 import dao.AccountDAO;
 import model.Account;
+import util.ExcelHandler;
 import view.nguoidung.NguoiDungPanel;
 import view.nguoidung.DataTablePanel;
 import view.nguoidung.InfoPanel;
@@ -24,20 +25,21 @@ import java.util.stream.Collectors;
 public class NguoiDungController implements RoleGroupChangeListener {
     private NguoiDungPanel view;
     private AccountDAO accountDAO;
+    private ExcelHandler excelHandler;
     private List<Account> accounts;
     private List<Account> originalAccounts;
-    private boolean dataLoaded = false; // Cờ để kiểm tra xem dữ liệu đã được tải chưa
+    private boolean dataLoaded = false;
 
     public NguoiDungController(NguoiDungPanel view) {
         this.view = view;
         this.accountDAO = new AccountDAO();
+        this.excelHandler = new ExcelHandler();
         setupButtonActions();
         setupTableSelectionListener();
         loadData();
     }
 
     public void loadData() {
-        // Chỉ truy vấn cơ sở dữ liệu nếu dữ liệu chưa được tải hoặc cần làm mới
         if (!dataLoaded) {
             accounts = accountDAO.getAllAccounts();
             originalAccounts = new ArrayList<>(accounts);
@@ -46,19 +48,17 @@ public class NguoiDungController implements RoleGroupChangeListener {
         updateTable(accounts);
     }
 
-    // Phương thức để làm mới dữ liệu từ cơ sở dữ liệu
     public void refreshData() {
         SwingWorker<List<Account>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Account> doInBackground() {
-                // Truy vấn cơ sở dữ liệu trong luồng riêng
                 return accountDAO.getAllAccounts();
             }
 
             @Override
             protected void done() {
                 try {
-                    accounts = get(); // Lấy kết quả từ luồng
+                    accounts = get();
                     originalAccounts = new ArrayList<>(accounts);
                     updateTable(accounts);
                 } catch (Exception ex) {
@@ -66,29 +66,26 @@ public class NguoiDungController implements RoleGroupChangeListener {
                 }
             }
         };
-        worker.execute(); // Chạy SwingWorker
+        worker.execute();
     }
 
     private void updateTable(List<Account> accountList) {
         DataTablePanel tablePanel = view.getDataTablePanel();
         DefaultTableModel tableModel = tablePanel.getTableModel();
 
-        // Lưu vị trí cuộn hiện tại
         JScrollPane scrollPane = (JScrollPane) tablePanel.getTable().getParent().getParent();
         int scrollPosition = scrollPane.getVerticalScrollBar().getValue();
 
-        // Xóa dữ liệu cũ
         tableModel.setRowCount(0);
 
-        // Thêm dữ liệu mới
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         for (int i = 0; i < accountList.size(); i++) {
             Account account = accountList.get(i);
             Object[] rowData = new Object[8];
-            rowData[0] = String.valueOf(i + 1); // STT
+            rowData[0] = String.valueOf(i + 1);
             rowData[1] = account.getUserName();
             rowData[2] = account.getFullName();
-            rowData[3] = account.getRole(); // getRole() đã trả về roleGroupName
+            rowData[3] = account.getRole();
             rowData[4] = account.getStatus() == 1 ? "Hoạt động" : "Ngưng hoạt động";
             rowData[5] = account.getNamSinh() != null ? sdf.format(account.getNamSinh()) : "";
             rowData[6] = account.getDiaChi() != null ? account.getDiaChi() : "";
@@ -96,7 +93,6 @@ public class NguoiDungController implements RoleGroupChangeListener {
             tableModel.addRow(rowData);
         }
 
-        // Khôi phục vị trí cuộn
         SwingUtilities.invokeLater(() -> {
             scrollPane.getVerticalScrollBar().setValue(scrollPosition);
         });
@@ -123,19 +119,21 @@ public class NguoiDungController implements RoleGroupChangeListener {
 
     @Override
     public void onRoleGroupChanged() {
-        refreshData(); // Làm mới dữ liệu từ cơ sở dữ liệu khi danh sách nhóm quyền thay đổi
-        UserFormDialog.refreshRoles(); // Làm mới danh sách vai trò trong UserFormDialog
+        refreshData();
+        UserFormDialog.refreshRoles();
     }
 
     private void setupButtonActions() {
         ButtonPanel buttonPanel = view.getButtonPanel();
 
-        // Xóa các ActionListener cũ trước khi thêm mới
+        // Xóa các ActionListener cũ
         buttonPanel.getAddButton().removeActionListener(buttonPanel.getAddButton().getActionListeners().length > 0 ? buttonPanel.getAddButton().getActionListeners()[0] : null);
         buttonPanel.getEditButton().removeActionListener(buttonPanel.getEditButton().getActionListeners().length > 0 ? buttonPanel.getEditButton().getActionListeners()[0] : null);
         buttonPanel.getDeleteButton().removeActionListener(buttonPanel.getDeleteButton().getActionListeners().length > 0 ? buttonPanel.getDeleteButton().getActionListeners()[0] : null);
         buttonPanel.getFilterButton().removeActionListener(buttonPanel.getFilterButton().getActionListeners().length > 0 ? buttonPanel.getFilterButton().getActionListeners()[0] : null);
         buttonPanel.getClearFilterButton().removeActionListener(buttonPanel.getClearFilterButton().getActionListeners().length > 0 ? buttonPanel.getClearFilterButton().getActionListeners()[0] : null);
+        buttonPanel.getImportExcelButton().removeActionListener(buttonPanel.getImportExcelButton().getActionListeners().length > 0 ? buttonPanel.getImportExcelButton().getActionListeners()[0] : null);
+        buttonPanel.getExportExcelButton().removeActionListener(buttonPanel.getExportExcelButton().getActionListeners().length > 0 ? buttonPanel.getExportExcelButton().getActionListeners()[0] : null);
 
         // Nút Thêm
         buttonPanel.getAddButton().addActionListener(e -> {
@@ -152,7 +150,7 @@ public class NguoiDungController implements RoleGroupChangeListener {
                     Account account = new Account();
                     account.setUserName(data.get("Tên tài khoản"));
                     account.setFullName(data.get("Họ tên"));
-                    account.setRoleGroupId(data.get("Vai trò")); // Lưu roleGroupId
+                    account.setRoleGroupId(data.get("Vai trò"));
                     account.setStatus(data.get("Trạng thái").equals("Hoạt động") ? 1 : 0);
                     String namSinhStr = data.get("Ngày sinh");
                     if (!namSinhStr.isEmpty()) {
@@ -190,7 +188,7 @@ public class NguoiDungController implements RoleGroupChangeListener {
             HashMap<String, String> initialData = new HashMap<>();
             initialData.put("Tên tài khoản", selectedAccount.getUserName());
             initialData.put("Họ tên", selectedAccount.getFullName());
-            initialData.put("Vai trò", selectedAccount.getRoleGroupId()); // Truyền roleGroupId
+            initialData.put("Vai trò", selectedAccount.getRoleGroupId());
             initialData.put("Trạng thái", selectedAccount.getStatus() == 1 ? "Hoạt động" : "Ngưng hoạt động");
             initialData.put("Ngày sinh", selectedAccount.getNamSinh() != null ? sdf.format(selectedAccount.getNamSinh()) : "");
             initialData.put("Địa chỉ", selectedAccount.getDiaChi() != null ? selectedAccount.getDiaChi() : "");
@@ -210,7 +208,7 @@ public class NguoiDungController implements RoleGroupChangeListener {
                     Account account = new Account();
                     account.setUserName(data.get("Tên tài khoản"));
                     account.setFullName(data.get("Họ tên"));
-                    account.setRoleGroupId(data.get("Vai trò")); // Lưu roleGroupId
+                    account.setRoleGroupId(data.get("Vai trò"));
                     account.setStatus(data.get("Trạng thái").equals("Hoạt động") ? 1 : 0);
                     String namSinhStr = data.get("Ngày sinh");
                     if (!namSinhStr.isEmpty()) {
@@ -272,7 +270,6 @@ public class NguoiDungController implements RoleGroupChangeListener {
                 return;
             }
 
-            // Kiểm tra định dạng ngày sinh nếu lọc theo Ngày sinh
             Date filterDate = null;
             if (selectedField.equals("Ngày sinh")) {
                 try {
@@ -285,7 +282,6 @@ public class NguoiDungController implements RoleGroupChangeListener {
                 }
             }
 
-            // Lọc danh sách
             Date finalFilterDate = filterDate;
             accounts = originalAccounts.stream().filter(account -> {
                 boolean matches = false;
@@ -298,7 +294,7 @@ public class NguoiDungController implements RoleGroupChangeListener {
                         matches = account.getFullName() != null && account.getFullName().toLowerCase().contains(filterValue.toLowerCase());
                         break;
                     case "Vai trò":
-                        matches = account.getRole() != null && account.getRole().equals(filterValue); // So sánh với roleGroupName
+                        matches = account.getRole() != null && account.getRole().equals(filterValue);
                         break;
                     case "Ngày sinh":
                         matches = account.getNamSinh() != null && account.getNamSinh().equals(new java.sql.Date(finalFilterDate.getTime()));
@@ -314,7 +310,6 @@ public class NguoiDungController implements RoleGroupChangeListener {
                 return matches;
             }).collect(Collectors.toList());
 
-            // Cập nhật JTable
             updateTable(accounts);
             JOptionPane.showMessageDialog(view, "Đã lọc dữ liệu thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         });
@@ -326,6 +321,34 @@ public class NguoiDungController implements RoleGroupChangeListener {
             accounts = new ArrayList<>(originalAccounts);
             updateTable(accounts);
             JOptionPane.showMessageDialog(view, "Đã xóa bộ lọc!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        // Nút Xuất Excel
+        buttonPanel.getExportExcelButton().addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+            fileChooser.setSelectedFile(new java.io.File("Accounts.xlsx"));
+            if (fileChooser.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getPath();
+                if (!filePath.endsWith(".xlsx")) {
+                    filePath += ".xlsx";
+                }
+                excelHandler.exportAccountsToExcel(accounts, filePath);
+            }
+        });
+
+        // Nút Nhập Excel
+        buttonPanel.getImportExcelButton().addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn file Excel để nhập");
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Excel files", "xlsx"));
+            if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getPath();
+                if (excelHandler.importAccountsFromExcel(filePath)) {
+                    refreshData();
+                    view.getInfoPanel().updateInfo(null);
+                }
+            }
         });
     }
 }
