@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import controller.NguoiDungController;
 import controller.PhanQuyenController;
+import controller.SupplierController;
+
 import view.nguoidung.NguoiDungPanel;
 import view.thongke.StatisticsPanel;
 import view.nhaphang.NhaphangPanel;
@@ -15,6 +17,7 @@ import view.phieunhap.PhieunhapPanel;
 import view.phieuxuat.PhieuxuatPanel;
 import view.sanpham.SanPhamPanel;
 import view.xuathang.XuathangPanel;
+import view.nhacungcap.SupplierPanel;
 
 
 
@@ -31,9 +34,11 @@ public class SidebarPanel extends JPanel {
     private PhieuxuatPanel phieuxuatPanel;
     private StatisticsPanel statisticsPanel;
     private SanPhamPanel sanphamPanel;
+    private SupplierPanel nhacungcapPanel;
 
     private NguoiDungController nguoiDungController;
     private PhanQuyenController phanQuyenController;
+    private SupplierController supplierController;
 
     private JPanel currentPanel; // Lưu panel hiện tại để tránh làm mới không cần thiết
 
@@ -145,7 +150,7 @@ public class SidebarPanel extends JPanel {
                         newPanel = sanphamPanel;
                         break;
                     case "Nhà cung cấp":
-                        newPanel = createPlaceholderPanel("Nhà cung cấp - Chưa triển khai");
+                        newPanel = nhacungcapPanel;
                         break;
                     case "Nhập hàng":
                         newPanel = nhaphangPanel;
@@ -212,10 +217,13 @@ public class SidebarPanel extends JPanel {
         phieuxuatPanel = new PhieuxuatPanel();
         statisticsPanel = new StatisticsPanel();
         sanphamPanel = new SanPhamPanel();
+        nhacungcapPanel = new SupplierPanel();
 
         // Khởi tạo các controller
         nguoiDungController = new NguoiDungController(nguoiDungPanel);
         phanQuyenController = new PhanQuyenController(phanQuyenPanel);
+        supplierController = new SupplierController(nhacungcapPanel);
+        
 
         // Đăng ký NguoiDungController làm listener cho PhanQuyenController
         phanQuyenController.addRoleGroupChangeListener(nguoiDungController);

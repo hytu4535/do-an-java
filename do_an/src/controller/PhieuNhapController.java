@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -25,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import util.ExcelHandler;
 
 
 
@@ -78,6 +80,14 @@ public class PhieuNhapController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 xoaPhieuNhap();
+            }
+        });
+        
+         // thêm sự kiên cho nút xuất excel
+        panelchucnang.getBtnNut().get(3).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                xuatFileExcel();
             }
         });
         
@@ -473,6 +483,34 @@ public class PhieuNhapController {
         // cập nhật lại bảng phiếu nhập
         loadData();
     }
+    
+    // xuất file excel
+    public void xuatFileExcel() {
+        // tạo một gui để hiển thị thư mục cho người dùng chọn để lưu
+        JFileChooser chooser = new JFileChooser();
+        
+        // đặt title cho gui
+        chooser.setDialogTitle("Hãy chọn thư mục lưu file");
+        
+        // tạo tên file mặc định khi lưu
+        chooser.setSelectedFile(new java.io.File("PhieuNhap.xlsx"));
+        
+        // kiểm tra nếu người dùng có nhấn nút save thì sẽ trả về 0
+        if (chooser.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
+            // lấy đường dẫn file
+            String filePath = chooser.getSelectedFile().getPath();
+            // kiểm tra nếu đường dẫn không kết thúc với đuôi như dưới thì thêm vào
+            if (!filePath.endsWith(".xlsx")) {
+                    filePath += ".xlsx";
+            }
+            
+            // xuất file
+            ArrayList<PhieuNhap> danhSachPhieu = PhieuNhapDAO.getInstance().getAll();
+            ExcelHandler.getInstance().XuatFilePhieuNhapExcel(danhSachPhieu, filePath);
+        }
+    }
+    
+    
     
   
     // hàm để kiểm tra xem chuỗi có  phải số không(kiểu dữ liệu double)

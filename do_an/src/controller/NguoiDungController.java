@@ -351,4 +351,20 @@ public class NguoiDungController implements RoleGroupChangeListener {
             }
         });
     }
+    
+    // biến static để lưu username người đăng nhập
+public static String currentUsername = null;
+
+// phương thức đăng nhập dùng trong LoginFrame
+public static boolean login(String username, String password) {
+    AccountDAO dao = new AccountDAO();
+    Account acc = dao.getByUsername(username);
+
+    if (acc != null && acc.getPassword() != null && acc.getPassword().equals(password)) {
+        currentUsername = username;
+        return true;
+    }
+    return false;
+}
+
 }

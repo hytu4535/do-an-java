@@ -8,11 +8,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javax.swing.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import model.PhieuNhap;
+import model.PhieuXuat;
+
+import java.sql.Timestamp;
 
 public class ExcelHandler {
     private final AccountDAO accountDAO;
@@ -24,6 +32,11 @@ public class ExcelHandler {
         this.roleGroupDAO = new RoleGroupDAO();
         this.roleMapping = new HashMap<>();
         loadRoleMapping();
+    }
+    
+    // hàm lấy đói tượng để truy cập phương thức
+    public static ExcelHandler getInstance() {
+        return new ExcelHandler();
     }
 
     private void loadRoleMapping() {
@@ -197,4 +210,252 @@ public class ExcelHandler {
             return false;
         }
     }
+    
+    //############< code >##############
+    // các hàm dưới đây để tái sử dụng cho nhiều phần trong view
+    
+    // hàm để tạo các cột dữ liệu gồm một đối tượng sheet và mảng String[] tên các cột
+    public void createHeaderRow(Workbook workbook, Sheet mySheet, int index, String[] cotDuLieu) {
+        // tạo hàng dữ liệu
+        Row headerRow = mySheet.createRow(index);
+        
+        // cấu hình màu sắc,...
+        CellStyle headerStyle = workbook.createCellStyle();
+        
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        
+        // đưa các dữ liệu vào các cell
+        for(int i = 0; i < cotDuLieu.length; ++i) {
+            // tạo cell tại vị trí i
+            Cell headerCell = headerRow.createCell(i);
+            headerCell.setCellValue(cotDuLieu[i]);
+            headerCell.setCellStyle(headerStyle);
+        }
+    }
+    
+    // hàm để tạo các dòng dữ liệu cho phiếu nhập
+    public void createPhieuNhapContentRow(Workbook workbook, Sheet mySheet, int index, PhieuNhap phieu) {
+        Row contentRow = mySheet.createRow(index);
+        
+        // cái này để tạo format cho ngày
+        DateTimeFormatter Formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
+        // thêm dữ liệu vào 
+        Cell contentCell = null;
+                
+        // mã phiếu
+        contentCell = contentRow.createCell(0);
+        contentCell.setCellValue(phieu.getMaPhieu());
+        
+        // nhà cung cấp
+        contentCell = contentRow.createCell(1);
+        contentCell.setCellValue(phieu.getMaNhaCungCap());
+        
+        // người tạo
+        contentCell = contentRow.createCell(2);
+        contentCell.setCellValue(phieu.getNguoiTao());
+        
+        // tổng tiền
+        contentCell = contentRow.createCell(3);
+        contentCell.setCellValue(phieu.getTongTien());
+        
+        // thời gian tạo
+        // chuyển thời gian tạo thành LocalDate
+        LocalDateTime dateTime = phieu.getThoiGianTao().toLocalDateTime();
+        
+        contentCell = contentRow.createCell(4);
+        contentCell.setCellValue(dateTime.format(Formatter));
+    }
+    
+    
+     // hàm để tạo các dòng dữ liệu cho phiếu xuất
+    public void createPhieuXuatContentRow(Workbook workbook, Sheet mySheet, int index, PhieuXuat phieu) {
+        Row contentRow = mySheet.createRow(index);
+        
+        // cái này để tạo format cho ngày
+        DateTimeFormatter Formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
+        // thêm dữ liệu vào 
+        Cell contentCell = null;
+                
+        // mã phiếu
+        contentCell = contentRow.createCell(0);
+        contentCell.setCellValue(phieu.getMaPhieu());
+        
+        // người tạo
+        contentCell = contentRow.createCell(1);
+        contentCell.setCellValue(phieu.getNguoiTao());
+        
+        // tổng tiền
+        contentCell = contentRow.createCell(2);
+        contentCell.setCellValue(phieu.getTongTien());
+        
+        // thời gian tạo
+        // chuyển thời gian tạo thành LocalDate
+        LocalDateTime dateTime = phieu.getThoiGianTao().toLocalDateTime();
+        
+        contentCell = contentRow.createCell(3);
+        contentCell.setCellValue(dateTime.format(Formatter));
+    }
+    
+    
+    // xuất file excel phiếu nhập
+    public void XuatFilePhieuNhapExcel(ArrayList<PhieuNhap> danhSachPhieu, String filePath) {
+        Workbook workBook = new XSSFWorkbook();
+        Sheet mySheet = workBook.createSheet("phieu nhap");
+        
+        // tạo hàng dữ liệu cho header
+        String[] header = new String[] {"Mã phiếu", "Nhà cung cấp", 
+                                                                   "Người tạo", "Tổng tiền", "Thời gian tạo"};
+        
+        createHeaderRow(workBook, mySheet, 0, header);
+        
+         // chỉnh cho kích thước các cột rộng 15 kí tự
+        for(int i = 0; i < header.length; ++i) {
+            mySheet.setColumnWidth(i, 15 * 256);
+        }
+        
+        // tạo hàng dữ liệu
+        for(int i = 0; i < danhSachPhieu.size(); ++i) {
+            PhieuNhap phieu = danhSachPhieu.get(i);
+            createPhieuNhapContentRow(workBook, mySheet, i + 1, phieu);
+        }
+        
+        // xuất file ra
+        try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+            workBook.write(fileOut);
+            JOptionPane.showMessageDialog(
+                    null, 
+                    "Xuất file Excel thành công tại: " + filePath, 
+                    "Thành công", 
+                    JOptionPane.INFORMATION_MESSAGE);
+        } 
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    null, 
+                    "Lỗi khi xuất file Excel: " + e.getMessage(), 
+                    "Lỗi", 
+                    JOptionPane.ERROR_MESSAGE);
+            
+            e.printStackTrace();
+        } 
+        finally {
+            try {
+                workBook.close();
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    
+    // xuất file excel phiếu nhập
+    public void XuatFilePhieuXuatExcel(ArrayList<PhieuXuat> danhSachPhieu, String filePath) {
+        Workbook workBook = new XSSFWorkbook();
+        Sheet mySheet = workBook.createSheet("phieu xuat");
+        
+        // tạo hàng dữ liệu cho header
+        String[] header = new String[] {"Mã phiếu", "Người tạo", "Tổng tiền", "Thời gian tạo"};
+        
+        createHeaderRow(workBook, mySheet, 0, header);
+        
+         // chỉnh cho kích thước các cột rộng 15 kí tự
+        for(int i = 0; i < header.length; ++i) {
+            mySheet.setColumnWidth(i, 15 * 256);
+        }
+        
+        // tạo hàng dữ liệu
+        for(int i = 0; i < danhSachPhieu.size(); ++i) {
+            PhieuXuat phieu = danhSachPhieu.get(i);
+            createPhieuXuatContentRow(workBook, mySheet, i + 1, phieu);
+        }
+        
+        // xuất file ra
+        try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+            workBook.write(fileOut);
+            JOptionPane.showMessageDialog(
+                    null, 
+                    "Xuất file Excel thành công tại: " + filePath, 
+                    "Thành công", 
+                    JOptionPane.INFORMATION_MESSAGE);
+        } 
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    null, 
+                    "Lỗi khi xuất file Excel: " + e.getMessage(), 
+                    "Lỗi", 
+                    JOptionPane.ERROR_MESSAGE);
+            
+            e.printStackTrace();
+        } 
+        finally {
+            try {
+                workBook.close();
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /*
+    // nhập file excel phiếu nhập
+    public ArrayList<PhieuNhap> nhapFileExcelPhieuNhap(String filePath) {
+        ArrayList<PhieuNhap> danhsachPhieuNhapExcel = new ArrayList<>();
+        
+        // đọc dữ liệu từ file ở đường dẫn filePath và xử lý theo định dạng excel
+        try(
+                FileInputStream fileInput = new FileInputStream(filePath);
+                Workbook workBook = new XSSFWorkbook(fileInput);        
+        ) {
+            // lấy ra sheet đầu tiên trong file( chọn sheet cần đọc)
+            Sheet mySheet = workBook.getSheetAt(0);
+            
+            // bắt đầu đọc
+            
+            // đọc từ dòng 1 vì bỏ qua dòng tiêu đề
+            for(int i = 1; i < mySheet.getLastRowNum(); ++i) {
+                // lấy dòng dữ liệu
+                Row row = mySheet.getRow(i);
+                
+                // nếu dòng không trống
+                if(row != null) {
+                    // mã phiếu
+                    String maPhieu = row.getCell(0).getStringCellValue();
+                    
+                    // nhà cung cấp
+                    String maNhaCungCap = row.getCell(1).getStringCellValue();
+                    
+                    // người tạo
+                    String nguoiTao = row.getCell(2).getStringCellValue();
+                    
+                    // tổng tiền
+                    double tongTien = (double) row.getCell(3).getNumericCellValue();
+                    
+                    // thời gian tạo
+                    
+                    // lấy ngày từ cell
+                    Date ngayExcel = (Date) row.getCell(4).getDateCellValue();
+                    
+                    // chuyển Date thành Timestamp
+                    Timestamp ngay = new Timestamp(ngayExcel.getTime());
+                    
+                    
+                }
+            }
+            
+        } 
+        // bắt lỗi liên quan tới file
+        catch (IOException e) {
+            System.out.println("Lỗi đọc file: " + e.getMessage());
+        } 
+        // các lỗi khác
+        catch (NullPointerException e) {
+            System.out.println("Lỗi dữ liệu null không mong muốn!");
+        }
+
+    }
+    */
 }

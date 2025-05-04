@@ -90,4 +90,35 @@ public class AccountDAO {
             e.printStackTrace();
         }
     }
+    
+    //Phuc vu phan login - Quoc HUY
+    public Account getByUsername(String username) {
+    Account account = null;
+    String sql = "SELECT * FROM quanlivanphongpham.account WHERE userName = ?";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            account = new Account();
+            account.setUserName(rs.getString("userName"));
+            account.setPassword(rs.getString("password")); 
+            account.setFullName(rs.getString("fullName"));
+            account.setRoleGroupId(rs.getString("roleGroupId"));
+            account.setStatus(rs.getInt("status"));
+            account.setNamSinh(rs.getDate("namsinh"));
+            account.setDiaChi(rs.getString("diachi"));
+            account.setDienThoai(rs.getString("dienthoai"));
+            account.setEmail(rs.getString("email"));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return account;
+}
+
 }

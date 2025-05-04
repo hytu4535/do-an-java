@@ -12,6 +12,7 @@ public class Account {
     private String diaChi;
     private String dienThoai;
     private String email;
+    private String password;
 
     // Constructor
     public Account() {
@@ -97,4 +98,11 @@ public class Account {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public String getPassword() { 
+        return password;
+    } 
+    public void setPassword(String password) { 
+        this.password = password; 
+    } 
 }

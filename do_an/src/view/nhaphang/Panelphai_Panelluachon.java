@@ -52,9 +52,9 @@ public class Panelphai_Panelluachon extends JPanel {
         
         btnNut = new ArrayList<JButton>();
         
-        btnTennut = new String[] {"Nhập Excel", "Sửa số lượng", "Xóa sản phẩm", "Nhập hàng"};
+        btnTennut = new String[] {"Sửa số lượng", "Xóa sản phẩm", "Nhập hàng"};
         
-        btnCommand = new String[] {"Excel", "Sua", "Xoa", "Nhap"};
+        //btnCommand = new String[] {"Sua", "Xoa", "Nhap"};
         
         int height = 40;
         
@@ -70,7 +70,7 @@ public class Panelphai_Panelluachon extends JPanel {
         //lblHienthi.setPreferredSize(new Dimension(lblHienthi.getPreferredSize().width, height));
         
         //dieu chinh btnNut
-        for(int i = 0; i < 4; ++i) {
+        for(int i = 0; i < btnTennut.length; ++i) {
             JButton tempbutt = new JButton(btnTennut[i]);
             
             tempbutt.setFocusable(false);
@@ -83,11 +83,11 @@ public class Panelphai_Panelluachon extends JPanel {
             
             tempbutt.setPreferredSize(new Dimension(tempbutt.getPreferredSize().width, height));
             
-            tempbutt.setActionCommand(btnCommand[i]);
+            //tempbutt.setActionCommand(btnCommand[i]);
             
             btnNut.add(tempbutt);
             
-            if(i == 3) {
+            if(i == btnTennut.length - 1) {
                 tempbutt.setBackground(new Color(50, 168, 82));
             }
         }
@@ -111,14 +111,8 @@ public class Panelphai_Panelluachon extends JPanel {
         
         //btnThem
         for(int i = 0; i < btnNut.size(); ++i) {
-            if(i == btnNut.size() - 1) {
-                gbc.gridx = 2;
-                gbc.gridy = 1;
-            }
-            else {
-                gbc.gridx = i;
-                gbc.gridy = 0;
-            }
+            gbc.gridx = i;
+            gbc.gridy = 0;
             
             this.add(btnNut.get(i), gbc);
         }

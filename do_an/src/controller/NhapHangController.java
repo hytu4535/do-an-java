@@ -74,7 +74,7 @@ public class NhapHangController {
         });
         
         // thêm sự kiện cho nút xóa sản phẩm bên phải
-        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(2).addActionListener(new ActionListener() {
+        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(1).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent l) {
                 chuyenPhaiVeTrai();
@@ -82,7 +82,7 @@ public class NhapHangController {
         });
         
         // thêm sự kiện cho nút sửa số lượng bên phải
-        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(1).addActionListener(new ActionListener() {
+        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(0).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent l) {
                 suaSoLuong();
@@ -90,7 +90,7 @@ public class NhapHangController {
         });
         
         // thêm sự kiện cho nút thêm phiếu nhập bên phải
-        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(3).addActionListener(new ActionListener() {
+        this.view.getPnlPanelphai().getPnlPanelluachon().getBtnNut().get(2).addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent l) {
                 themPhieuNhap();
@@ -540,12 +540,20 @@ public class NhapHangController {
                     temp.getSoLuong(),
                     DoubleToDong(temp.getGia())
                });
-            } 
+            }
+           
+             // làm mới phần tổng tiền
+        
+            // lấy label hiển thị tổng tiền
+            double tong = tongTien(dulieu);
+            
+            this.view.getPnlPanelphai().getPnlPanelluachon().getLblHienthi().setText(DoubleToDong(tong));
         }
         
         // tải thêm thông tim của mã phiếu nhập mới
         this.view.getPnlPanelphai().getPnlPaneltimkiem().getTxtfHienthi().get(0).setText(
                 maPhieuNhapMoi());
+        
     }
     //##############################
     
@@ -607,6 +615,17 @@ public class NhapHangController {
     
         //trả về chuỗi và cộng thêm "đ"
         return Format.format((long) number) + " đ";
+    }
+    
+    // hàm để tính tổng tiền bên danhsachVPPPhai
+    public double tongTien(ArrayList<VanPhongPham> dulieu) {
+        double tongTien = 0;
+        
+        for(var vpp : dulieu) {
+            tongTien += ( vpp.getGia() * vpp.getSoLuong() );
+        }
+        
+        return tongTien;
     }
     
 }

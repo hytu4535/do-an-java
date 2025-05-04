@@ -1,4 +1,4 @@
-package view.sanpham;
+ package view.sanpham;
 
 import controller.SanPhamController;
 import javax.swing.*;
@@ -18,7 +18,7 @@ public class SanPhamPanel extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBackground(new Color(245, 245, 245));
 
-        // Panel chứa các nút chức năng
+        // các nút chức năng
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setBackground(new Color(230, 230, 250));
@@ -30,13 +30,13 @@ public class SanPhamPanel extends JPanel {
         JButton btnXuatExcel = createStyledButton("Xuất Excel", "/resources/images/export_icon.png");
         JButton btnNhapExcel = createStyledButton("Nhập Excel", "/resources/images/import_icon.png");
 
-        // Khởi tạo bảng
+        // tao bang
         String[] columnNames = {"Mã SP", "Tên SP", "Số lượng", "Loại SP", "Giá", "Thương hiệu", "Chất liệu", "Độ dày", "Mô tả", "Xuất xứ", "Trạng thái"};
         tableModel = new DefaultTableModel(new Object[][]{}, columnNames);
         productTable = new JTable(tableModel);
         controller = new SanPhamController(this);
 
-        // Sự kiện cho các nút
+        // su kien cho cac nut
         btnThem.addActionListener(e -> {
             SanPhamThemForm themForm = new SanPhamThemForm((Frame) SwingUtilities.getWindowAncestor(this), controller);
             themForm.setVisible(true);
@@ -82,7 +82,7 @@ public class SanPhamPanel extends JPanel {
             buttonPanel.add(btn);
         }
 
-        // Panel chứa thanh tìm kiếm
+        // thanh tìm kiếm
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         searchPanel.setBackground(new Color(245, 245, 245));
         searchPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
@@ -107,6 +107,10 @@ public class SanPhamPanel extends JPanel {
             String tieuChi = (String) searchComboBox.getSelectedItem();
             controller.timKiemSanPham(tuKhoa, tieuChi);
         });
+        
+        btnXuatExcel.addActionListener(e -> controller.xuatExcel(tableModel));
+        btnNhapExcel.addActionListener(e -> controller.nhapExcel(tableModel));
+
 
         searchPanel.add(lblSearch);
         searchPanel.add(txtSearch);
