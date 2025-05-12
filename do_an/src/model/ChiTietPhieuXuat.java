@@ -9,6 +9,15 @@ public class ChiTietPhieuXuat {
     // Constructor
     public ChiTietPhieuXuat() {}
 
+    public ChiTietPhieuXuat(String maPhieu, String maVatPham, int soLuong, double donGia) {
+        this.maPhieu = maPhieu;
+        this.maVatPham = maVatPham;
+        this.soLuong = soLuong;
+        this.donGia = donGia;
+    }
+    
+    
+
     // Getters và Setters
     public String getMaPhieu() { return maPhieu; }
     public void setMaPhieu(String maPhieu) { this.maPhieu = maPhieu; }

@@ -5,10 +5,17 @@ import javax.swing.*;
 import java.awt.*;
 
 import javax.swing.border.LineBorder;
+import util.ButtonFactory;
+
+import util.ButtonFactory;
+
+
 
 public class Paneltrai_Paneltimkiem extends JPanel {
     private GridBagConstraints gbc;
     private JTextField txtfTimkiem;
+    private JLabel lblNhacungcap;
+    private JComboBox<String> cbNhacungcap;
     private JButton btnTimkiem;
     
     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
@@ -44,7 +51,14 @@ public class Paneltrai_Paneltimkiem extends JPanel {
     public void InitTimkiem() {
         txtfTimkiem = new JTextField();
         
-        btnTimkiem = new JButton("Làm mới");
+        btnTimkiem = new JButton("Tìm kiếm");
+        
+        ButtonFactory.applyImageToButton(
+                btnTimkiem,
+                ButtonFactory.buildIconPath("icons8-magnifying-glass-tilted-left-32.png"), 
+                16, 
+                16);
+        
         btnTimkiem.setBackground(this.bgColor);
         
         //dieu chinh txtfTimkiem
@@ -56,11 +70,21 @@ public class Paneltrai_Paneltimkiem extends JPanel {
         btnTimkiem.setFont(myFont);
         btnTimkiem.setFocusable(false);
         
+        // combobox nha cung cap
+        cbNhacungcap = new JComboBox();
+        cbNhacungcap.setFont(myFont);
+        cbNhacungcap.setBackground(bgColor);
+        
+        // lblNhacuncap
+        lblNhacungcap = new JLabel("Nhà cung cấp: ");
+        lblNhacungcap.setFont(myFont);
+        lblNhacungcap.setBackground(this.bgColor);
+        
         //them components vao panel
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(0, 10, 0, 10);//top, left, bottom, right
+        gbc.insets = new Insets(10, 10, 10, 10);//top, left, bottom, right
         
-        //lblTimkiem
+        //txtfTimkiem
         gbc.gridx = 0;
         gbc.gridy = 0;
         
@@ -78,6 +102,22 @@ public class Paneltrai_Paneltimkiem extends JPanel {
         
         this.add(btnTimkiem, gbc);
         
+        // lblNhacungcap
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        
+        gbc.weightx = 0.5;
+        
+        this.add(lblNhacungcap, gbc);
+        
+        //cbNhacungcap
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        
+        gbc.weightx = 0.5;
+        
+        this.add(cbNhacungcap, gbc);
+        
     }
     
     
@@ -90,6 +130,10 @@ public class Paneltrai_Paneltimkiem extends JPanel {
 
     public JButton getBtnTimkiem() {
         return btnTimkiem;
+    }
+
+    public JComboBox<String> getCbNhacungcap() {
+        return cbNhacungcap;
     }
     
 }

@@ -15,6 +15,7 @@ public class NhaphangPanel extends JPanel {
     private Panelphai pnlPanelphai;
     private GridLayout gridlayout;
     
+    
     private Font myFont = new Font("Arial", Font.PLAIN, 16);//dung de dieu chinh phong chu, kieu chu, kich co
     
     private Color bgColor = new Color(255, 255, 255);

@@ -1,6 +1,5 @@
 package view.phieuxuat;
 
-import view.phieunhap.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import util.ButtonFactory;
 
 
 public class Panel1_Panelchucnang extends JPanel {
@@ -78,6 +78,16 @@ public class Panel1_Panelchucnang extends JPanel {
         btnTennut = new String[] {"Xóa", "Sửa", "Chi tiết", "Xuất Excel", "Nhập Excel"};
         btnCommand = new String[] {"Xoa", "Sua", "CT", "XuatE", "NhapE"};
         
+        String[] iconFile = new String[] {
+           "icon_delete.png",
+            "edit_icon.png",
+            "view_icon.png",
+            "export_icon.png",
+            "import_icon.png"
+        };
+        
+        
+        
         // thêm nút vào btnNut
         for(int i = 0; i < 5; ++i) {
            JButton tempbutt = new JButton(btnTennut[i]);
@@ -89,6 +99,14 @@ public class Panel1_Panelchucnang extends JPanel {
             
             tempbutt.setPreferredSize(new Dimension(tempbutt.getPreferredSize().width, height));
             tempbutt.setActionCommand(btnCommand[i]);
+            
+            ButtonFactory.applyImageAboveButton(
+                tempbutt,
+                ButtonFactory.buildIconPath(iconFile[i]), 
+                18, 
+                18);
+            
+            tempbutt.setBackground(new Color(240, 248, 255));
             
             btnNut.add(tempbutt);
        }
@@ -106,11 +124,8 @@ public class Panel1_Panelchucnang extends JPanel {
     }
     
     
-    
-    // getter
-
+    //getter
     public ArrayList<JButton> getBtnNut() {
         return btnNut;
     }
-    
 }

@@ -21,6 +21,10 @@ import model.PhieuNhap;
 import model.PhieuXuat;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+
+import model.ChiTietPhieuNhap;
+import model.ChiTietPhieuXuat;
 
 public class ExcelHandler {
     private final AccountDAO accountDAO;
@@ -268,8 +272,37 @@ public class ExcelHandler {
         contentCell.setCellValue(dateTime.format(Formatter));
     }
     
+     // hàm để tạo các dòng dữ liệu cho chi tiết phiếu nhập
+    public void createChiTietPhieuNhapContentRow(Workbook workbook, Sheet mySheet, int index, ChiTietPhieuNhap ctphieu) {
+        Row contentRow = mySheet.createRow(index);
+        
+        // cái này để tạo format cho ngày
+        // DateTimeFormatter Formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
+        // thêm dữ liệu vào 
+        Cell contentCell = null;
+                
+        // mã phiếu
+        contentCell = contentRow.createCell(0);
+        contentCell.setCellValue(ctphieu.getMaPhieu());
+        
+        // mã văn phòng phẩm
+        contentCell = contentRow.createCell(1);
+        contentCell.setCellValue(ctphieu.getMaVatPham());
+        
+        // số lượng
+        contentCell = contentRow.createCell(2);
+        contentCell.setCellValue(ctphieu.getSoLuong());
+        
+        // đơn giá
+        contentCell = contentRow.createCell(3);
+        contentCell.setCellValue(ctphieu.getDonGia());
+        
+    }
     
-     // hàm để tạo các dòng dữ liệu cho phiếu xuất
+    
+    
+    // hàm để tạo các dòng dữ liệu cho phiếu xuất
     public void createPhieuXuatContentRow(Workbook workbook, Sheet mySheet, int index, PhieuXuat phieu) {
         Row contentRow = mySheet.createRow(index);
         
@@ -299,20 +332,57 @@ public class ExcelHandler {
         contentCell.setCellValue(dateTime.format(Formatter));
     }
     
+    // hàm để tạo các dòng dữ liệu cho chi tiết phiếu xuất
+    public void createChiTietPhieuXuatContentRow(Workbook workbook, Sheet mySheet, 
+            int index, ChiTietPhieuXuat ctphieu) {
+        Row contentRow = mySheet.createRow(index);
+        
+        // cái này để tạo format cho ngày
+        // DateTimeFormatter Formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
+        // thêm dữ liệu vào 
+        Cell contentCell = null;
+                
+        // mã phiếu
+        contentCell = contentRow.createCell(0);
+        contentCell.setCellValue(ctphieu.getMaPhieu());
+        
+        // mã văn phòng phẩm
+        contentCell = contentRow.createCell(1);
+        contentCell.setCellValue(ctphieu.getMaVatPham());
+        
+        // số lượng
+        contentCell = contentRow.createCell(2);
+        contentCell.setCellValue(ctphieu.getSoLuong());
+        
+        // đơn giá
+        contentCell = contentRow.createCell(3);
+        contentCell.setCellValue(ctphieu.getDonGia());
+        
+    }
+    
     
     // xuất file excel phiếu nhập
-    public void XuatFilePhieuNhapExcel(ArrayList<PhieuNhap> danhSachPhieu, String filePath) {
+    public void XuatFilePhieuNhapExcel(ArrayList<PhieuNhap> danhSachPhieu, 
+            ArrayList<ChiTietPhieuNhap> danhSachCTPhieu, String filePath) {
+        
         Workbook workBook = new XSSFWorkbook();
+        // trang tinh phieu nhap
         Sheet mySheet = workBook.createSheet("phieu nhap");
+        // trang tinh chi tiet phieu
+        Sheet mySheet2 = workBook.createSheet("chi tiet phieu");
+        
+        
+        // tải dữ liệu cho mySheet
         
         // tạo hàng dữ liệu cho header
-        String[] header = new String[] {"Mã phiếu", "Nhà cung cấp", 
+        String[] header1 = new String[] {"Mã phiếu", "Nhà cung cấp", 
                                                                    "Người tạo", "Tổng tiền", "Thời gian tạo"};
         
-        createHeaderRow(workBook, mySheet, 0, header);
+        createHeaderRow(workBook, mySheet, 0, header1);
         
          // chỉnh cho kích thước các cột rộng 15 kí tự
-        for(int i = 0; i < header.length; ++i) {
+        for(int i = 0; i < header1.length; ++i) {
             mySheet.setColumnWidth(i, 15 * 256);
         }
         
@@ -320,6 +390,25 @@ public class ExcelHandler {
         for(int i = 0; i < danhSachPhieu.size(); ++i) {
             PhieuNhap phieu = danhSachPhieu.get(i);
             createPhieuNhapContentRow(workBook, mySheet, i + 1, phieu);
+        }
+        
+        // tải dữ liệu cho mySheet2
+        
+        // tạo hàng dữ liệu cho header
+        String[] header2 = new String[] {"Mã phiếu", "Mã vật phẩm", 
+                                                                   "Số lượng", "Đơn giá"};
+        
+        createHeaderRow(workBook, mySheet2, 0, header2);
+        
+         // chỉnh cho kích thước các cột rộng 15 kí tự
+        for(int i = 0; i < header2.length; ++i) {
+            mySheet.setColumnWidth(i, 15 * 256);
+        }
+        
+        // tạo hàng dữ liệu
+        for(int i = 0; i < danhSachCTPhieu.size(); ++i) {
+            ChiTietPhieuNhap ctphieu = danhSachCTPhieu.get(i);
+            createChiTietPhieuNhapContentRow(workBook, mySheet2, i + 1, ctphieu);
         }
         
         // xuất file ra
@@ -352,9 +441,13 @@ public class ExcelHandler {
     
     
     // xuất file excel phiếu nhập
-    public void XuatFilePhieuXuatExcel(ArrayList<PhieuXuat> danhSachPhieu, String filePath) {
+    public void XuatFilePhieuXuatExcel(ArrayList<PhieuXuat> danhSachPhieu, 
+            ArrayList<ChiTietPhieuXuat> danhSachCTPhieu, String filePath) {
         Workbook workBook = new XSSFWorkbook();
+        
         Sheet mySheet = workBook.createSheet("phieu xuat");
+        
+        Sheet mySheet2 = workBook.createSheet("chi tiet phieu");
         
         // tạo hàng dữ liệu cho header
         String[] header = new String[] {"Mã phiếu", "Người tạo", "Tổng tiền", "Thời gian tạo"};
@@ -372,6 +465,25 @@ public class ExcelHandler {
             createPhieuXuatContentRow(workBook, mySheet, i + 1, phieu);
         }
         
+        // tải dữ liệu cho mySheet2
+        
+        // tạo hàng dữ liệu cho header
+        String[] header2 = new String[] {"Mã phiếu", "Mã vật phẩm", 
+                                                                   "Số lượng", "Đơn giá"};
+        
+        createHeaderRow(workBook, mySheet2, 0, header2);
+        
+         // chỉnh cho kích thước các cột rộng 15 kí tự
+        for(int i = 0; i < header2.length; ++i) {
+            mySheet.setColumnWidth(i, 15 * 256);
+        }
+        
+        // tạo hàng dữ liệu
+        for(int i = 0; i < danhSachCTPhieu.size(); ++i) {
+            ChiTietPhieuXuat ctphieu = danhSachCTPhieu.get(i);
+            createChiTietPhieuXuatContentRow(workBook, mySheet2, i + 1, ctphieu);
+        }
+        
         // xuất file ra
         try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
             workBook.write(fileOut);
@@ -400,10 +512,17 @@ public class ExcelHandler {
         }
     }
     
-    /*
+    
+    //#####################
+    //Nhập file excel sẽ có hai hàm trả về ArrayList<> của phieu và chi tiết phiếu đề controller làm việc
+    //#####################
+   
+    //###################< PHIẾU NHẬP >#####################
     // nhập file excel phiếu nhập
     public ArrayList<PhieuNhap> nhapFileExcelPhieuNhap(String filePath) {
         ArrayList<PhieuNhap> danhsachPhieuNhapExcel = new ArrayList<>();
+        
+        SimpleDateFormat Sdf = new SimpleDateFormat("dd/MM/yyyy");
         
         // đọc dữ liệu từ file ở đường dẫn filePath và xử lý theo định dạng excel
         try(
@@ -416,7 +535,7 @@ public class ExcelHandler {
             // bắt đầu đọc
             
             // đọc từ dòng 1 vì bỏ qua dòng tiêu đề
-            for(int i = 1; i < mySheet.getLastRowNum(); ++i) {
+            for(int i = 1; i <= mySheet.getLastRowNum(); ++i) {
                 // lấy dòng dữ liệu
                 Row row = mySheet.getRow(i);
                 
@@ -437,15 +556,16 @@ public class ExcelHandler {
                     // thời gian tạo
                     
                     // lấy ngày từ cell
-                    Date ngayExcel = (Date) row.getCell(4).getDateCellValue();
+                    Timestamp thoiGianTao = toTimestamp(row.getCell(4).getStringCellValue().trim());
                     
-                    // chuyển Date thành Timestamp
-                    Timestamp ngay = new Timestamp(ngayExcel.getTime());
+                    // tạo đối tượng phiếu nhập và đưa vào danh sách
+                    PhieuNhap phieuMoi = new PhieuNhap(maPhieu, thoiGianTao, 
+                            nguoiTao, maNhaCungCap, tongTien);
                     
-                    
+                    danhsachPhieuNhapExcel.add(phieuMoi);
                 }
             }
-            
+           
         } 
         // bắt lỗi liên quan tới file
         catch (IOException e) {
@@ -455,7 +575,198 @@ public class ExcelHandler {
         catch (NullPointerException e) {
             System.out.println("Lỗi dữ liệu null không mong muốn!");
         }
-
+  
+        return danhsachPhieuNhapExcel;
     }
-    */
+    
+    // nhập file excel chi tiết phiếu nhập
+    public ArrayList<ChiTietPhieuNhap> nhapFileExcelChiTietPhieuNhap(String filePath) {
+        ArrayList<ChiTietPhieuNhap> danhsachCTPhieuNhapExcel = new ArrayList<>();
+        
+        // đọc dữ liệu từ file ở đường dẫn filePath và xử lý theo định dạng excel
+        try(
+                FileInputStream fileInput = new FileInputStream(filePath);
+                Workbook workBook = new XSSFWorkbook(fileInput);        
+        ) {
+            // lấy ra sheet đầu tiên trong file( chọn sheet cần đọc)
+            Sheet mySheet = workBook.getSheetAt(1);
+            
+            // bắt đầu đọc
+            
+            // đọc từ dòng 1 vì bỏ qua dòng tiêu đề
+            for(int i = 1; i <= mySheet.getLastRowNum(); ++i) {
+                // lấy dòng dữ liệu
+                Row row = mySheet.getRow(i);
+                
+                // nếu dòng không trống
+                if(row != null) {
+                   // bắt lỗi khi đọc
+                   try {
+                        //  mã phiếu
+                        String maPhieu = row.getCell(0).getStringCellValue();
+
+                        // Các cột chi tiết
+                        String maVatPham = row.getCell(1).getStringCellValue();
+                        
+                        int soLuong = (int) row.getCell(2).getNumericCellValue();
+                        
+                        double donGia = row.getCell(3).getNumericCellValue();
+
+                    // Tạo chi tiết phiếu nhập và thêm vào danh sách
+                    ChiTietPhieuNhap ctphieuMoi = new ChiTietPhieuNhap(maPhieu, maVatPham, soLuong, donGia);
+                    
+                    danhsachCTPhieuNhapExcel.add(ctphieuMoi);
+                   }
+                   catch(Exception e) {
+                       System.out.println("Lỗi đọc dữ liệu ở dòng "+ i );
+                   }
+                }
+            }  
+        } 
+        // bắt lỗi liên quan tới file
+        catch (IOException e) {
+            System.out.println("Lỗi đọc file: " + e.getMessage());
+        } 
+        // các lỗi khác
+        catch (NullPointerException e) {
+            System.out.println("Lỗi dữ liệu null không mong muốn!");
+        }
+  
+        return danhsachCTPhieuNhapExcel;
+    }
+ 
+    
+    //###################< PHIẾU XUẤT >#####################
+    // nhập file excel phiếu nhập
+    public ArrayList<PhieuXuat> nhapFileExcelPhieuXuat(String filePath) {
+        ArrayList<PhieuXuat> danhsachPhieuXuatExcel = new ArrayList<>();
+        
+        SimpleDateFormat Sdf = new SimpleDateFormat("dd/MM/yyyy");
+        
+        // đọc dữ liệu từ file ở đường dẫn filePath và xử lý theo định dạng excel
+        try(
+                FileInputStream fileInput = new FileInputStream(filePath);
+                Workbook workBook = new XSSFWorkbook(fileInput);        
+        ) {
+            // lấy ra sheet đầu tiên trong file( chọn sheet cần đọc)
+            Sheet mySheet = workBook.getSheetAt(0);
+            
+            // bắt đầu đọc
+            
+            // đọc từ dòng 1 vì bỏ qua dòng tiêu đề
+            for(int i = 1; i <= mySheet.getLastRowNum(); ++i) {
+                // lấy dòng dữ liệu
+                Row row = mySheet.getRow(i);
+                
+                // nếu dòng không trống
+                if(row != null) {
+                    // mã phiếu
+                    String maPhieu = row.getCell(0).getStringCellValue();
+  
+                    // người tạo
+                    String nguoiTao = row.getCell(1).getStringCellValue();
+                    
+                    // tổng tiền
+                    double tongTien = (double) row.getCell(2).getNumericCellValue();
+                    
+                    // thời gian tạo
+                    
+                    // lấy ngày từ cell
+                    Timestamp thoiGianTao = toTimestamp(row.getCell(3).getStringCellValue().trim());
+                    
+                    // tạo đối tượng phiếu nhập và đưa vào danh sách
+                    PhieuXuat phieuMoi = new PhieuXuat(maPhieu, thoiGianTao, 
+                            nguoiTao, tongTien);
+                    
+                    danhsachPhieuXuatExcel.add(phieuMoi);
+                }
+            }
+           
+        } 
+        // bắt lỗi liên quan tới file
+        catch (IOException e) {
+            System.out.println("Lỗi đọc file: " + e.getMessage());
+        } 
+        // các lỗi khác
+        catch (NullPointerException e) {
+            System.out.println("Lỗi dữ liệu null không mong muốn!");
+        }
+  
+        return danhsachPhieuXuatExcel;
+    }
+    
+    // nhập file excel chi tiết phiếu nhập
+    public ArrayList<ChiTietPhieuXuat> nhapFileExcelChiTietPhieuXuat(String filePath) {
+        ArrayList<ChiTietPhieuXuat> danhsachCTPhieuXuatExcel = new ArrayList<>();
+        
+        // đọc dữ liệu từ file ở đường dẫn filePath và xử lý theo định dạng excel
+        try(
+                FileInputStream fileInput = new FileInputStream(filePath);
+                Workbook workBook = new XSSFWorkbook(fileInput);        
+        ) {
+            // lấy ra sheet đầu tiên trong file( chọn sheet cần đọc)
+            Sheet mySheet = workBook.getSheetAt(1);
+            
+            // bắt đầu đọc
+            
+            // đọc từ dòng 1 vì bỏ qua dòng tiêu đề
+            for(int i = 1; i <= mySheet.getLastRowNum(); ++i) {
+                // lấy dòng dữ liệu
+                Row row = mySheet.getRow(i);
+                
+                // nếu dòng không trống
+                if(row != null) {
+                   // bắt lỗi khi đọc
+                   try {
+                        //  mã phiếu
+                        String maPhieu = row.getCell(0).getStringCellValue();
+
+                        // Các cột chi tiết
+                        String maVatPham = row.getCell(1).getStringCellValue();
+                        
+                        int soLuong = (int) row.getCell(2).getNumericCellValue();
+                        
+                        double donGia = row.getCell(3).getNumericCellValue();
+
+                    // Tạo chi tiết phiếu nhập và thêm vào danh sách
+                    ChiTietPhieuXuat ctphieuMoi = new ChiTietPhieuXuat(maPhieu, maVatPham, soLuong, donGia);
+                    
+                    danhsachCTPhieuXuatExcel.add(ctphieuMoi);
+                   }
+                   catch(Exception e) {
+                       System.out.println("Lỗi đọc dữ liệu ở dòng "+ i );
+                   }
+                }
+            }  
+        } 
+        // bắt lỗi liên quan tới file
+        catch (IOException e) {
+            System.out.println("Lỗi đọc file: " + e.getMessage());
+        } 
+        // các lỗi khác
+        catch (NullPointerException e) {
+            System.out.println("Lỗi dữ liệu null không mong muốn!");
+        }
+  
+        return danhsachCTPhieuXuatExcel;
+    }
+    
+    // hàm hỗ trợ
+    
+    // hàm trả về Timestamp 
+    public Timestamp toTimestamp(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) return null;
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            // chuyển về java.util.Date chứ không phải java.sql.Date 
+            java.util.Date date = sdf.parse(dateStr.trim());
+            return new Timestamp(date.getTime());
+        } catch (ParseException e) {
+            System.err.println("Lỗi chuyển ngày: " + dateStr);
+            return null;
+        }
+    }
+
+            
 }

@@ -113,7 +113,7 @@ public class SidebarPanel extends JPanel {
         menuItems.add("Xuất hàng");
         menuItems.add("Phiếu xuất");
         menuItems.add("Tài khoản");
-        menuItems.add("Tồn kho");
+        //menuItems.add("Tồn kho");
         menuItems.add("Thống kê");
         menuItems.add("Phân quyền");
         menuItems.add("Đăng xuất");

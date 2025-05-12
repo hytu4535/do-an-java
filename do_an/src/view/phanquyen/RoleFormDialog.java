@@ -55,7 +55,7 @@ public class RoleFormDialog extends JDialog {
 
         // Tạo bảng với 5 cột: Tên chức năng, Xem, Tạo mới, Cập nhật, Xóa
         String[] columnNames = {"Danh mục chức năng", "Xem", "Tạo mới", "Cập nhật", "Xóa"};
-        functionNames.add("Quản lý khách hàng");
+        functionNames.add("Quản lý hóa đơn");
         functionNames.add("Quản lý khu vực kho");
         functionNames.add("Quản lý nhà cung cấp");
         functionNames.add("Quản lý nhân viên");

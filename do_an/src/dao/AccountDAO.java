@@ -1,6 +1,7 @@
 package dao;
 
 import model.Account;
+import dao.DBConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,12 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class AccountDAO {
     public List<Account> getAllAccounts() {
         List<Account> accounts = new ArrayList<>();
         String sql = "SELECT a.*, rg.roleGroupName FROM quanlivanphongpham.account a " +
-                     "LEFT JOIN quanlivanphongpham.role_group rg ON a.roleGroupId = rg.roleGroupId";
+                     "LEFT JOIN quanlivanphongpham.role_group rg ON a.roleGroupId = rg.roleGroupId " +
+                     "WHERE a.status = 1"; // Chỉ lấy tài khoản Hoạt động
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -90,8 +93,61 @@ public class AccountDAO {
             e.printStackTrace();
         }
     }
+
+    public void deactivateAccount(String userName) {
+        String sql = "UPDATE quanlivanphongpham.account SET status = 0 WHERE userName = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userName);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi chuyển trạng thái tài khoản: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Regex để kiểm tra định dạng userName
+    private static final String USERNAME_REGEX = "^[a-zA-Z0-9_-]{3,20}$";
+    private static final Pattern USERNAME_PATTERN = Pattern.compile(USERNAME_REGEX);
+
+    // Kiểm tra định dạng userName
+    private boolean isValidUsername(String userName) {
+        if (userName == null) {
+            return false;
+        }
+        return USERNAME_PATTERN.matcher(userName).matches();
+    }
+
+    // Kiểm tra xem userName đã tồn tại trong database chưa
+    public boolean isUsernameExists(String userName) {
+        String sql = "SELECT COUNT(*) FROM quanlivanphongpham.account WHERE userName = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi khi kiểm tra userName: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Kiểm tra trùng lặp userName và trả về thông báo
+    public String checkUsernameDuplicate(String userName) {
+        if (!isValidUsername(userName)) {
+            return "Tên tài khoản không hợp lệ. Tên tài khoản chỉ được chứa chữ cái, số, dấu gạch dưới hoặc gạch ngang, và có độ dài từ 3 đến 20 ký tự.";
+        }
+        if (isUsernameExists(userName)) {
+            return "Tên tài khoản đã tồn tại. Vui lòng chọn tên tài khoản khác.";
+        }
+        return null; // Null nghĩa là không có lỗi
+    }
     
-    //Phuc vu phan login - Quoc HUY
+     //Phuc vu phan login - Quoc HUY
     public Account getByUsername(String username) {
     Account account = null;
     String sql = "SELECT * FROM quanlivanphongpham.account WHERE userName = ?";
@@ -120,5 +176,4 @@ public class AccountDAO {
 
     return account;
 }
-
 }

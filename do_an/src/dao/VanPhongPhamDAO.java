@@ -141,6 +141,10 @@ public class VanPhongPhamDAO {
                 
                 ketqua = kq;
             }
+            
+            DBConnection.closeConnection(con);
+            
+            pst.close();
         }
         catch(SQLException e) {
             e.printStackTrace();
@@ -173,6 +177,44 @@ public class VanPhongPhamDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return vanPhongPhams;
+    }
+    
+    public ArrayList<VanPhongPham> getAllVanPhongPhamByNhaCungCap(String nhaCungCap) {
+        ArrayList<VanPhongPham> vanPhongPhams = new ArrayList<>();
+        String sql = "SELECT * FROM VanPhongPham WHERE thuonghieu = ? AND trangThai = 1 ";
+        try (Connection conn = DBConnection.getConnection()) {
+            
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            
+            stmt.setString(1, nhaCungCap);
+            
+            ResultSet rs = stmt.executeQuery();
+             
+            while (rs.next()) {
+                VanPhongPham vpp = new VanPhongPham();
+                vpp.setMaVatPham(rs.getString("maVatPham"));
+                vpp.setTenVatPham(rs.getString("tenVatPham"));
+                vpp.setSoLuong(rs.getInt("soLuong"));
+                vpp.setLoaiVatPham(rs.getString("loaiVatPham"));
+                vpp.setGia(rs.getDouble("gia"));
+                vpp.setThuongHieu(rs.getString("thuongHieu"));
+                vpp.setChatLieu(rs.getString("chatLieu"));
+                vpp.setDoDay(rs.getDouble("doDay"));
+                vpp.setMoTa(rs.getString("moTa"));
+                vpp.setXuatXu(rs.getString("xuatXu"));
+                vpp.setTrangThai(rs.getInt("trangThai"));
+                vanPhongPhams.add(vpp);
+            }
+            
+           stmt.close();
+           
+           rs.close();
+           
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
         return vanPhongPhams;
     }
 

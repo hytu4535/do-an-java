@@ -52,7 +52,7 @@ public class Paneltrai extends JPanel {
         
         pnlPaneltimkiem.setOpaque(true);
         
-        pnlPaneltimkiem.setPreferredSize(new Dimension(pnlPaneltimkiem.getPreferredSize().width, 100));
+        pnlPaneltimkiem.setPreferredSize(new Dimension(pnlPaneltimkiem.getPreferredSize().width, 150));
         //dung de fix loi va kiem tra
         //pnlPaneltimkiem.setBackground(Color.red);
         
@@ -65,7 +65,7 @@ public class Paneltrai extends JPanel {
         
         pnlPanelthongtin.setOpaque(true);
         
-        pnlPanelthongtin.setPreferredSize(new Dimension(pnlPanelthongtin.getPreferredSize().width, 400));
+        pnlPanelthongtin.setPreferredSize(new Dimension(pnlPanelthongtin.getPreferredSize().width, 350));
         
         //dung de fix loi va kiem tra
         //pnlPanelthongtin.setBackground(Color.yellow);

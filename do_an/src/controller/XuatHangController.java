@@ -211,7 +211,7 @@ public class XuatHangController {
                             ));
                         }
                         
-                        // cập nhật lại danhsachVPPTrai bên trái
+                        // cập nhật lại danhsachVPPTrai 
                         temp.setSoLuong(soLuongHang - soLuongNhap);
                         
                         // làm mới lại hai table 
@@ -419,6 +419,19 @@ public class XuatHangController {
     
     // phương thức thêm phiếu xuất mới
     public void themPhieuXuat() {
+         // kiểm tra xem nếu có tồ tại sản phầm ở mảng VPPPhai không
+        if(this.danhsachVPPPhai.size() == 0) {
+            // báo cho người dùng phải thêm dữ liệu
+            JOptionPane.showMessageDialog(
+                    null,                                                                     // parent: 
+                    "Không có sản phẩm nào được chọn để xuất",                           // nội dung của thông báo
+                    "THÔNG BÁO",                                                 // tiêu đề của thông báo
+                    JOptionPane.INFORMATION_MESSAGE        // icon của thông báo
+            );    
+            
+            return;
+        }
+
         // tạo một phiếu nhập trước
         PhieuXuat phieuMoi = new PhieuXuat();
         
@@ -433,8 +446,8 @@ public class XuatHangController {
         
         phieuMoi.setThoiGianTao(thoiGian);
         
-        // người tạo (chưa lấy được tài khoản đăng nhập nên mặc định là bên dưới)
-        phieuMoi.setNguoiTao("staff01");
+        // người tạo lấy từ phần login
+        phieuMoi.setNguoiTao(NguoiDungController.getCurrentUsername());
         
         // tongTien. Sử dụng mảng VPPPhai để tính
         double tongTien = 0;
@@ -497,10 +510,13 @@ public class XuatHangController {
         // làm mới panel
         // table trái
         // làm mới dữ liệu danhsachVPPTrai
+        /*
         this.danhsachVPPTrai = 
                 (ArrayList<VanPhongPham>) VanPhongPhamDAO.getInstance().getAllVanPhongPhams();
         
         loadData(this.danhsachVPPTrai, 1);
+        */
+        loadDataBenTrai();
         
         // table phải
         // xóa hết dữ liệu danhsachVPPPhai
@@ -563,9 +579,12 @@ public class XuatHangController {
             this.view.getPnlPanelphai().getPnlPanelluachon().getLblHienthi().setText(DoubleToDong(tong));
         }
         
-        // tải thêm thông tim của mã phiếu nhập mới
+        // tải thêm thông tim của mã phiếu nhập mới và người tạo
         this.view.getPnlPanelphai().getPnlPaneltimkiem().getTxtfHienthi().get(0).setText(
                 maPhieuXuatMoi());
+        
+        this.view.getPnlPanelphai().getPnlPaneltimkiem().getTxtfHienthi().get(1).setText(
+                NguoiDungController.getCurrentUsername());
     }
     //##############################
     

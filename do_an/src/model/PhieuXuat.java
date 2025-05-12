@@ -11,6 +11,15 @@ public class PhieuXuat {
     // Constructor
     public PhieuXuat() {}
 
+    public PhieuXuat(String maPhieu, Timestamp thoiGianTao, String nguoiTao, double tongTien) {
+        this.maPhieu = maPhieu;
+        this.thoiGianTao = thoiGianTao;
+        this.nguoiTao = nguoiTao;
+        this.tongTien = tongTien;
+    }
+    
+    
+
     // Getters và Setters
     public String getMaPhieu() { return maPhieu; }
     public void setMaPhieu(String maPhieu) { this.maPhieu = maPhieu; }

@@ -96,6 +96,16 @@ public class NhapHangController {
                 themPhieuNhap();
             }
         });
+        
+        // thêm sự kiện cho combobox nhà cung cấp bên trái
+        this.view.getPnlPaneltrai().getPnlPaneltimkiem().getCbNhacungcap().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent I) {
+                ArrayList<VanPhongPham> danhSach = locTheoBoLoc();
+                
+                loadData(danhSach, 1);
+            }
+        });
     }
     
     
@@ -105,7 +115,7 @@ public class NhapHangController {
             // thêm các nhà cung cấp cho combobox ở phần tìm kiếm bên phải
             
             // lấy bộ lọc
-            JComboBox boloc = this.view.getPnlPanelphai().getPnlPaneltimkiem().getCbNhacungcap();
+            JComboBox boloc = this.view.getPnlPaneltrai().getPnlPaneltimkiem().getCbNhacungcap();
             
             // lấy giá trị được chọn 
             String nhaCungCap = boloc.getSelectedItem().toString();
@@ -141,9 +151,13 @@ public class NhapHangController {
                     }
                 }
            }
-           // nếu không dùng tìm kiếm
+           // nếu không dùng tìm kiếm thì sẽ lọc mặc định theo combobox
            else {
-               danhsach = this.danhsachVPPTrai;
+               for(var item : this.danhsachVPPTrai) {
+                   if( item.getThuongHieu().equals(boloc.getSelectedItem().toString()) ) {
+                       danhsach.add(item);
+                   }
+               }
            }
            
            //in danhsach ra bảng
@@ -166,7 +180,7 @@ public class NhapHangController {
                 
                 // kiểm tra nếu chuỗi nhập vào là số
                 String soLuongNhapTextField = 
-                        this.view.getPnlPaneltrai().getPnlPanelluachon().getTxtfHienthi().getText().toString();
+                        this.view.getPnlPaneltrai().getPnlPanelluachon().getTxtfHienthi().getText();
                 
                 System.out.println(soLuongNhapTextField);
                 
@@ -389,6 +403,19 @@ public class NhapHangController {
     
     // phương thức thêm phiếu nhập mới
     public void themPhieuNhap() {
+        // kiểm tra xem nếu có tồ tại sản phầm ở mảng VPPPhai không
+        if(this.danhsachVPPPhai.size() == 0) {
+            // báo cho người dùng phải thêm dữ liệu
+            JOptionPane.showMessageDialog(
+                    null,                                                                     // parent: 
+                    "Không có sản phẩm nào được chọn để thêm",                           // nội dung của thông báo
+                    "THÔNG BÁO",                                                 // tiêu đề của thông báo
+                    JOptionPane.INFORMATION_MESSAGE        // icon của thông báo
+            );    
+            
+            return;
+        }
+        
         // tạo một phiếu nhập trước
         PhieuNhap phieuMoi = new PhieuNhap();
         
@@ -403,12 +430,12 @@ public class NhapHangController {
         
         phieuMoi.setThoiGianTao(thoiGian);
         
-        // người tạo (chưa lấy được tài khoản đăng nhập nên mặc định là bên dưới)
-        phieuMoi.setNguoiTao("staff01");
+        // lấy người tạo từ phần login 
+        phieuMoi.setNguoiTao(NguoiDungController.getCurrentUsername());
         
         // maNhaCungCap
         phieuMoi.setMaNhaCungCap(
-                this.view.getPnlPanelphai().getPnlPaneltimkiem().getCbNhacungcap().getSelectedItem().toString());
+                this.view.getPnlPaneltrai().getPnlPaneltimkiem().getCbNhacungcap().getSelectedItem().toString());
         
         // tongTien. Sử dụng mảng VPPPhai để tính
         double tongTien = 0;
@@ -470,8 +497,7 @@ public class NhapHangController {
         // làm mới panel
         // table trái
         // làm mới dữ liệu danhsachVPPTrai
-        this.danhsachVPPTrai = 
-                (ArrayList<VanPhongPham>) VanPhongPhamDAO.getInstance().getAllVanPhongPhams();
+        this.danhsachVPPTrai = locTheoBoLoc();
         
         loadData(this.danhsachVPPTrai, 1);
         
@@ -488,10 +514,35 @@ public class NhapHangController {
         ArrayList<NhaCungCap> danhsachNCC = 
                 (ArrayList<NhaCungCap>) NhaCungCapDAO.getInstance().getAllNhaCungCaps();
         
+         this.view.getPnlPaneltrai().getPnlPaneltimkiem().getCbNhacungcap().addItem("--Tất cả--");
+        
         for(var item : danhsachNCC) {
-            this.view.getPnlPanelphai().getPnlPaneltimkiem().getCbNhacungcap().addItem(
+            this.view.getPnlPaneltrai().getPnlPaneltimkiem().getCbNhacungcap().addItem(
                 item.getMaNhaCungCap());
         }
+        
+    }
+    
+    // trả về mảng theo bộ lọc
+    public ArrayList<VanPhongPham> locTheoBoLoc() {
+        // lấy combobox nhà cung cấp
+        JComboBox boloc = this.view.getPnlPaneltrai().getPnlPaneltimkiem().getCbNhacungcap();
+        
+        String ketQuaLoc = boloc.getSelectedItem().toString();
+        
+        ArrayList<VanPhongPham> ketqua = null;
+        
+        // kiểm tra ket qua lọc
+        // nếu lấy tất cả 
+        if(boloc.getSelectedIndex() == 0) {
+            ketqua = (ArrayList<VanPhongPham>) VanPhongPhamDAO.getInstance().getAllSanPhams();
+        }
+        // nếu có chọn 
+        else {
+            ketqua = VanPhongPhamDAO.getInstance().getAllVanPhongPhamByNhaCungCap(ketQuaLoc);
+        }
+        
+        return ketqua;
     }
     
     
@@ -550,9 +601,12 @@ public class NhapHangController {
             this.view.getPnlPanelphai().getPnlPanelluachon().getLblHienthi().setText(DoubleToDong(tong));
         }
         
-        // tải thêm thông tim của mã phiếu nhập mới
+        // tải thêm thông tim của mã phiếu nhập mới và người tạo
         this.view.getPnlPanelphai().getPnlPaneltimkiem().getTxtfHienthi().get(0).setText(
                 maPhieuNhapMoi());
+        
+        this.view.getPnlPanelphai().getPnlPaneltimkiem().getTxtfHienthi().get(1).setText(
+                NguoiDungController.getCurrentUsername());
         
     }
     //##############################

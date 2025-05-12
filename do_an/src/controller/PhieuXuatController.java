@@ -12,6 +12,7 @@ import view.phieuxuat.PhieuxuatPanel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -26,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import util.ExcelHandler;
 
@@ -90,6 +92,14 @@ public class PhieuXuatController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 xuatFileExcel();
+            }
+        });
+        
+        // thêm sự kiên cho nút nhập excel
+        panelchucnang.getBtnNut().get(4).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nhapFileExcel();
             }
         });
         
@@ -505,7 +515,80 @@ public class PhieuXuatController {
             // xuất file
             ArrayList<PhieuXuat> danhSachPhieu = 
                     (ArrayList<PhieuXuat>) PhieuXuatDAO.getInstance().getAllPhieuXuats();
-            ExcelHandler.getInstance().XuatFilePhieuXuatExcel(danhSachPhieu, filePath);
+            
+            ArrayList<ChiTietPhieuXuat> danhSachCTPhieu = ChiTietPhieuXuatDAO.getInstance().getAll();
+            
+            ExcelHandler.getInstance().XuatFilePhieuXuatExcel(danhSachPhieu, danhSachCTPhieu, filePath);
+        }
+    }
+    
+     // nhập file excel
+    public void nhapFileExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        
+        fileChooser.setDialogTitle("Chọn file Excel");
+        
+        // chỉ cho nhập file excel
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files", "xlsx"));
+
+        int result = fileChooser.showOpenDialog(null);
+        
+        // nếu người dùng có chọn
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            
+            String filePath = selectedFile.getAbsolutePath();
+
+            // Gọi hàm đọc file Excel
+            ArrayList<PhieuXuat> danhSach = ExcelHandler.getInstance().nhapFileExcelPhieuXuat(filePath);
+
+            ArrayList<ChiTietPhieuXuat> danhSachCT = 
+                    ExcelHandler.getInstance().nhapFileExcelChiTietPhieuXuat(filePath);
+            
+            // bắt đầu nhập
+            // B1: xóa dữ liệu ở bảng chi tiết phiếu rồi tới bảng phiếu
+            if(ChiTietPhieuXuatDAO.getInstance().deleteAll()) {
+                if(PhieuXuatDAO.getInstance().deleteAll()) {
+                    // B2: thêm bảng phiếu xuất trước rồi tới bảng chi tiết phiếu
+                    
+                    // phiếu xuất
+                    for(var phieu : danhSach) {
+                        PhieuXuatDAO.getInstance().insert(phieu);
+                    }
+                    
+                    // chi tiết phiếu xuất
+                    for(var phieu : danhSachCT) {
+                        ChiTietPhieuXuatDAO.getInstance().insert(phieu);
+                    }
+                    
+                    // làm mới lại bảng hiển thị
+                    loadData();
+                    
+                    // thông báo đã nhập xong
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Nhập file Excel hoàn tất!",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );  
+                }
+                else {
+                  JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Có lỗi trong lúc ghi đè bảng chi tiết phiếu xuất",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.ERROR_MESSAGE
+                    );  
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Có lỗi trong lúc ghi đè bảng phiếu xuất",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
+            }
         }
     }
     

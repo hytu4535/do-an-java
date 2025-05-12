@@ -55,7 +55,7 @@ public class Panelphai extends JPanel {
         
         pnlPaneltimkiem.setOpaque(true);
         
-        pnlPaneltimkiem.setPreferredSize(new Dimension(pnlPaneltimkiem.getPreferredSize().width, 200));
+        pnlPaneltimkiem.setPreferredSize(new Dimension(pnlPaneltimkiem.getPreferredSize().width, 150));
         
         //dung de fix loi va kiem tra
         //pnlPaneltimkiem.setBackground(Color.red);
@@ -69,7 +69,7 @@ public class Panelphai extends JPanel {
         
         pnlPanelthongtin.setOpaque(true);
         
-        pnlPanelthongtin.setPreferredSize(new Dimension(pnlPanelthongtin.getPreferredSize().width, 200));
+        pnlPanelthongtin.setPreferredSize(new Dimension(pnlPanelthongtin.getPreferredSize().width, 350));
         
         //dung de fix loi va kiem tra
         pnlPanelthongtin.setBackground(Color.yellow);

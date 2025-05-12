@@ -10,7 +10,19 @@ public class PhieuNhap {
     private double tongTien;
 
     // Constructor
+    //######################
     public PhieuNhap() {}
+
+    public PhieuNhap(String maPhieu, Timestamp thoiGianTao, String nguoiTao, String maNhaCungCap, double tongTien) {
+        this.maPhieu = maPhieu;
+        this.thoiGianTao = thoiGianTao;
+        this.nguoiTao = nguoiTao;
+        this.maNhaCungCap = maNhaCungCap;
+        this.tongTien = tongTien;
+    }
+    //######################
+    
+
 
     // Getters và Setters
     public String getMaPhieu() { return maPhieu; }

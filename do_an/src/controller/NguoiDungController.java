@@ -143,12 +143,25 @@ public class NguoiDungController implements RoleGroupChangeListener {
                 null,
                 false
             );
-            dialog.setVisible(true);
-            if (dialog.isConfirmed()) {
+            boolean isValid = false;
+            while (!isValid) {
+                dialog.setVisible(true);
+                if (!dialog.isConfirmed()) {
+                    dialog.dispose();
+                    return; // Người dùng hủy, thoát
+                }
                 try {
                     HashMap<String, String> data = dialog.getData();
+                    String userName = data.get("Tên tài khoản");
+                    // Kiểm tra trùng lặp userName
+                    String message = accountDAO.checkUsernameDuplicate(userName);
+                    if (message != null) {
+                        JOptionPane.showMessageDialog(dialog, message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        continue; // Giữ form mở, chờ người dùng sửa
+                    }
+
                     Account account = new Account();
-                    account.setUserName(data.get("Tên tài khoản"));
+                    account.setUserName(userName);
                     account.setFullName(data.get("Họ tên"));
                     account.setRoleGroupId(data.get("Vai trò"));
                     account.setStatus(data.get("Trạng thái").equals("Hoạt động") ? 1 : 0);
@@ -165,12 +178,16 @@ public class NguoiDungController implements RoleGroupChangeListener {
                     account.setEmail(data.get("Email").isEmpty() ? null : data.get("Email"));
 
                     accountDAO.addAccount(account);
+                    isValid = true; // Đánh dấu dữ liệu hợp lệ
                     refreshData();
                     JOptionPane.showMessageDialog(view, "Thêm người dùng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    dialog.dispose(); // Đóng form sau khi thêm thành công
                 } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(view, "Ngày sinh phải có định dạng dd/MM/yyyy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Ngày sinh phải có định dạng dd/MM/yyyy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    // Giữ form mở, chờ người dùng sửa
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(view, "Lỗi khi thêm người dùng: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Lỗi khi thêm người dùng: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    // Giữ form mở, chờ người dùng sửa
                 }
             }
         });
@@ -242,16 +259,20 @@ public class NguoiDungController implements RoleGroupChangeListener {
             }
 
             Account selectedAccount = accounts.get(selectedRow);
-            String message = "Bạn có chắc chắn muốn xóa người dùng này?\n" +
+            String message = "Bạn có chắc chắn muốn chuyển trạng thái người dùng này sang Ngưng hoạt động?\n" +
                             "Tên tài khoản: " + selectedAccount.getUserName() + "\n" +
                             "Họ tên: " + selectedAccount.getFullName() + "\n" +
                             "Vai trò: " + selectedAccount.getRole();
-            int confirm = JOptionPane.showConfirmDialog(view, message, "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(view, message, "Xác nhận chuyển trạng thái", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                accountDAO.deleteAccount(selectedAccount.getUserName());
-                refreshData();
-                view.getInfoPanel().updateInfo(null);
-                JOptionPane.showMessageDialog(view, "Xóa người dùng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    accountDAO.deactivateAccount(selectedAccount.getUserName());
+                    refreshData();
+                    view.getInfoPanel().updateInfo(null);
+                    JOptionPane.showMessageDialog(view, "Chuyển trạng thái người dùng sang Ngưng hoạt động thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(view, "Lỗi khi chuyển trạng thái người dùng: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -352,7 +373,8 @@ public class NguoiDungController implements RoleGroupChangeListener {
         });
     }
     
-    // biến static để lưu username người đăng nhập
+    //###########< code Q.Huy >##############
+        // biến static để lưu username người đăng nhập
 public static String currentUsername = null;
 
 // phương thức đăng nhập dùng trong LoginFrame
@@ -366,5 +388,10 @@ public static boolean login(String username, String password) {
     }
     return false;
 }
+
+    public static String getCurrentUsername() {
+        return currentUsername;
+    }
+
 
 }

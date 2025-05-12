@@ -9,8 +9,8 @@ public class AvatarPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.LIGHT_GRAY);
 
-        // Tạo avatar (giả sử dùng ảnh từ file)
-        ImageIcon avatarIcon = new ImageIcon("D:/ảnh/github.jpg");
+        //C:\Users\DELL\Documents\SGU_CNTT_K23\NAM2_HK2\Ngon_ngu_lap_trinh_JAVA\do-an-java\do-an-java\do_an\src\resources\images
+        ImageIcon avatarIcon = new ImageIcon("C:\\Users\\DELL\\Documents\\SGU_CNTT_K23\\NAM2_HK2\\Ngon_ngu_lap_trinh_JAVA\\do-an-java\\do-an-java\\do_an\\src\\resources\\images\\R.png");
         JLabel avatarLabel = new JLabel(avatarIcon);
         avatarLabel.setHorizontalAlignment(SwingConstants.CENTER);
 

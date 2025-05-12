@@ -130,7 +130,7 @@ public class ChiTietPhieuXuatDAO {
             
             Connection con = DBConnection.getConnection();
             
-            String sql = "SELECT * FROM chitietphieuxuat ORDER BY thoiGianTao DESC";
+            String sql = "SELECT * FROM chitietphieuxuat";
             
             PreparedStatement pst = con.prepareStatement(sql);
             
@@ -211,6 +211,23 @@ public class ChiTietPhieuXuatDAO {
         }
         
         return ketQua;
+    }
+    
+     // xóa hết dữ liệu trong bảng và trả về true khi thành công 
+    public boolean deleteAll() {
+        String query = "DELETE FROM chitietphieuxuat";
+        
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement pst = con.prepareStatement(query);
+                ) {
+            int rowsAffected = pst.executeUpdate(query);
+            
+            return rowsAffected > 0;
+        } 
+        catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     
 }

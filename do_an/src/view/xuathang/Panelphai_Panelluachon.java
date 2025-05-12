@@ -7,6 +7,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import javax.swing.border.LineBorder;
+import util.ButtonFactory;
 
 
 public class Panelphai_Panelluachon extends JPanel {
@@ -55,6 +56,13 @@ public class Panelphai_Panelluachon extends JPanel {
         
         btnTennut = new String[] {"Sửa số lượng", "Xóa sản phẩm", "Xuất hàng"};
         
+         // tên file các icon
+        String[] iconFile = new String[] {
+            "edit_icon.png",
+            "icon_delete.png",
+            "icon_plus48.png"
+        };
+        
         btnCommand = new String[] { "Sua", "Xoa", "Xuat"};
         
         int height = 40;
@@ -74,6 +82,12 @@ public class Panelphai_Panelluachon extends JPanel {
         for(int i = 0; i < btnTennut.length; ++i) {
             JButton tempbutt = new JButton(btnTennut[i]);
             
+            ButtonFactory.applyImageToButton(
+                tempbutt, 
+                ButtonFactory.buildIconPath(iconFile[i]), 
+                16, 
+                16);
+            
             tempbutt.setFocusable(false);
             
             tempbutt.setFont(myFont);
@@ -89,7 +103,7 @@ public class Panelphai_Panelluachon extends JPanel {
             btnNut.add(tempbutt);
             
             if(i == btnTennut.length - 1) {
-                tempbutt.setBackground(new Color(50, 168, 82));
+                tempbutt.setBackground(new Color(240, 248, 255));
             }
         }
         

@@ -11,6 +11,7 @@ import view.phieunhap.*;
 import view.phieunhap.PhieunhapPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -25,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import util.ExcelHandler;
 
@@ -32,6 +34,7 @@ import util.ExcelHandler;
 
 public class PhieuNhapController {
     private PhieunhapPanel view;
+    private ArrayList<PhieuNhap> danhsachPhieuNhap;
     
     public PhieuNhapController(PhieunhapPanel view ) {
         this.view = view;
@@ -91,16 +94,34 @@ public class PhieuNhapController {
             }
         });
         
+         // thêm sự kiên cho nút nhập excel
+        panelchucnang.getBtnNut().get(4).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nhapFileExcel();
+            }
+        });
+        
+        /*
+        // thêm sự kiện cho combobox lọc
+        paneltimkiem.getCbTimkiem().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadData();
+            }
+        });
+        */
+        
     }
     
     // lọc dữ liệu theo các lựa chon trong combobox(nếu các giá trị lọc không được thêm vào thì sẽ in ra danh
     // sách từ getAll() )
     private void loadData() {
         // lấy dữ liêu từ cdsl
-        ArrayList<PhieuNhap> danhsachphieu = PhieuNhapDAO.getInstance().getAll();
+        this.danhsachPhieuNhap = PhieuNhapDAO.getInstance().getAll();
         
         // dùng để lọc danh sách
-        Iterator<PhieuNhap> it = danhsachphieu.iterator();
+        Iterator<PhieuNhap> it = this.danhsachPhieuNhap.iterator();
         
         // LỌC DỮ LIỆU THEO PHẦN PANEL1
         // lấy các component ở panel1_timkiem
@@ -158,7 +179,7 @@ public class PhieuNhapController {
         
         // nếu một trong hai điều kiện lọc không bị trống => có sử dụng bộ lọc ngày
         if(tuNgay != null || denNgay != null) {
-            it = danhsachphieu.iterator();
+            it = this.danhsachPhieuNhap.iterator();
             
             // nếu cả hai bộ lọc đều được chọn
             if( tuNgay != null && denNgay != null) {
@@ -204,7 +225,7 @@ public class PhieuNhapController {
         
         // nếu có dùng bộ lọc và số
         if(tuGia.length() > 0 || denGia.length() > 0) {
-            it = danhsachphieu.iterator();
+            it = this.danhsachPhieuNhap.iterator();
             
             // nếu cả hai bộ lọc được chọn
             if(tuGia.length() > 0 && denGia.length() > 0) {
@@ -267,8 +288,8 @@ public class PhieuNhapController {
         tblmodel.setRowCount(0);
         
         // thêm hàng vào bảng
-        for(int i = 0; i < danhsachphieu.size(); ++i) {
-            PhieuNhap phieu = danhsachphieu.get(i);
+        for(int i = 0; i < this.danhsachPhieuNhap.size(); ++i) {
+            PhieuNhap phieu = this.danhsachPhieuNhap.get(i);
             
             tblmodel.addRow(new Object[] {
                 String.valueOf(i + 1),
@@ -506,7 +527,80 @@ public class PhieuNhapController {
             
             // xuất file
             ArrayList<PhieuNhap> danhSachPhieu = PhieuNhapDAO.getInstance().getAll();
-            ExcelHandler.getInstance().XuatFilePhieuNhapExcel(danhSachPhieu, filePath);
+            ArrayList<ChiTietPhieuNhap> danhSachCTPhieu = ChiTietPhieuNhapDAO.getInstance().getAll();
+            
+            ExcelHandler.getInstance().XuatFilePhieuNhapExcel(danhSachPhieu, danhSachCTPhieu, filePath);
+        }
+    }
+    
+    
+    // nhập file excel
+    public void nhapFileExcel() {
+        JFileChooser fileChooser = new JFileChooser();
+        
+        fileChooser.setDialogTitle("Chọn file Excel");
+        
+        // chỉ cho nhập file excel
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files", "xlsx"));
+
+        int result = fileChooser.showOpenDialog(null);
+        
+        // nếu người dùng có chọn
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            
+            String filePath = selectedFile.getAbsolutePath();
+
+            // Gọi hàm đọc file Excel
+            ArrayList<PhieuNhap> danhSach = ExcelHandler.getInstance().nhapFileExcelPhieuNhap(filePath);
+
+            ArrayList<ChiTietPhieuNhap> danhSachCT = 
+                    ExcelHandler.getInstance().nhapFileExcelChiTietPhieuNhap(filePath);
+            
+            // bắt đầu nhập
+            // B1: xóa dữ liệu ở bảng chi tiết phiếu rồi tới bảng phiếu
+            if(ChiTietPhieuNhapDAO.getInstance().deleteAll()) {
+                if(PhieuNhapDAO.getInstance().deleteAll()) {
+                    // B2: thêm bảng phiếu nhập trước rồi tới bảng chi tiết phiếu
+                    
+                    // phiếu nhập
+                    for(var phieu : danhSach) {
+                        PhieuNhapDAO.getInstance().insert(phieu);
+                    }
+                    
+                    // chi tiết phiếu nhập
+                    for(var phieu : danhSachCT) {
+                        ChiTietPhieuNhapDAO.getInstance().insert(phieu);
+                    }
+                    
+                    // làm mới lại bảng hiển thị
+                    loadData();
+                    
+                    // thông báo đã nhập xong
+                    JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Nhập fil Excel hoàn tất!",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.INFORMATION_MESSAGE
+                    );  
+                }
+                else {
+                  JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Có lỗi trong lúc ghi đè bảng chi tiết phiếu nhập",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.ERROR_MESSAGE
+                    );  
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(
+                        null,        // parent
+                        "Có lỗi trong lúc ghi đè bảng phiếu nhập",// nội dung 
+                        "Cảnh báo", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
+            }
         }
     }
     
@@ -541,3 +635,6 @@ public class PhieuNhapController {
     }
 
 }
+
+
+// mở output window = ctrl + 4

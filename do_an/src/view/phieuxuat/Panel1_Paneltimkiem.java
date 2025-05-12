@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import util.ButtonFactory;
 
 
 public class Panel1_Paneltimkiem extends JPanel {
@@ -63,7 +64,7 @@ public class Panel1_Paneltimkiem extends JPanel {
     }
     
     public void InitTimkiem() {
-        btnLammoi = new JButton("Làm mới");
+        btnLammoi = new JButton("Tìm kiếm");
         
         txtfTimkiem = new JTextField();
         
@@ -74,6 +75,12 @@ public class Panel1_Paneltimkiem extends JPanel {
         // đieeuf chỉnh các components
         //btnLammoi
         btnLammoi.setOpaque(true);
+        
+        ButtonFactory.applyImageToButton(
+                btnLammoi,
+                ButtonFactory.buildIconPath("icons8-magnifying-glass-tilted-left-32.png"), 
+                16, 
+                16);
         
         btnLammoi.setBackground(new Color(255, 255, 255));
         

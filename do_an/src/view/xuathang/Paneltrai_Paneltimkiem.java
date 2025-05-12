@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import javax.swing.border.LineBorder;
+import util.ButtonFactory;
 
 public class Paneltrai_Paneltimkiem extends JPanel {
     private GridBagConstraints gbc;
@@ -44,7 +45,14 @@ public class Paneltrai_Paneltimkiem extends JPanel {
     public void InitTimkiem() {
         txtfTimkiem = new JTextField();
         
-        btnTimkiem = new JButton("Làm mới");
+        btnTimkiem = new JButton("Tìm kiếm");
+        
+        ButtonFactory.applyImageToButton(
+                btnTimkiem,
+                ButtonFactory.buildIconPath("icons8-magnifying-glass-tilted-left-32.png"), 
+                16, 
+                16);
+        
         btnTimkiem.setBackground(this.bgColor);
         
         //dieu chinh txtfTimkiem

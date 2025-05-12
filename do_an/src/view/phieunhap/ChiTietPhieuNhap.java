@@ -73,7 +73,7 @@ public class ChiTietPhieuNhap extends JPanel {
         pnlTieude.setPreferredSize(new Dimension(this.pnlTieude.getPreferredSize().width, 80));
        
         // đặt màu tạm thời
-        pnlTieude.setBackground(Color.cyan);
+        pnlTieude.setBackground(new Color(50, 168, 82));
         
         //căn giũa Label trong Panel bằng GridBagLayout 
         pnlTieude.setLayout(new GridBagLayout());

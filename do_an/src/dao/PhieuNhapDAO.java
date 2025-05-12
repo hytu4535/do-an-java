@@ -41,6 +41,8 @@ public class PhieuNhapDAO {
             // thực thi câu lệnh
             ketqua = pst.executeUpdate();
             
+            System.out.println(ketqua);
+            
             // đóng kết nối tới csdl
             pst.close();
             
@@ -232,5 +234,22 @@ public class PhieuNhapDAO {
             e.printStackTrace();
         }
         return phieuNhaps;
+    }
+    
+    // xóa hết dữ liệu trong bảng và trả về true khi thành công 
+    public boolean deleteAll() {
+        String query = "DELETE FROM phieunhap";
+        
+        try (Connection con = DBConnection.getConnection();
+                PreparedStatement pst = con.prepareStatement(query);
+                ) {
+            int rowsAffected = pst.executeUpdate(query);
+            
+            return rowsAffected > 0;
+        } 
+        catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
