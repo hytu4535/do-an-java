@@ -60,13 +60,25 @@ public class VanPhongPhamDAO {
         return false;
     }
     
-    // phương thức cập nhật văn phòng phẩm
+   // phương thức cập nhật văn phòng phẩm
     public void update(VanPhongPham temp) {
         int ketqua = 0;
         
         try {
             Connection con = DBConnection.getConnection();
             
+            // Lấy trạng thái hiện tại nếu không được cung cấp
+            int trangThaiHienTai = 1; // Mặc định là 1 nếu không tìm thấy
+            String sqlCheck = "SELECT trangThai FROM vanphongpham WHERE maVatPham = ?";
+            PreparedStatement pstCheck = con.prepareStatement(sqlCheck);
+            pstCheck.setString(1, temp.getMaVatPham());
+            ResultSet rs = pstCheck.executeQuery();
+            if (rs.next()) {
+                trangThaiHienTai = rs.getInt("trangThai");
+            }
+            rs.close();
+            pstCheck.close();
+
             String sql = "UPDATE vanphongpham SET "
                     + "maVatPham = ?, "
                     + "tenVatPham = ?, "
@@ -93,7 +105,7 @@ public class VanPhongPhamDAO {
             pst.setDouble(8, temp.getDoDay());
             pst.setString(9, temp.getMoTa());
             pst.setString(10, temp.getXuatXu());
-            pst.setInt(11, temp.getTrangThai());
+            pst.setInt(11, temp.getTrangThai() != null ? temp.getTrangThai() : trangThaiHienTai); // Giữ nguyên nếu null
             pst.setString(12, temp.getMaVatPham());
             
             // bắt đầu update
@@ -104,12 +116,11 @@ public class VanPhongPhamDAO {
             
             DBConnection.closeConnection(con);
             
-        }
-        catch(SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Lỗi khi cập nhật sản phẩm: " + e.getMessage());
         }
-    } 
-    
+    }    
     // phương thức tìm kiếm theo maVatPham và trả về đối tượng
     public VanPhongPham getByID(String id) {
         VanPhongPham ketqua = null;
@@ -141,10 +152,6 @@ public class VanPhongPhamDAO {
                 
                 ketqua = kq;
             }
-            
-            DBConnection.closeConnection(con);
-            
-            pst.close();
         }
         catch(SQLException e) {
             e.printStackTrace();
@@ -302,7 +309,7 @@ public class VanPhongPhamDAO {
         }
     }
 
-    public void updateSanPham(VanPhongPham vpp) {
+public void updateSanPham(VanPhongPham vpp) {
         String sql = "UPDATE VanPhongPham SET tenVatPham = ?, soLuong = ?, loaiVatPham = ?, gia = ?, thuongHieu = ?, chatLieu = ?, doDay = ?, moTa = ?, xuatXu = ?, trangThai = ? WHERE maVatPham = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -315,9 +322,12 @@ public class VanPhongPhamDAO {
             stmt.setDouble(7, vpp.getDoDay());
             stmt.setString(8, vpp.getMoTa());
             stmt.setString(9, vpp.getXuatXu());
-            stmt.setInt(10, vpp.getTrangThai());
+            stmt.setInt(10, vpp.getTrangThai() != null ? vpp.getTrangThai() : 1); // Sử dụng giá trị từ vpp, mặc định 1 nếu null
             stmt.setString(11, vpp.getMaVatPham());
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Không tìm thấy sản phẩm với mã: " + vpp.getMaVatPham());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Lỗi khi cập nhật sản phẩm: " + e.getMessage());

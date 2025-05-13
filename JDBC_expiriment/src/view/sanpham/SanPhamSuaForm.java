@@ -1,17 +1,24 @@
 package view.sanpham;
 
 import controller.SanPhamController;
+import dao.VanPhongPhamDAO;
 import model.VanPhongPham;
 import javax.swing.*;
 import java.awt.*;
 
 public class SanPhamSuaForm extends JDialog {
     private JTextField[] textFields;
+    private JComboBox<String> cbLoaiSP;
+    private JComboBox<String> cbTrangThai;
+    private JComboBox<String> cbXuatXu;
+    private JComboBox<String> cbThuongHieu;
     private SanPhamController controller;
+    private VanPhongPhamDAO dao;
 
     public SanPhamSuaForm(Frame parent, Object[] productData, SanPhamController controller) {
         super(parent, "Sửa sản phẩm", true);
         this.controller = controller;
+        this.dao = VanPhongPhamDAO.getInstance();
         setSize(600, 450);
         setLocationRelativeTo(parent);
         setLayout(new BorderLayout(10, 10));
@@ -31,16 +38,54 @@ public class SanPhamSuaForm extends JDialog {
 
         String[] labels = {"Mã SP", "Tên SP", "Số lượng", "Loại SP", "Giá", "Thương hiệu",
                            "Chất liệu", "Độ dày", "Mô tả", "Xuất xứ", "Trạng thái"};
-        textFields = new JTextField[labels.length];
+        textFields = new JTextField[labels.length - 4]; // Bớt 4 trường cho Loại SP, Thương hiệu, Xuất xứ, Trạng thái
+
+        // Lấy dữ liệu hiện tại từ productData
+        String maSP = productData[0].toString();
+        VanPhongPham spHienTai = dao.getByID(maSP);
+
+        // Các trường dùng JTextField hoặc JComboBox
+        int textFieldIndex = 0;
         for (int i = 0; i < labels.length; i++) {
             JLabel lbl = new JLabel(labels[i] + ":");
             lbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
             infoPanel.add(lbl);
 
-            textFields[i] = new JTextField(productData[i] != null ? productData[i].toString() : "");
-            textFields[i].setFont(new Font("Segoe UI", Font.PLAIN, 14));
-            textFields[i].setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
-            infoPanel.add(textFields[i]);
+            if (i == 3) { // Trường Loại SP
+                cbLoaiSP = new JComboBox<>(new String[]{"Bút", "Bút chì", "Sổ tay", "Tẩy", "Thước", "Vở"});
+                cbLoaiSP.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbLoaiSP.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                cbLoaiSP.setSelectedItem(productData[i] != null ? productData[i].toString() : "Bút");
+                infoPanel.add(cbLoaiSP);
+            } else if (i == 5) { // Trường Thương hiệu
+                cbThuongHieu = new JComboBox<>(dao.getAllThuongHieu().toArray(new String[0]));
+                cbThuongHieu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbThuongHieu.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                cbThuongHieu.setSelectedItem(productData[i] != null ? productData[i].toString() : "");
+                infoPanel.add(cbThuongHieu);
+            } else if (i == 9) { // Trường Xuất xứ
+                cbXuatXu = new JComboBox<>(dao.getAllXuatXu().toArray(new String[0]));
+                cbXuatXu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbXuatXu.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                cbXuatXu.setSelectedItem(productData[i] != null ? productData[i].toString() : "");
+                infoPanel.add(cbXuatXu);
+            } else if (i == 10) { // Trường Trạng thái
+                cbTrangThai = new JComboBox<>(new String[]{"Bán", "Không được bán"});
+                cbTrangThai.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbTrangThai.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                cbTrangThai.setSelectedItem((spHienTai != null && spHienTai.getTrangThai() == 1) ? "Bán" : "Không được bán");
+                infoPanel.add(cbTrangThai);
+            } else {
+                textFields[textFieldIndex] = new JTextField(productData[i] != null ? productData[i].toString() : "");
+                textFields[textFieldIndex].setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                textFields[textFieldIndex].setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                if (i == 0) {
+                    textFields[textFieldIndex].setEditable(false);
+                    textFields[textFieldIndex].setBackground(new Color(230, 230, 230));
+                }
+                infoPanel.add(textFields[textFieldIndex]);
+                textFieldIndex++;
+            }
         }
 
         add(infoPanel, BorderLayout.CENTER);
@@ -54,18 +99,62 @@ public class SanPhamSuaForm extends JDialog {
             try {
                 String maVatPham = textFields[0].getText().trim();
                 String tenVatPham = textFields[1].getText().trim();
-                int soLuong = Integer.parseInt(textFields[2].getText().trim());
-                String loaiVatPham = textFields[3].getText().trim();
-                double gia = Double.parseDouble(textFields[4].getText().trim());
-                String thuongHieu = textFields[5].getText().trim();
-                String chatLieu = textFields[6].getText().trim();
-                double doDay = Double.parseDouble(textFields[7].getText().trim());
-                String moTa = textFields[8].getText().trim();
-                String xuatXu = textFields[9].getText().trim();
-                int trangThai = Integer.parseInt(textFields[10].getText().trim());
+                String soLuongStr = textFields[2].getText().trim();
+                String giaStr = textFields[3].getText().trim();
+                String doDayStr = textFields[5].getText().trim();
+                String loaiVatPham = (String) cbLoaiSP.getSelectedItem();
+                String thuongHieu = (String) cbThuongHieu.getSelectedItem();
+                String chatLieu = textFields[4].getText().trim();
+                String moTa = textFields[6].getText().trim();
+                String xuatXu = (String) cbXuatXu.getSelectedItem();
+                String trangThaiStr = (String) cbTrangThai.getSelectedItem();
+                int trangThai = trangThaiStr.equals("Bán") ? 1 : 0;
 
-                if (maVatPham.isEmpty() || tenVatPham.isEmpty()) {
-                    throw new IllegalArgumentException("Mã SP và Tên SP không được để trống!");
+                // Kiểm tra từng trường
+                StringBuilder errorMessage = new StringBuilder();
+                int soLuong = 0;
+                double gia = 0.0;
+                double doDay = 0.0;
+
+                if (soLuongStr.isEmpty()) {
+                    errorMessage.append("Số lượng không được để trống! ");
+                } else {
+                    try {
+                        soLuong = Integer.parseInt(soLuongStr);
+                        if (soLuong < 0) errorMessage.append("Số lượng phải là số dương! ");
+                    } catch (NumberFormatException ex) {
+                        errorMessage.append("Số lượng phải là số hợp lệ! ");
+                    }
+                }
+
+                if (giaStr.isEmpty()) {
+                    errorMessage.append("Giá không được để trống! ");
+                } else {
+                    try {
+                        gia = Double.parseDouble(giaStr);
+                        if (gia < 0) errorMessage.append("Giá phải là số dương! ");
+                    } catch (NumberFormatException ex) {
+                        errorMessage.append("Giá phải là số hợp lệ! ");
+                    }
+                }
+
+                if (doDayStr.isEmpty()) {
+                    errorMessage.append("Độ dày không được để trống! ");
+                } else {
+                    try {
+                        doDay = Double.parseDouble(doDayStr);
+                        if (doDay < 0) errorMessage.append("Độ dày phải là số dương! ");
+                    } catch (NumberFormatException ex) {
+                        errorMessage.append("Độ dày phải là số hợp lệ! ");
+                    }
+                }
+
+                if (maVatPham.isEmpty() || tenVatPham.isEmpty() || loaiVatPham == null || thuongHieu == null || xuatXu == null) {
+                    errorMessage.append("Mã SP, Tên SP, Loại SP, Thương hiệu và Xuất xứ không được để trống!");
+                }
+
+                if (errorMessage.length() > 0) {
+                    throw new IllegalArgumentException(errorMessage.toString().trim());
                 }
 
                 VanPhongPham sp = new VanPhongPham();
@@ -83,8 +172,6 @@ public class SanPhamSuaForm extends JDialog {
 
                 controller.suaSanPham(productData[0].toString(), sp);
                 dispose();
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Số lượng, Giá, Độ dày và Trạng thái phải là số hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             } catch (RuntimeException ex) {

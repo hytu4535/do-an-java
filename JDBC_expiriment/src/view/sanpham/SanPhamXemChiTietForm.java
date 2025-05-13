@@ -15,7 +15,7 @@ public class SanPhamXemChiTietForm extends JDialog {
         JLabel lblTitle = new JLabel("THÔNG TIN SẢN PHẨM", JLabel.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblTitle.setForeground(Color.WHITE);
-        lblTitle.setBackground(new Color(50, 168, 82)); // Màu xanh lá giống hình
+        lblTitle.setBackground(new Color(50, 168, 82));
         lblTitle.setOpaque(true);
         lblTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(lblTitle, BorderLayout.NORTH);
@@ -33,11 +33,23 @@ public class SanPhamXemChiTietForm extends JDialog {
             lbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
             infoPanel.add(lbl);
 
-            JTextField txt = new JTextField(productData[i] != null ? productData[i].toString() : "");
+            JTextField txt = new JTextField();
             txt.setFont(new Font("Segoe UI", Font.PLAIN, 14));
             txt.setEditable(false);
             txt.setBackground(new Color(230, 230, 230));
             txt.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+            if (i < productData.length) {
+                if (i == labels.length - 1) { // Trường trạng thái
+                    try {
+                        int trangThai = (Integer) productData[i]; // Ép kiểu sang Integer
+                        txt.setText(trangThai == 1 ? "Bán" : "Không được bán");
+                    } catch (ClassCastException e) {
+                        txt.setText("Không xác định"); // Xử lý trường hợp dữ liệu không phải số
+                    }
+                } else {
+                    txt.setText(productData[i] != null ? productData[i].toString() : "");
+                }
+            }
             infoPanel.add(txt);
         }
 

@@ -5,10 +5,14 @@ import dao.VanPhongPhamDAO;
 import model.VanPhongPham;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class SanPhamThemForm extends JDialog {
     private JTextField[] textFields;
-    private JComboBox<String> cbThuongHieu, cbXuatXu;
+    private JComboBox<String> cbLoaiSP;
+    private JComboBox<String> cbTrangThai;
+    private JComboBox<String> cbXuatXu;
+    private JComboBox<String> cbThuongHieu;
     private SanPhamController controller;
     private VanPhongPhamDAO dao;
 
@@ -21,6 +25,7 @@ public class SanPhamThemForm extends JDialog {
         setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(new Color(245, 245, 245));
 
+        // Tiêu đề
         JLabel lblTitle = new JLabel("THÊM SẢN PHẨM", JLabel.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblTitle.setForeground(Color.WHITE);
@@ -29,13 +34,18 @@ public class SanPhamThemForm extends JDialog {
         lblTitle.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(lblTitle, BorderLayout.NORTH);
 
+        // Panel chứa thông tin
         JPanel infoPanel = new JPanel(new GridLayout(6, 2, 10, 10));
         infoPanel.setBackground(new Color(245, 245, 245));
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         String[] labels = {"Mã SP", "Tên SP", "Số lượng", "Loại SP", "Giá", "Thương hiệu",
                            "Chất liệu", "Độ dày", "Mô tả", "Xuất xứ", "Trạng thái"};
-        textFields = new JTextField[labels.length - 2]; // Bớt 2 trường (Thương hiệu, Xuất xứ)
+        textFields = new JTextField[labels.length - 4]; // Bớt 4 trường cho Loại SP, Thương hiệu, Xuất xứ, Trạng thái (sẽ dùng JComboBox)
+
+        // Lấy danh sách xuất xứ và thương hiệu từ cơ sở dữ liệu
+        List<String> xuatXuList = dao.getAllXuatXu();
+        List<String> thuongHieuList = dao.getAllThuongHieu();
 
         // Các trường dùng JTextField hoặc JComboBox
         int textFieldIndex = 0;
@@ -44,18 +54,34 @@ public class SanPhamThemForm extends JDialog {
             lbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
             infoPanel.add(lbl);
 
-            if (i == 5) { // Thương hiệu
-                cbThuongHieu = new JComboBox<>(dao.getAllThuongHieu().toArray(new String[0]));
+            if (i == 3) { // Trường Loại SP
+                cbLoaiSP = new JComboBox<>(new String[]{"Bút", "Bút chì", "Sổ tay", "Tẩy", "Thước", "Vở"});
+                cbLoaiSP.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbLoaiSP.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                infoPanel.add(cbLoaiSP);
+            } else if (i == 5) { // Trường Thương hiệu
+                cbThuongHieu = new JComboBox<>(thuongHieuList.toArray(new String[0]));
                 cbThuongHieu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbThuongHieu.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
                 infoPanel.add(cbThuongHieu);
-            } else if (i == 9) { // Xuất xứ
-                cbXuatXu = new JComboBox<>(dao.getAllXuatXu().toArray(new String[0]));
+            } else if (i == 9) { // Trường Xuất xứ
+                cbXuatXu = new JComboBox<>(xuatXuList.toArray(new String[0]));
                 cbXuatXu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbXuatXu.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
                 infoPanel.add(cbXuatXu);
+            } else if (i == 10) { // Trường Trạng thái
+                cbTrangThai = new JComboBox<>(new String[]{"Bán", "Không được bán"});
+                cbTrangThai.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                cbTrangThai.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                cbTrangThai.setSelectedItem("Bán"); // Mặc định chọn "Bán"
+                infoPanel.add(cbTrangThai);
             } else {
                 textFields[textFieldIndex] = new JTextField();
                 textFields[textFieldIndex].setFont(new Font("Segoe UI", Font.PLAIN, 14));
                 textFields[textFieldIndex].setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
+                if (i == 0) {
+                    textFields[textFieldIndex].setEditable(true); // Có thể thêm logic kiểm tra mã duy nhất
+                }
                 infoPanel.add(textFields[textFieldIndex]);
                 textFieldIndex++;
             }
@@ -63,6 +89,7 @@ public class SanPhamThemForm extends JDialog {
 
         add(infoPanel, BorderLayout.CENTER);
 
+        // Nút xác nhận và hủy
         JButton btnConfirm = new JButton("Xác nhận");
         btnConfirm.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btnConfirm.setBackground(new Color(50, 168, 82));
@@ -73,41 +100,61 @@ public class SanPhamThemForm extends JDialog {
                 String maVatPham = textFields[0].getText().trim();
                 String tenVatPham = textFields[1].getText().trim();
                 String soLuongStr = textFields[2].getText().trim();
-                String loaiVatPham = textFields[3].getText().trim();
-                String giaStr = textFields[4].getText().trim();
+                String giaStr = textFields[3].getText().trim();
+                String doDayStr = textFields[5].getText().trim();
+                String loaiVatPham = (String) cbLoaiSP.getSelectedItem();
                 String thuongHieu = (String) cbThuongHieu.getSelectedItem();
-                String chatLieu = textFields[5].getText().trim();
-                String doDayStr = textFields[6].getText().trim();
-                String moTa = textFields[7].getText().trim();
+                String chatLieu = textFields[4].getText().trim();
+                String moTa = textFields[6].getText().trim();
                 String xuatXu = (String) cbXuatXu.getSelectedItem();
-                String trangThaiStr = textFields[8].getText().trim();
+                String trangThaiStr = (String) cbTrangThai.getSelectedItem();
+                int trangThai = trangThaiStr.equals("Bán") ? 1 : 0;
 
-                if (maVatPham.isEmpty() || tenVatPham.isEmpty()) {
-                    throw new IllegalArgumentException("Mã SP và Tên SP không được để trống!");
-                }
+                // Kiểm tra từng trường
+                StringBuilder errorMessage = new StringBuilder();
+                int soLuong = 0;
+                double gia = 0.0;
+                double doDay = 0.0;
+
                 if (soLuongStr.isEmpty()) {
-                    throw new IllegalArgumentException("Số lượng không được để trống!");
+                    errorMessage.append("Số lượng không được để trống! ");
+                } else {
+                    try {
+                        soLuong = Integer.parseInt(soLuongStr);
+                        if (soLuong < 0) errorMessage.append("Số lượng phải là số dương! ");
+                    } catch (NumberFormatException ex) {
+                        errorMessage.append("Số lượng phải là số hợp lệ! ");
+                    }
                 }
+
                 if (giaStr.isEmpty()) {
-                    throw new IllegalArgumentException("Giá không được để trống!");
-                }
-                if (dao.isMaVatPhamExists(maVatPham)) {
-                    throw new IllegalArgumentException("Mã sản phẩm bị trùng, xin mời nhập lại mã sản phẩm!");
-                }
-                if (thuongHieu == null || thuongHieu.isEmpty()) {
-                    throw new IllegalArgumentException("Thương hiệu không được để trống!");
-                }
-                if (xuatXu == null || xuatXu.isEmpty()) {
-                    throw new IllegalArgumentException("Xuất xứ không được để trống!");
+                    errorMessage.append("Giá không được để trống! ");
+                } else {
+                    try {
+                        gia = Double.parseDouble(giaStr);
+                        if (gia < 0) errorMessage.append("Giá phải là số dương! ");
+                    } catch (NumberFormatException ex) {
+                        errorMessage.append("Giá phải là số hợp lệ! ");
+                    }
                 }
 
-                int soLuong = Integer.parseInt(soLuongStr);
-                double gia = Double.parseDouble(giaStr);
-                double doDay = doDayStr.isEmpty() ? 0 : Double.parseDouble(doDayStr);
-                int trangThai = Integer.parseInt(trangThaiStr);
+                if (doDayStr.isEmpty()) {
+                    errorMessage.append("Độ dày không được để trống! ");
+                } else {
+                    try {
+                        doDay = Double.parseDouble(doDayStr);
+                        if (doDay < 0) errorMessage.append("Độ dày phải là số dương! ");
+                    } catch (NumberFormatException ex) {
+                        errorMessage.append("Độ dày phải là số hợp lệ! ");
+                    }
+                }
 
-                if (trangThai != 0 && trangThai != 1) {
-                    throw new IllegalArgumentException("Trạng thái chỉ được nhập 0 hoặc 1!");
+                if (maVatPham.isEmpty() || tenVatPham.isEmpty() || loaiVatPham == null || thuongHieu == null || xuatXu == null) {
+                    errorMessage.append("Mã SP, Tên SP, Loại SP, Thương hiệu và Xuất xứ không được để trống!");
+                }
+
+                if (errorMessage.length() > 0) {
+                    throw new IllegalArgumentException(errorMessage.toString().trim());
                 }
 
                 VanPhongPham sp = new VanPhongPham();
@@ -124,19 +171,11 @@ public class SanPhamThemForm extends JDialog {
                 sp.setTrangThai(trangThai);
 
                 controller.themSanPham(sp);
-                JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Số lượng, Giá, Độ dày và Trạng thái phải là số hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             } catch (RuntimeException ex) {
-                String errorMessage = ex.getMessage();
-                if (errorMessage.contains("Duplicate entry")) {
-                    JOptionPane.showMessageDialog(this, "Mã sản phẩm bị trùng, xin mời nhập lại mã sản phẩm!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Lỗi khi thêm sản phẩm: " + errorMessage, "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
 

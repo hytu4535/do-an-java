@@ -1,4 +1,4 @@
- package view.sanpham;
+package view.sanpham;
 
 import controller.SanPhamController;
 import javax.swing.*;
@@ -32,7 +32,28 @@ public class SanPhamPanel extends JPanel {
 
         // tao bang
         String[] columnNames = {"Mã SP", "Tên SP", "Số lượng", "Loại SP", "Giá", "Thương hiệu", "Chất liệu", "Độ dày", "Mô tả", "Xuất xứ", "Trạng thái"};
-        tableModel = new DefaultTableModel(new Object[][]{}, columnNames);
+        tableModel = new DefaultTableModel(new Object[][]{}, columnNames) {
+            @Override
+            public Object getValueAt(int row, int col) {
+                if (col == 10) { // Cột trạng thái
+                    Object value = super.getValueAt(row, col);
+                    // Ánh xạ chính xác từ giá trị gốc (1 → "Bán", 0 → "Không được bán")
+                    if (value != null) {
+                        String valStr = value.toString().trim();
+                        if (valStr.equals("1")) {
+                            return "Bán";
+                        } else if (valStr.equals("0")) {
+                            return "Không được bán";
+                        } else {
+                            // Nếu giá trị đã là "Bán" hoặc "Không được bán" (do SanPhamController truyền vào), giữ nguyên
+                            return valStr.equals("Bán") ? "Bán" : "Không được bán";
+                        }
+                    }
+                    return "Không được bán"; // Mặc định nếu giá trị null
+                }
+                return super.getValueAt(row, col);
+            }
+        };
         productTable = new JTable(tableModel);
         controller = new SanPhamController(this);
 
@@ -47,7 +68,11 @@ public class SanPhamPanel extends JPanel {
             if (selectedRow >= 0) {
                 Object[] rowData = new Object[tableModel.getColumnCount()];
                 for (int i = 0; i < rowData.length; i++) {
-                    rowData[i] = tableModel.getValueAt(selectedRow, i);
+                    if (i == 10) { // Cột trạng thái, lấy giá trị nguyên gốc từ model (1 hoặc 0)
+                        rowData[i] = tableModel.getValueAt(selectedRow, i).toString().equals("Bán") ? 1 : 0;
+                    } else {
+                        rowData[i] = tableModel.getValueAt(selectedRow, i);
+                    }
                 }
                 new SanPhamXemChiTietForm((Frame) SwingUtilities.getWindowAncestor(this), rowData).setVisible(true);
             } else {
@@ -60,7 +85,11 @@ public class SanPhamPanel extends JPanel {
             if (selectedRow >= 0) {
                 Object[] rowData = new Object[tableModel.getColumnCount()];
                 for (int i = 0; i < rowData.length; i++) {
-                    rowData[i] = tableModel.getValueAt(selectedRow, i);
+                    if (i == 10) { // Cột trạng thái, lấy giá trị nguyên gốc từ model (1 hoặc 0)
+                        rowData[i] = tableModel.getValueAt(selectedRow, i).toString().equals("Bán") ? 1 : 0;
+                    } else {
+                        rowData[i] = tableModel.getValueAt(selectedRow, i);
+                    }
                 }
                 new SanPhamSuaForm((Frame) SwingUtilities.getWindowAncestor(this), rowData, controller).setVisible(true);
             } else {
@@ -110,7 +139,6 @@ public class SanPhamPanel extends JPanel {
         
         btnXuatExcel.addActionListener(e -> controller.xuatExcel(tableModel));
         btnNhapExcel.addActionListener(e -> controller.nhapExcel(tableModel));
-
 
         searchPanel.add(lblSearch);
         searchPanel.add(txtSearch);
